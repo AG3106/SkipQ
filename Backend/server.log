@@ -1,0 +1,346 @@
+[2026-03-17 20:32:56,445] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+[2026-03-17 20:33:11,922] INFO django.server basehttp.log_message:213 — "GET /api/ HTTP/1.1" 200 190
+[2026-03-17 20:33:11,939] INFO django.server basehttp.log_message:213 — "GET /api/canteens/ HTTP/1.1" 200 787
+[2026-03-17 20:33:11,974] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/ HTTP/1.1" 200 480
+[2026-03-17 20:33:11,992] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/menu/ HTTP/1.1" 200 1195
+[2026-03-17 20:33:12,029] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/wait-time/ HTTP/1.1" 200 24
+[2026-03-17 20:33:12,046] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/lead-time/ HTTP/1.1" 200 36
+[2026-03-17 20:33:12,307] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for rahul@iitk.ac.in
+[2026-03-17 20:33:12,309] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 171
+[2026-03-17 20:33:12,535] WARNING django.request log.log_response:253 — Bad Request: /api/auth/login/
+[2026-03-17 20:33:12,535] WARNING django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 400 38
+[2026-03-17 20:33:12,773] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for manager1@iitk.ac.in
+[2026-03-17 20:33:12,775] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 173
+[2026-03-17 20:33:13,023] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for admin@iitk.ac.in
+[2026-03-17 20:33:13,025] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 168
+[2026-03-17 20:33:13,258] WARNING django.request log.log_response:253 — Bad Request: /api/auth/login/
+[2026-03-17 20:33:13,259] WARNING django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 400 31
+[2026-03-17 20:33:13,273] INFO django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 200 222
+[2026-03-17 20:33:13,290] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:33:13,334] INFO django.server basehttp.log_message:213 — "GET /api/orders/history/ HTTP/1.1" 200 981
+[2026-03-17 20:33:13,368] INFO django.server basehttp.log_message:213 — "GET /api/orders/1/ HTTP/1.1" 200 536
+[2026-03-17 20:33:13,381] WARNING django.request log.log_response:253 — Forbidden: /api/orders/3/
+[2026-03-17 20:33:13,381] WARNING django.server basehttp.log_message:213 — "GET /api/orders/3/ HTTP/1.1" 403 26
+[2026-03-17 20:33:13,399] INFO django.server basehttp.log_message:213 — "GET /api/orders/pending/ HTTP/1.1" 200 514
+[2026-03-17 20:33:13,439] INFO django.server basehttp.log_message:213 — "GET /api/orders/active/ HTTP/1.1" 200 1025
+[2026-03-17 20:33:13,463] WARNING django.request log.log_response:253 — Bad Request: /api/orders/2/accept/
+[2026-03-17 20:33:13,463] WARNING django.server basehttp.log_message:213 — "POST /api/orders/2/accept/ HTTP/1.1" 400 67
+[2026-03-17 20:33:13,500] WARNING django.request log.log_response:253 — Bad Request: /api/orders/2/ready/
+[2026-03-17 20:33:13,500] WARNING django.server basehttp.log_message:213 — "POST /api/orders/2/ready/ HTTP/1.1" 400 64
+[2026-03-17 20:33:13,535] WARNING django.request log.log_response:253 — Bad Request: /api/orders/2/complete/
+[2026-03-17 20:33:13,536] WARNING django.server basehttp.log_message:213 — "POST /api/orders/2/complete/ HTTP/1.1" 400 68
+[2026-03-17 20:33:13,573] WARNING django.request log.log_response:253 — Bad Request: /api/orders/2/accept/
+[2026-03-17 20:33:13,573] WARNING django.server basehttp.log_message:213 — "POST /api/orders/2/accept/ HTTP/1.1" 400 67
+[2026-03-17 20:33:13,588] WARNING django.request log.log_response:253 — Bad Request: /api/orders/3/ready/
+[2026-03-17 20:33:13,588] WARNING django.server basehttp.log_message:213 — "POST /api/orders/3/ready/ HTTP/1.1" 400 82
+[2026-03-17 20:33:13,611] INFO django.server basehttp.log_message:213 — "GET /api/canteens/manager/dashboard/ HTTP/1.1" 200 623
+[2026-03-17 20:33:13,646] INFO apps.canteens.models models.toggle_availability:241 — Dish Veg Biryani availability toggled to False
+[2026-03-17 20:33:13,648] INFO django.server basehttp.log_message:213 — "POST /api/canteens/dishes/4/toggle/ HTTP/1.1" 200 262
+[2026-03-17 20:33:13,689] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/holidays/ HTTP/1.1" 200 180
+[2026-03-17 20:33:13,746] INFO django.server basehttp.log_message:213 — "GET /api/cakes/my-reservations/ HTTP/1.1" 200 339
+[2026-03-17 20:33:13,770] INFO django.server basehttp.log_message:213 — "GET /api/cakes/pending/ HTTP/1.1" 200 2
+[2026-03-17 20:33:13,814] WARNING django.request log.log_response:253 — Bad Request: /api/cakes/1/accept/
+[2026-03-17 20:33:13,814] WARNING django.server basehttp.log_message:213 — "POST /api/cakes/1/accept/ HTTP/1.1" 400 117
+[2026-03-17 20:33:13,833] WARNING django.request log.log_response:253 — Bad Request: /api/cakes/2/complete/
+[2026-03-17 20:33:13,833] WARNING django.server basehttp.log_message:213 — "POST /api/cakes/2/complete/ HTTP/1.1" 400 85
+[2026-03-17 20:33:13,847] INFO django.server basehttp.log_message:213 — "GET /api/admin/canteen-requests/ HTTP/1.1" 200 2
+[2026-03-17 20:33:13,874] WARNING django.request log.log_response:253 — Not Found: /api/admin/canteen-requests/2/approve/
+[2026-03-17 20:33:13,874] WARNING django.server basehttp.log_message:213 — "POST /api/admin/canteen-requests/2/approve/ HTTP/1.1" 404 37
+[2026-03-17 20:33:13,891] INFO django.server basehttp.log_message:213 — "GET /api/admin/users/ HTTP/1.1" 200 948
+[2026-03-17 20:33:13,941] INFO django.server basehttp.log_message:213 — "GET /api/admin/analytics/ HTTP/1.1" 200 179
+[2026-03-17 20:33:13,965] INFO django.server basehttp.log_message:213 — "GET /api/admin/activity-log/ HTTP/1.1" 200 651
+[2026-03-17 20:33:13,981] INFO apps.administration.views views.broadcast_notification:312 — Admin admin@iitk.ac.in broadcast notification to 6 users: Test broadcast to all users
+[2026-03-17 20:33:13,994] INFO django.server basehttp.log_message:213 — "POST /api/admin/broadcast/ HTTP/1.1" 200 82
+[2026-03-17 20:33:14,017] WARNING django.request log.log_response:253 — Bad Request: /api/auth/register/
+[2026-03-17 20:33:14,017] WARNING django.server basehttp.log_message:213 — "POST /api/auth/register/ HTTP/1.1" 400 53
+[2026-03-17 20:33:14,052] WARNING django.request log.log_response:253 — Bad Request: /api/auth/register/
+[2026-03-17 20:33:14,052] WARNING django.server basehttp.log_message:213 — "POST /api/auth/register/ HTTP/1.1" 400 58
+[2026-03-17 20:33:14,076] WARNING django.request log.log_response:253 — Bad Request: /api/orders/place/
+[2026-03-17 20:33:14,076] WARNING django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 400 32
+[2026-03-17 20:33:14,097] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:33:14,142] WARNING django.request log.log_response:253 — Bad Request: /api/orders/place/
+[2026-03-17 20:33:14,142] WARNING django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 400 32
+[2026-03-17 20:33:14,172] INFO apps.users.services.profile_service profile_service.add_funds:45 — Added ₹200.00 to wallet of rahul@iitk.ac.in. New balance: ₹672.00
+[2026-03-17 20:33:14,173] INFO django.server basehttp.log_message:213 — "POST /api/users/wallet/add-funds/ HTTP/1.1" 200 44
+[2026-03-17 20:33:14,219] WARNING django.request log.log_response:253 — Bad Request: /api/users/wallet/add-funds/
+[2026-03-17 20:33:14,219] WARNING django.server basehttp.log_message:213 — "POST /api/users/wallet/add-funds/ HTTP/1.1" 400 63
+[2026-03-17 20:33:14,239] INFO apps.users.services.profile_service profile_service.set_wallet_pin:97 — Wallet PIN updated for rahul@iitk.ac.in
+[2026-03-17 20:33:14,240] INFO django.server basehttp.log_message:213 — "POST /api/users/wallet/set-pin/ HTTP/1.1" 200 32
+[2026-03-17 20:33:14,260] INFO django.server basehttp.log_message:213 — "PATCH /api/users/profile/ HTTP/1.1" 200 222
+[2026-03-17 20:33:14,311] INFO django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 200 268
+[2026-03-17 20:33:14,326] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: OPEN → CLOSED
+[2026-03-17 20:33:14,330] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 482
+[2026-03-17 20:33:14,363] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: CLOSED → OPEN
+[2026-03-17 20:33:14,366] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 480
+[2026-03-17 20:33:14,396] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: OPEN → BUSY
+[2026-03-17 20:33:14,399] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 480
+[2026-03-17 20:33:14,428] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: BUSY → OPEN
+[2026-03-17 20:33:14,432] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 480
+[2026-03-17 20:33:14,447] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: OPEN → EMERGENCY_CLOSURE
+[2026-03-17 20:33:14,450] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 494
+[2026-03-17 20:33:14,497] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: EMERGENCY_CLOSURE → OPEN
+[2026-03-17 20:33:14,502] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 480
+[2026-03-17 20:33:14,758] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for priya@iitk.ac.in
+[2026-03-17 20:33:14,760] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 171
+[2026-03-17 20:33:14,772] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:33:14,809] INFO apps.orders.services.payment_service payment_service.authorize_payment:35 — Payment authorized for priya@iitk.ac.in — ₹80.00
+[2026-03-17 20:33:14,809] INFO apps.users.services.profile_service profile_service.deduct_funds:68 — Deducted ₹80.00 from wallet of priya@iitk.ac.in. New balance: ₹220.00
+[2026-03-17 20:33:14,810] INFO apps.orders.services.payment_service payment_service.validate_and_deduct_funds:84 — Funds validated and deducted: ₹80.00 from priya@iitk.ac.in
+[2026-03-17 20:33:14,811] INFO apps.orders.services.order_service order_service.place_order:108 — Order #7 placed by priya@iitk.ac.in at 'Hall 5 Canteen' — total ₹80.00
+[2026-03-17 20:33:14,815] INFO django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 201 467
+[2026-03-17 20:33:14,851] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:33:14,880] INFO apps.orders.models models.update_order_status:135 — Order #7 transitioned: PENDING → REJECTED
+[2026-03-17 20:33:14,884] INFO apps.users.services.profile_service profile_service.refund_to_wallet:85 — Refunded ₹80.00 to wallet of priya@iitk.ac.in. New balance: ₹300.00
+[2026-03-17 20:33:14,885] INFO apps.orders.services.payment_service payment_service.process_refund:71 — Payment #7 refunded — ₹80.00 to priya@iitk.ac.in
+[2026-03-17 20:33:14,887] INFO apps.orders.models models.update_order_status:135 — Order #7 transitioned: REJECTED → REFUNDED
+[2026-03-17 20:33:14,887] INFO apps.orders.services.order_service order_service.reject_order:150 — Order #7 rejected and refunded. Reason: Out of coffee beans
+[2026-03-17 20:33:14,892] INFO django.server basehttp.log_message:213 — "POST /api/orders/7/reject/ HTTP/1.1" 200 438
+[2026-03-17 20:33:14,929] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:33:14,972] INFO apps.canteens.services.menu_service menu_service.add_dish:48 — Dish 'Chole Bhature' added to canteen 'Hall 5 Canteen'
+[2026-03-17 20:33:14,974] INFO django.server basehttp.log_message:213 — "POST /api/canteens/1/menu/add/ HTTP/1.1" 201 268
+[2026-03-17 20:33:15,019] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/dishes/6/ HTTP/1.1" 200 271
+[2026-03-17 20:33:15,066] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/menu/ HTTP/1.1" 200 1468
+[2026-03-17 20:33:15,106] INFO django.server basehttp.log_message:213 — "DELETE /api/canteens/dishes/6/ HTTP/1.1" 204 26
+[2026-03-17 20:33:15,131] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/menu/ HTTP/1.1" 200 1196
+[2026-03-17 20:33:15,173] INFO apps.canteens.services.menu_service menu_service.add_review:100 — Review added for 'Paneer Butter Masala' by rahul@iitk.ac.in: 5★
+[2026-03-17 20:33:15,174] INFO django.server basehttp.log_message:213 — "POST /api/canteens/dishes/1/review/ HTTP/1.1" 201 112
+[2026-03-17 20:33:15,195] WARNING django.request log.log_response:253 — Forbidden: /api/canteens/dishes/1/review/
+[2026-03-17 20:33:15,195] WARNING django.server basehttp.log_message:213 — "POST /api/canteens/dishes/1/review/ HTTP/1.1" 403 37
+[2026-03-17 20:33:15,219] INFO django.server basehttp.log_message:213 — "POST /api/admin/users/4/unsuspend/ HTTP/1.1" 200 51
+[2026-03-17 20:33:15,466] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for suspended@iitk.ac.in
+[2026-03-17 20:33:15,468] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 175
+[2026-03-17 20:33:15,487] INFO django.server basehttp.log_message:213 — "POST /api/admin/users/4/suspend/ HTTP/1.1" 200 49
+[2026-03-17 20:33:15,713] WARNING django.request log.log_response:253 — Bad Request: /api/auth/login/
+[2026-03-17 20:33:15,713] WARNING django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 400 38
+[2026-03-17 20:33:15,724] WARNING django.request log.log_response:253 — Bad Request: /api/admin/users/1/suspend/
+[2026-03-17 20:33:15,725] WARNING django.server basehttp.log_message:213 — "POST /api/admin/users/1/suspend/ HTTP/1.1" 400 39
+[2026-03-17 20:33:15,737] WARNING django.request log.log_response:253 — Not Found: /api/admin/moderate/
+[2026-03-17 20:33:15,737] WARNING django.server basehttp.log_message:213 — "POST /api/admin/moderate/ HTTP/1.1" 404 28
+[2026-03-17 20:33:15,752] WARNING django.request log.log_response:253 — Bad Request: /api/admin/moderate/
+[2026-03-17 20:33:15,753] WARNING django.server basehttp.log_message:213 — "POST /api/admin/moderate/ HTTP/1.1" 400 52
+[2026-03-17 20:33:15,768] WARNING django.request log.log_response:253 — Forbidden: /api/orders/pending/
+[2026-03-17 20:33:15,768] WARNING django.server basehttp.log_message:213 — "GET /api/orders/pending/ HTTP/1.1" 403 49
+[2026-03-17 20:33:15,783] WARNING django.request log.log_response:253 — Forbidden: /api/orders/1/accept/
+[2026-03-17 20:33:15,784] WARNING django.server basehttp.log_message:213 — "POST /api/orders/1/accept/ HTTP/1.1" 403 43
+[2026-03-17 20:33:15,800] WARNING django.request log.log_response:253 — Forbidden: /api/admin/analytics/
+[2026-03-17 20:33:15,801] WARNING django.server basehttp.log_message:213 — "GET /api/admin/analytics/ HTTP/1.1" 403 33
+[2026-03-17 20:33:15,816] WARNING django.request log.log_response:253 — Forbidden: /api/admin/analytics/
+[2026-03-17 20:33:15,816] WARNING django.server basehttp.log_message:213 — "GET /api/admin/analytics/ HTTP/1.1" 403 33
+[2026-03-17 20:33:15,828] WARNING django.request log.log_response:253 — Forbidden: /api/orders/place/
+[2026-03-17 20:33:15,828] WARNING django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 403 43
+[2026-03-17 20:33:15,839] WARNING django.request log.log_response:253 — Forbidden: /api/users/profile/
+[2026-03-17 20:33:15,839] WARNING django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 403 58
+[2026-03-17 20:33:15,850] WARNING django.request log.log_response:253 — Forbidden: /api/orders/history/
+[2026-03-17 20:33:15,851] WARNING django.server basehttp.log_message:213 — "GET /api/orders/history/ HTTP/1.1" 403 58
+[2026-03-17 20:33:15,863] WARNING django.request log.log_response:253 — Bad Request: /api/auth/register/
+[2026-03-17 20:33:15,863] WARNING django.server basehttp.log_message:213 — "POST /api/auth/register/ HTTP/1.1" 400 53
+[2026-03-17 20:33:15,875] WARNING django.request log.log_response:253 — Not Found: /api/canteens/9999/
+[2026-03-17 20:33:15,875] WARNING django.server basehttp.log_message:213 — "GET /api/canteens/9999/ HTTP/1.1" 404 29
+[2026-03-17 20:33:15,888] WARNING django.request log.log_response:253 — Not Found: /api/orders/9999/
+[2026-03-17 20:33:15,888] WARNING django.server basehttp.log_message:213 — "GET /api/orders/9999/ HTTP/1.1" 404 27
+[2026-03-17 20:33:15,901] WARNING django.request log.log_response:253 — Not Found: /api/canteens/dishes/9999/toggle/
+[2026-03-17 20:33:15,901] WARNING django.server basehttp.log_message:213 — "POST /api/canteens/dishes/9999/toggle/ HTTP/1.1" 404 26
+[2026-03-17 20:33:15,911] WARNING django.request log.log_response:253 — Not Found: /api/orders/place/
+[2026-03-17 20:33:15,911] WARNING django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 404 29
+[2026-03-17 20:33:16,152] INFO apps.users.services.auth_service auth_service.authenticate_user:184 — Extended session (31 days) for rahul@iitk.ac.in
+[2026-03-17 20:33:16,154] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 171
+[2026-03-17 20:33:16,172] WARNING django.request log.log_response:253 — Bad Request: /api/canteens/1/holidays/
+[2026-03-17 20:33:16,172] WARNING django.server basehttp.log_message:213 — "POST /api/canteens/1/holidays/ HTTP/1.1" 400 49
+[2026-03-17 20:33:16,189] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/holidays/ HTTP/1.1" 200 180
+[2026-03-17 20:33:16,227] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/documents/ HTTP/1.1" 200 84
+[2026-03-17 20:33:16,245] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/documents/ HTTP/1.1" 200 84
+[2026-03-17 20:33:16,262] WARNING django.request log.log_response:253 — Forbidden: /api/canteens/1/documents/
+[2026-03-17 20:33:16,262] WARNING django.server basehttp.log_message:213 — "GET /api/canteens/1/documents/ HTTP/1.1" 403 26
+[2026-03-17 20:33:16,278] WARNING django.request log.log_response:253 — Bad Request: /api/admin/broadcast/
+[2026-03-17 20:33:16,279] WARNING django.server basehttp.log_message:213 — "POST /api/admin/broadcast/ HTTP/1.1" 400 31
+[2026-03-17 20:33:16,293] INFO apps.administration.views views.broadcast_notification:312 — Admin admin@iitk.ac.in broadcast notification to 3 users: Special offer for students!
+[2026-03-17 20:33:16,305] INFO django.server basehttp.log_message:213 — "POST /api/admin/broadcast/ HTTP/1.1" 200 87
+[2026-03-17 20:33:16,340] INFO apps.users.services.auth_service auth_service.logout_user:199 — User logged out
+[2026-03-17 20:33:16,340] INFO django.server basehttp.log_message:213 — "POST /api/auth/logout/ HTTP/1.1" 200 37
+[2026-03-17 20:33:16,350] WARNING django.request log.log_response:253 — Forbidden: /api/users/profile/
+[2026-03-17 20:33:16,351] WARNING django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 403 58
+[2026-03-17 20:33:16,362] INFO apps.users.services.auth_service auth_service.logout_user:199 — User logged out
+[2026-03-17 20:33:16,362] INFO django.server basehttp.log_message:213 — "POST /api/auth/logout/ HTTP/1.1" 200 37
+[2026-03-17 20:33:16,374] INFO apps.users.services.auth_service auth_service.logout_user:199 — User logged out
+[2026-03-17 20:33:16,374] INFO django.server basehttp.log_message:213 — "POST /api/auth/logout/ HTTP/1.1" 200 37
+[2026-03-17 20:34:08,219] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+Error: That port is already in use.
+[2026-03-17 20:34:10,942] INFO django.server basehttp.log_message:213 — "GET /api/ HTTP/1.1" 200 190
+[2026-03-17 20:34:10,967] INFO django.server basehttp.log_message:213 — "GET /api/canteens/ HTTP/1.1" 200 423
+[2026-03-17 20:34:11,002] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/ HTTP/1.1" 200 421
+[2026-03-17 20:34:11,015] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/menu/ HTTP/1.1" 200 1084
+[2026-03-17 20:34:11,042] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/wait-time/ HTTP/1.1" 200 24
+[2026-03-17 20:34:11,055] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/lead-time/ HTTP/1.1" 200 36
+[2026-03-17 20:34:11,308] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for rahul@iitk.ac.in
+[2026-03-17 20:34:11,310] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 171
+[2026-03-17 20:34:11,546] WARNING django.request log.log_response:253 — Bad Request: /api/auth/login/
+[2026-03-17 20:34:11,546] WARNING django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 400 38
+[2026-03-17 20:34:11,774] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for manager1@iitk.ac.in
+[2026-03-17 20:34:11,776] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 173
+[2026-03-17 20:34:12,015] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for admin@iitk.ac.in
+[2026-03-17 20:34:12,017] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 168
+[2026-03-17 20:34:12,249] WARNING django.request log.log_response:253 — Bad Request: /api/auth/login/
+[2026-03-17 20:34:12,250] WARNING django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 400 31
+[2026-03-17 20:34:12,261] INFO django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 200 218
+[2026-03-17 20:34:12,275] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:34:12,313] INFO django.server basehttp.log_message:213 — "GET /api/orders/history/ HTTP/1.1" 200 538
+[2026-03-17 20:34:12,346] INFO django.server basehttp.log_message:213 — "GET /api/orders/1/ HTTP/1.1" 200 536
+[2026-03-17 20:34:12,357] WARNING django.request log.log_response:253 — Forbidden: /api/orders/3/
+[2026-03-17 20:34:12,357] WARNING django.server basehttp.log_message:213 — "GET /api/orders/3/ HTTP/1.1" 403 26
+[2026-03-17 20:34:12,373] INFO django.server basehttp.log_message:213 — "GET /api/orders/pending/ HTTP/1.1" 200 420
+[2026-03-17 20:34:12,409] INFO django.server basehttp.log_message:213 — "GET /api/orders/active/ HTTP/1.1" 200 934
+[2026-03-17 20:34:12,434] INFO apps.orders.models models.update_order_status:135 — Order #2 transitioned: PENDING → ACCEPTED
+[2026-03-17 20:34:12,435] INFO apps.orders.services.order_service order_service.accept_order:127 — Order #2 accepted by manager
+[2026-03-17 20:34:12,439] INFO django.server basehttp.log_message:213 — "POST /api/orders/2/accept/ HTTP/1.1" 200 419
+[2026-03-17 20:34:12,486] INFO apps.orders.models models.update_order_status:135 — Order #2 transitioned: ACCEPTED → READY
+[2026-03-17 20:34:12,486] INFO apps.orders.services.order_service order_service.mark_order_ready:236 — Order #2 marked as ready for pickup
+[2026-03-17 20:34:12,490] INFO django.server basehttp.log_message:213 — "POST /api/orders/2/ready/ HTTP/1.1" 200 416
+[2026-03-17 20:34:12,526] INFO apps.orders.models models.update_order_status:135 — Order #2 transitioned: READY → COMPLETED
+[2026-03-17 20:34:12,528] INFO apps.users.services.profile_service profile_service.credit_to_manager:112 — Credited ₹60.00 to manager wallet of manager1@iitk.ac.in. New balance: ₹1060.00
+[2026-03-17 20:34:12,529] INFO apps.orders.models models.add_to_order_history:195 — Order #2 added to history for customer rahul@iitk.ac.in
+[2026-03-17 20:34:12,529] INFO apps.orders.services.order_service order_service.mark_order_completed:262 — Order #2 completed — ₹60.00 credited to manager
+[2026-03-17 20:34:12,532] INFO django.server basehttp.log_message:213 — "POST /api/orders/2/complete/ HTTP/1.1" 200 442
+[2026-03-17 20:34:12,571] WARNING django.request log.log_response:253 — Bad Request: /api/orders/2/accept/
+[2026-03-17 20:34:12,571] WARNING django.server basehttp.log_message:213 — "POST /api/orders/2/accept/ HTTP/1.1" 400 67
+[2026-03-17 20:34:12,588] INFO apps.orders.models models.update_order_status:135 — Order #3 transitioned: ACCEPTED → READY
+[2026-03-17 20:34:12,588] INFO apps.orders.services.order_service order_service.mark_order_ready:236 — Order #3 marked as ready for pickup
+[2026-03-17 20:34:12,594] INFO django.server basehttp.log_message:213 — "POST /api/orders/3/ready/ HTTP/1.1" 200 510
+[2026-03-17 20:34:12,612] INFO django.server basehttp.log_message:213 — "GET /api/canteens/manager/dashboard/ HTTP/1.1" 200 562
+[2026-03-17 20:34:12,634] INFO apps.canteens.models models.toggle_availability:241 — Dish Veg Biryani availability toggled to True
+[2026-03-17 20:34:12,636] INFO django.server basehttp.log_message:213 — "POST /api/canteens/dishes/4/toggle/ HTTP/1.1" 200 261
+[2026-03-17 20:34:12,674] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/holidays/ HTTP/1.1" 200 121
+[2026-03-17 20:34:12,713] INFO django.server basehttp.log_message:213 — "GET /api/cakes/my-reservations/ HTTP/1.1" 200 346
+[2026-03-17 20:34:12,738] INFO django.server basehttp.log_message:213 — "GET /api/cakes/pending/ HTTP/1.1" 200 346
+[2026-03-17 20:34:12,803] INFO apps.cakes.models models.update_status:113 — CakeReservation #1 transitioned: PENDING_APPROVAL → CONFIRMED
+[2026-03-17 20:34:12,803] INFO apps.cakes.services.cake_service cake_service.accept_reservation:105 — Cake reservation #1 confirmed
+[2026-03-17 20:34:12,808] INFO django.server basehttp.log_message:213 — "POST /api/cakes/1/accept/ HTTP/1.1" 200 337
+[2026-03-17 20:34:12,825] INFO apps.cakes.models models.update_status:113 — CakeReservation #2 transitioned: CONFIRMED → COMPLETED
+[2026-03-17 20:34:12,825] INFO apps.cakes.services.cake_service cake_service.complete_reservation:142 — Cake reservation #2 completed (picked up)
+[2026-03-17 20:34:12,827] INFO django.server basehttp.log_message:213 — "POST /api/cakes/2/complete/ HTTP/1.1" 200 312
+[2026-03-17 20:34:12,843] INFO django.server basehttp.log_message:213 — "GET /api/admin/canteen-requests/ HTTP/1.1" 200 313
+[2026-03-17 20:34:12,873] INFO apps.canteens.services.canteen_service canteen_service.approve_canteen:59 — Canteen 'New Cafe' approved and activated
+[2026-03-17 20:34:12,878] INFO django.server basehttp.log_message:213 — "POST /api/admin/canteen-requests/2/approve/ HTTP/1.1" 200 370
+[2026-03-17 20:34:12,897] INFO django.server basehttp.log_message:213 — "GET /api/admin/users/ HTTP/1.1" 200 809
+[2026-03-17 20:34:12,931] INFO django.server basehttp.log_message:213 — "GET /api/admin/analytics/ HTTP/1.1" 200 179
+[2026-03-17 20:34:12,955] INFO django.server basehttp.log_message:213 — "GET /api/admin/activity-log/ HTTP/1.1" 200 116
+[2026-03-17 20:34:12,971] INFO apps.administration.views views.broadcast_notification:312 — Admin admin@iitk.ac.in broadcast notification to 5 users: Test broadcast to all users
+[2026-03-17 20:34:12,974] INFO django.server basehttp.log_message:213 — "POST /api/admin/broadcast/ HTTP/1.1" 200 82
+[2026-03-17 20:34:13,218] INFO apps.users.services.auth_service auth_service.generate_and_send_otp:64 — OTP for newstudent@iitk.ac.in: 410110 (dev mode — not sent via email)
+[2026-03-17 20:34:13,219] INFO django.server basehttp.log_message:213 — "POST /api/auth/register/ HTTP/1.1" 200 55
+[2026-03-17 20:34:13,259] INFO apps.users.services.auth_service auth_service.verify_otp:94 — OTP verified successfully for newstudent@iitk.ac.in
+[2026-03-17 20:34:13,262] INFO apps.users.services.auth_service auth_service.complete_registration:137 — Registration completed for newstudent@iitk.ac.in as CUSTOMER
+[2026-03-17 20:34:13,263] INFO django.server basehttp.log_message:213 — "POST /api/auth/verify-otp/ HTTP/1.1" 201 183
+[2026-03-17 20:34:13,282] WARNING django.request log.log_response:253 — Bad Request: /api/auth/register/
+[2026-03-17 20:34:13,283] WARNING django.server basehttp.log_message:213 — "POST /api/auth/register/ HTTP/1.1" 400 58
+[2026-03-17 20:34:13,297] INFO apps.orders.services.payment_service payment_service.authorize_payment:35 — Payment authorized for rahul@iitk.ac.in — ₹228.0000
+[2026-03-17 20:34:13,297] INFO apps.users.services.profile_service profile_service.deduct_funds:68 — Deducted ₹228.0000 from wallet of rahul@iitk.ac.in. New balance: ₹272.0000
+[2026-03-17 20:34:13,297] INFO apps.orders.services.payment_service payment_service.validate_and_deduct_funds:84 — Funds validated and deducted: ₹228.0000 from rahul@iitk.ac.in
+[2026-03-17 20:34:13,299] INFO apps.orders.services.order_service order_service.place_order:108 — Order #5 placed by rahul@iitk.ac.in at 'Hall 5 Canteen' — total ₹228.0000
+[2026-03-17 20:34:13,304] INFO django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 201 560
+[2026-03-17 20:34:13,326] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:34:13,364] WARNING django.request log.log_response:253 — Bad Request: /api/orders/place/
+[2026-03-17 20:34:13,364] WARNING django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 400 32
+[2026-03-17 20:34:13,380] INFO apps.users.services.profile_service profile_service.add_funds:45 — Added ₹200.00 to wallet of rahul@iitk.ac.in. New balance: ₹472.00
+[2026-03-17 20:34:13,381] INFO django.server basehttp.log_message:213 — "POST /api/users/wallet/add-funds/ HTTP/1.1" 200 44
+[2026-03-17 20:34:13,411] WARNING django.request log.log_response:253 — Bad Request: /api/users/wallet/add-funds/
+[2026-03-17 20:34:13,412] WARNING django.server basehttp.log_message:213 — "POST /api/users/wallet/add-funds/ HTTP/1.1" 400 63
+[2026-03-17 20:34:13,431] INFO apps.users.services.profile_service profile_service.set_wallet_pin:97 — Wallet PIN updated for rahul@iitk.ac.in
+[2026-03-17 20:34:13,432] INFO django.server basehttp.log_message:213 — "POST /api/users/wallet/set-pin/ HTTP/1.1" 200 32
+[2026-03-17 20:34:13,450] INFO django.server basehttp.log_message:213 — "PATCH /api/users/profile/ HTTP/1.1" 200 222
+[2026-03-17 20:34:13,490] INFO django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 200 268
+[2026-03-17 20:34:13,512] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: OPEN → CLOSED
+[2026-03-17 20:34:13,515] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 423
+[2026-03-17 20:34:13,556] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: CLOSED → OPEN
+[2026-03-17 20:34:13,559] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 421
+[2026-03-17 20:34:13,603] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: OPEN → BUSY
+[2026-03-17 20:34:13,607] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 421
+[2026-03-17 20:34:13,650] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: BUSY → OPEN
+[2026-03-17 20:34:13,653] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 421
+[2026-03-17 20:34:13,669] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: OPEN → EMERGENCY_CLOSURE
+[2026-03-17 20:34:13,672] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 435
+[2026-03-17 20:34:13,707] INFO apps.canteens.services.canteen_service canteen_service.update_canteen_operational_status:106 — Canteen 'Hall 5 Canteen' transitioned: EMERGENCY_CLOSURE → OPEN
+[2026-03-17 20:34:13,711] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/1/status/ HTTP/1.1" 200 421
+[2026-03-17 20:34:13,941] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for priya@iitk.ac.in
+[2026-03-17 20:34:13,943] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 171
+[2026-03-17 20:34:13,956] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:34:13,996] INFO apps.orders.services.payment_service payment_service.authorize_payment:35 — Payment authorized for priya@iitk.ac.in — ₹80.00
+[2026-03-17 20:34:13,996] INFO apps.users.services.profile_service profile_service.deduct_funds:68 — Deducted ₹80.00 from wallet of priya@iitk.ac.in. New balance: ₹220.00
+[2026-03-17 20:34:13,996] INFO apps.orders.services.payment_service payment_service.validate_and_deduct_funds:84 — Funds validated and deducted: ₹80.00 from priya@iitk.ac.in
+[2026-03-17 20:34:13,997] INFO apps.orders.services.order_service order_service.place_order:108 — Order #6 placed by priya@iitk.ac.in at 'Hall 5 Canteen' — total ₹80.00
+[2026-03-17 20:34:14,001] INFO django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 201 466
+[2026-03-17 20:34:14,038] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:34:14,080] INFO apps.orders.models models.update_order_status:135 — Order #6 transitioned: PENDING → REJECTED
+[2026-03-17 20:34:14,083] INFO apps.users.services.profile_service profile_service.refund_to_wallet:85 — Refunded ₹80.00 to wallet of priya@iitk.ac.in. New balance: ₹300.00
+[2026-03-17 20:34:14,084] INFO apps.orders.services.payment_service payment_service.process_refund:71 — Payment #6 refunded — ₹80.00 to priya@iitk.ac.in
+[2026-03-17 20:34:14,086] INFO apps.orders.models models.update_order_status:135 — Order #6 transitioned: REJECTED → REFUNDED
+[2026-03-17 20:34:14,086] INFO apps.orders.services.order_service order_service.reject_order:150 — Order #6 rejected and refunded. Reason: Out of coffee beans
+[2026-03-17 20:34:14,090] INFO django.server basehttp.log_message:213 — "POST /api/orders/6/reject/ HTTP/1.1" 200 437
+[2026-03-17 20:34:14,127] INFO django.server basehttp.log_message:213 — "GET /api/users/wallet/ HTTP/1.1" 200 20
+[2026-03-17 20:34:14,158] INFO apps.canteens.services.menu_service menu_service.add_dish:48 — Dish 'Chole Bhature' added to canteen 'Hall 5 Canteen'
+[2026-03-17 20:34:14,161] INFO django.server basehttp.log_message:213 — "POST /api/canteens/1/menu/add/ HTTP/1.1" 201 268
+[2026-03-17 20:34:14,211] INFO django.server basehttp.log_message:213 — "PATCH /api/canteens/dishes/5/ HTTP/1.1" 200 271
+[2026-03-17 20:34:14,257] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/menu/ HTTP/1.1" 200 1355
+[2026-03-17 20:34:14,288] INFO django.server basehttp.log_message:213 — "DELETE /api/canteens/dishes/5/ HTTP/1.1" 204 26
+[2026-03-17 20:34:14,288] INFO django.server basehttp.handle_error:81 — - Broken pipe from ('127.0.0.1', 40496)
+[2026-03-17 20:34:14,307] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/menu/ HTTP/1.1" 200 1083
+[2026-03-17 20:34:14,345] INFO apps.canteens.services.menu_service menu_service.add_review:100 — Review added for 'Paneer Butter Masala' by rahul@iitk.ac.in: 5★
+[2026-03-17 20:34:14,346] INFO django.server basehttp.log_message:213 — "POST /api/canteens/dishes/1/review/ HTTP/1.1" 201 112
+[2026-03-17 20:34:14,363] WARNING django.request log.log_response:253 — Forbidden: /api/canteens/dishes/1/review/
+[2026-03-17 20:34:14,363] WARNING django.server basehttp.log_message:213 — "POST /api/canteens/dishes/1/review/ HTTP/1.1" 403 37
+[2026-03-17 20:34:14,380] INFO django.server basehttp.log_message:213 — "POST /api/admin/users/4/unsuspend/ HTTP/1.1" 200 51
+[2026-03-17 20:34:14,687] INFO apps.users.services.auth_service auth_service.authenticate_user:188 — Standard session (browser close) for suspended@iitk.ac.in
+[2026-03-17 20:34:14,689] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 175
+[2026-03-17 20:34:14,702] INFO django.server basehttp.log_message:213 — "POST /api/admin/users/4/suspend/ HTTP/1.1" 200 49
+[2026-03-17 20:34:14,932] WARNING django.request log.log_response:253 — Bad Request: /api/auth/login/
+[2026-03-17 20:34:14,932] WARNING django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 400 38
+[2026-03-17 20:34:14,945] WARNING django.request log.log_response:253 — Bad Request: /api/admin/users/1/suspend/
+[2026-03-17 20:34:14,946] WARNING django.server basehttp.log_message:213 — "POST /api/admin/users/1/suspend/ HTTP/1.1" 400 39
+[2026-03-17 20:34:14,958] WARNING django.request log.log_response:253 — Not Found: /api/admin/moderate/
+[2026-03-17 20:34:14,958] WARNING django.server basehttp.log_message:213 — "POST /api/admin/moderate/ HTTP/1.1" 404 28
+[2026-03-17 20:34:14,974] WARNING django.request log.log_response:253 — Bad Request: /api/admin/moderate/
+[2026-03-17 20:34:14,975] WARNING django.server basehttp.log_message:213 — "POST /api/admin/moderate/ HTTP/1.1" 400 52
+[2026-03-17 20:34:14,991] WARNING django.request log.log_response:253 — Forbidden: /api/orders/pending/
+[2026-03-17 20:34:14,992] WARNING django.server basehttp.log_message:213 — "GET /api/orders/pending/ HTTP/1.1" 403 49
+[2026-03-17 20:34:15,011] WARNING django.request log.log_response:253 — Forbidden: /api/orders/1/accept/
+[2026-03-17 20:34:15,011] WARNING django.server basehttp.log_message:213 — "POST /api/orders/1/accept/ HTTP/1.1" 403 43
+[2026-03-17 20:34:15,028] WARNING django.request log.log_response:253 — Forbidden: /api/admin/analytics/
+[2026-03-17 20:34:15,029] WARNING django.server basehttp.log_message:213 — "GET /api/admin/analytics/ HTTP/1.1" 403 33
+[2026-03-17 20:34:15,044] WARNING django.request log.log_response:253 — Forbidden: /api/admin/analytics/
+[2026-03-17 20:34:15,044] WARNING django.server basehttp.log_message:213 — "GET /api/admin/analytics/ HTTP/1.1" 403 33
+[2026-03-17 20:34:15,057] WARNING django.request log.log_response:253 — Forbidden: /api/orders/place/
+[2026-03-17 20:34:15,057] WARNING django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 403 43
+[2026-03-17 20:34:15,066] WARNING django.request log.log_response:253 — Forbidden: /api/users/profile/
+[2026-03-17 20:34:15,066] WARNING django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 403 58
+[2026-03-17 20:34:15,079] WARNING django.request log.log_response:253 — Forbidden: /api/orders/history/
+[2026-03-17 20:34:15,080] WARNING django.server basehttp.log_message:213 — "GET /api/orders/history/ HTTP/1.1" 403 58
+[2026-03-17 20:34:15,096] WARNING django.request log.log_response:253 — Bad Request: /api/auth/register/
+[2026-03-17 20:34:15,096] WARNING django.server basehttp.log_message:213 — "POST /api/auth/register/ HTTP/1.1" 400 53
+[2026-03-17 20:34:15,112] WARNING django.request log.log_response:253 — Not Found: /api/canteens/9999/
+[2026-03-17 20:34:15,112] WARNING django.server basehttp.log_message:213 — "GET /api/canteens/9999/ HTTP/1.1" 404 29
+[2026-03-17 20:34:15,128] WARNING django.request log.log_response:253 — Not Found: /api/orders/9999/
+[2026-03-17 20:34:15,129] WARNING django.server basehttp.log_message:213 — "GET /api/orders/9999/ HTTP/1.1" 404 27
+[2026-03-17 20:34:15,148] WARNING django.request log.log_response:253 — Not Found: /api/canteens/dishes/9999/toggle/
+[2026-03-17 20:34:15,148] WARNING django.server basehttp.log_message:213 — "POST /api/canteens/dishes/9999/toggle/ HTTP/1.1" 404 26
+[2026-03-17 20:34:15,172] WARNING django.request log.log_response:253 — Not Found: /api/orders/place/
+[2026-03-17 20:34:15,172] WARNING django.server basehttp.log_message:213 — "POST /api/orders/place/ HTTP/1.1" 404 29
+[2026-03-17 20:34:15,501] INFO apps.users.services.auth_service auth_service.authenticate_user:184 — Extended session (31 days) for rahul@iitk.ac.in
+[2026-03-17 20:34:15,503] INFO django.server basehttp.log_message:213 — "POST /api/auth/login/ HTTP/1.1" 200 171
+[2026-03-17 20:34:15,536] INFO apps.canteens.services.canteen_service canteen_service.add_holiday:126 — Holiday added for 'Hall 5 Canteen': 2026-12-25
+[2026-03-17 20:34:15,537] INFO django.server basehttp.log_message:213 — "POST /api/canteens/1/holidays/ HTTP/1.1" 201 58
+[2026-03-17 20:34:15,553] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/holidays/ HTTP/1.1" 200 180
+[2026-03-17 20:34:15,594] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/documents/ HTTP/1.1" 200 84
+[2026-03-17 20:34:15,611] INFO django.server basehttp.log_message:213 — "GET /api/canteens/1/documents/ HTTP/1.1" 200 84
+[2026-03-17 20:34:15,630] WARNING django.request log.log_response:253 — Forbidden: /api/canteens/1/documents/
+[2026-03-17 20:34:15,630] WARNING django.server basehttp.log_message:213 — "GET /api/canteens/1/documents/ HTTP/1.1" 403 26
+[2026-03-17 20:34:15,645] WARNING django.request log.log_response:253 — Bad Request: /api/admin/broadcast/
+[2026-03-17 20:34:15,646] WARNING django.server basehttp.log_message:213 — "POST /api/admin/broadcast/ HTTP/1.1" 400 31
+[2026-03-17 20:34:15,662] INFO apps.administration.views views.broadcast_notification:312 — Admin admin@iitk.ac.in broadcast notification to 3 users: Special offer for students!
+[2026-03-17 20:34:15,675] INFO django.server basehttp.log_message:213 — "POST /api/admin/broadcast/ HTTP/1.1" 200 87
+[2026-03-17 20:34:15,727] INFO apps.users.services.auth_service auth_service.logout_user:199 — User logged out
+[2026-03-17 20:34:15,728] INFO django.server basehttp.log_message:213 — "POST /api/auth/logout/ HTTP/1.1" 200 37
+[2026-03-17 20:34:15,745] WARNING django.request log.log_response:253 — Forbidden: /api/users/profile/
+[2026-03-17 20:34:15,745] WARNING django.server basehttp.log_message:213 — "GET /api/users/profile/ HTTP/1.1" 403 58
+[2026-03-17 20:34:15,761] INFO apps.users.services.auth_service auth_service.logout_user:199 — User logged out
+[2026-03-17 20:34:15,762] INFO django.server basehttp.log_message:213 — "POST /api/auth/logout/ HTTP/1.1" 200 37
+[2026-03-17 20:34:15,778] INFO apps.users.services.auth_service auth_service.logout_user:199 — User logged out
+[2026-03-17 20:34:15,779] INFO django.server basehttp.log_message:213 — "POST /api/auth/logout/ HTTP/1.1" 200 37

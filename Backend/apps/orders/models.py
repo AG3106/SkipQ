@@ -48,6 +48,8 @@ class Order(models.Model):
         COMPLETED = "COMPLETED", "Completed"                # Picked up
         REJECTED = "REJECTED", "Rejected"                   # Manager rejected
         REFUNDED = "REFUNDED", "Refunded"                   # After rejection → refund
+        CANCEL_REQUESTED = "CANCEL_REQUESTED", "Cancel Requested"  # Customer requests cancellation
+        CANCELLED = "CANCELLED", "Cancelled"                 # Manager approved cancellation
         # Cake-specific states (from Cake Reservation state diagram)
         PENDING_APPROVAL = "PENDING_APPROVAL", "Pending Approval"
         CONFIRMED = "CONFIRMED", "Confirmed"
@@ -77,6 +79,14 @@ class Order(models.Model):
     )
     # Special instructions from the customer
     notes = models.TextField(blank=True)
+    reject_reason = models.TextField(
+        blank=True,
+        help_text="Reason provided by manager when order is rejected.",
+    )
+    cancel_rejection_reason = models.TextField(
+        blank=True,
+        help_text="Reason provided by manager when cancel request is denied.",
+    )
 
     class Meta:
         app_label = "orders"
@@ -94,12 +104,21 @@ class Order(models.Model):
         Enforces valid state transitions from the Order Lifecycle state diagram.
         """
         valid_transitions = {
-            self.Status.PENDING: [self.Status.ACCEPTED, self.Status.REJECTED],
+            self.Status.PENDING: [
+                self.Status.ACCEPTED,
+                self.Status.REJECTED,
+                self.Status.CANCEL_REQUESTED,
+            ],
+            self.Status.CANCEL_REQUESTED: [
+                self.Status.CANCELLED,   # Manager approves cancellation
+                self.Status.PENDING,     # Manager rejects cancellation → back to PENDING
+            ],
             self.Status.PENDING_APPROVAL: [self.Status.CONFIRMED, self.Status.REJECTED],
-            self.Status.ACCEPTED: [self.Status.READY],
+            self.Status.ACCEPTED: [self.Status.READY, self.Status.CANCEL_REQUESTED],
             self.Status.CONFIRMED: [self.Status.READY],
             self.Status.READY: [self.Status.COMPLETED],
             self.Status.REJECTED: [self.Status.REFUNDED],
+            self.Status.CANCELLED: [self.Status.REFUNDED],
         }
         allowed = valid_transitions.get(self.status, [])
         if new_status not in allowed:
@@ -129,6 +148,55 @@ class Order(models.Model):
             for item in self.items.all()
         )
         return total
+
+    # --- Class diagram methods ---
+
+    @classmethod
+    def create_order(cls, customer, canteen, status=None, notes=""):
+        """
+        createOrder(status: String): Order — from class diagram.
+        Wraps Order.objects.create() for reuse across code paths.
+        """
+        if status is None:
+            status = cls.Status.PENDING
+        return cls.objects.create(
+            customer=customer,
+            canteen=canteen,
+            status=status,
+            notes=notes,
+        )
+
+    # TODO: implement this wherever required like active orders for canteen dashboard
+    @classmethod
+    def query_active_orders(cls, canteen):
+        """
+        queryActiveOrders(canteenId: Int): List — from class diagram.
+        Returns orders currently being processed for a canteen.
+        """
+        return cls.objects.filter(
+            canteen=canteen,
+            status__in=[cls.Status.PENDING, cls.Status.ACCEPTED, cls.Status.READY],
+        )
+
+    @classmethod
+    def place_order(cls, customer, canteen, items, wallet_pin, notes=""):
+        """
+        placeOrder(customerId: Int, dishId: Int): Bool — from class diagram.
+        Delegates to order_service.place_order() for the full workflow.
+        """
+        from apps.orders.services.order_service import place_order
+        return place_order(customer, canteen, items, wallet_pin, notes)
+
+    def add_to_order_history(self):
+        """
+        addToOrderHistory(): void — from class diagram.
+        Hook called when an order is completed. Currently logs the event;
+        can be extended for audit trails or archive tables.
+        """
+        logger.info(
+            "Order #%s added to history for customer %s",
+            self.pk, self.customer.user.email,
+        )
 
 
 # ---------------------------------------------------------------------------

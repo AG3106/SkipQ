@@ -102,3 +102,69 @@ def add_review(dish, customer_profile, rating, review_text=""):
         dish.name, customer_profile.user.email, rating,
     )
     return review
+
+
+def get_popular_dishes(limit=20, category=None, available_only=True):
+    """
+    Get globally ranked popular dishes across all canteens, sorted by rating.
+
+    Only includes dishes from canteens in operational states (ACTIVE, OPEN, BUSY).
+
+    Args:
+        limit: Max number of dishes to return (capped at 50).
+        category: Optional category filter.
+        available_only: If True, exclude unavailable dishes (default True).
+    """
+    from apps.canteens.models import Canteen
+    from django.db.models import Count
+
+    limit = min(max(1, limit), 50)
+
+    queryset = Dish.objects.filter(
+        canteen__status__in=[
+            Canteen.Status.ACTIVE,
+            Canteen.Status.OPEN,
+            Canteen.Status.BUSY,
+        ],
+    ).select_related("canteen")
+
+    if available_only:
+        queryset = queryset.filter(is_available=True)
+
+    if category:
+        queryset = queryset.filter(category__iexact=category)
+
+    queryset = queryset.annotate(
+        review_count=Count("reviews"),
+    ).order_by("-rating", "-review_count")[:limit]
+
+    return queryset
+
+
+def get_canteen_popular_dishes(canteen, limit=20, category=None, available_only=True):
+    """
+    Get popular dishes for a specific canteen, sorted by rating.
+
+    Args:
+        canteen: Canteen instance.
+        limit: Max number of dishes to return (capped at 50).
+        category: Optional category filter.
+        available_only: If True, exclude unavailable dishes (default True).
+    """
+    from django.db.models import Count
+
+    limit = min(max(1, limit), 50)
+
+    queryset = Dish.objects.filter(canteen=canteen)
+
+    if available_only:
+        queryset = queryset.filter(is_available=True)
+
+    if category:
+        queryset = queryset.filter(category__iexact=category)
+
+    queryset = queryset.annotate(
+        review_count=Count("reviews"),
+    ).order_by("-rating", "-review_count")[:limit]
+
+    return queryset

@@ -22,4 +22,9 @@ urlpatterns = [
     path("<int:order_id>/reject/", views.reject_order, name="reject-order"),
     path("<int:order_id>/ready/", views.mark_ready, name="mark-ready"),
     path("<int:order_id>/complete/", views.mark_completed, name="mark-completed"),
+
+    # Cancel request flow
+    path("<int:order_id>/cancel/", views.request_cancel_order, name="request-cancel"),
+    path("<int:order_id>/approve-cancel/", views.approve_cancel_order, name="approve-cancel"),
+    path("<int:order_id>/reject-cancel/", views.reject_cancel_order, name="reject-cancel"),
 ]

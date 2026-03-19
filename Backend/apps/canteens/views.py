@@ -21,6 +21,7 @@ from apps.canteens.serializers import (
     DishCreateUpdateSerializer,
     AddReviewSerializer,
     CanteenHolidaySerializer,
+    PopularDishSerializer,
 )
 from apps.canteens.services import canteen_service, menu_service
 
@@ -152,7 +153,7 @@ def canteen_menu(request, canteen_id):
 @permission_classes([IsAuthenticated])
 def add_dish(request, canteen_id):
     """
-    POST /api/canteens/<canteen_id>/menu/
+    POST /api/canteens/<canteen_id>/menu/add/
 
     updateMenu(dish: Dish): void — from Canteen class diagram.
     """
@@ -242,6 +243,75 @@ def add_review(request, dish_id):
         return Response(DishReviewSerializer(review).data, status=status.HTTP_201_CREATED)
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# Popular dishes — global ranking
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def popular_dishes(request):
+    """
+    GET /api/canteens/dishes/popular/
+
+    Returns a globally ranked list of popular dishes across all canteens,
+    sorted by rating (highest first).
+
+    Query params:
+      - limit (int, default 20, max 50)
+      - category (string, optional)
+      - available_only (bool, default true)
+    """
+    try:
+        limit = int(request.query_params.get("limit", 20))
+    except (ValueError, TypeError):
+        limit = 20
+
+    category = request.query_params.get("category", None)
+    available_only = request.query_params.get("available_only", "true").lower() != "false"
+
+    dishes = menu_service.get_popular_dishes(
+        limit=limit,
+        category=category,
+        available_only=available_only,
+    )
+    return Response(PopularDishSerializer(dishes, many=True).data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def canteen_popular_dishes(request, canteen_id):
+    """
+    GET /api/canteens/<canteen_id>/menu/popular/
+
+    Returns popular dishes for a specific canteen, sorted by rating (highest first).
+
+    Query params:
+      - limit (int, default 20, max 50)
+      - category (string, optional)
+      - available_only (bool, default true)
+    """
+    try:
+        canteen = Canteen.objects.get(pk=canteen_id)
+    except Canteen.DoesNotExist:
+        return Response({"error": "Canteen not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        limit = int(request.query_params.get("limit", 20))
+    except (ValueError, TypeError):
+        limit = 20
+
+    category = request.query_params.get("category", None)
+    available_only = request.query_params.get("available_only", "true").lower() != "false"
+
+    dishes = menu_service.get_canteen_popular_dishes(
+        canteen=canteen,
+        limit=limit,
+        category=category,
+        available_only=available_only,
+    )
+    return Response(DishSerializer(dishes, many=True).data)
 
 
 # ---------------------------------------------------------------------------

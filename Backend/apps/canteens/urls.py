@@ -19,9 +19,11 @@ urlpatterns = [
 
     # Menu management — Dish class diagram methods
     path("<int:canteen_id>/menu/", views.canteen_menu, name="canteen-menu"),
+    path("<int:canteen_id>/menu/popular/", views.canteen_popular_dishes, name="canteen-popular-dishes"),
     path("<int:canteen_id>/menu/add/", views.add_dish, name="add-dish"),
 
     # Dish management
+    path("dishes/popular/", views.popular_dishes, name="popular-dishes"),
     path("dishes/<int:dish_id>/", views.manage_dish, name="manage-dish"),
     path("dishes/<int:dish_id>/toggle/", views.toggle_dish_availability, name="toggle-dish"),
     path("dishes/<int:dish_id>/review/", views.add_review, name="add-review"),

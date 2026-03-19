@@ -250,3 +250,84 @@ def mark_completed(request, order_id):
         return Response(OrderSerializer(order).data)
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# Cancel request flow — customer requests, manager approves/rejects
+# ---------------------------------------------------------------------------
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def request_cancel_order(request, order_id):
+    """
+    POST /api/orders/<order_id>/cancel/
+
+    Customer requests cancellation of their PENDING or ACCEPTED order.
+    Manager must then approve or reject the request.
+    """
+    if request.user.role != User.Role.CUSTOMER:
+        return Response({"error": "Only customers can request cancellation"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        order = Order.objects.get(pk=order_id)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        order = order_service.request_cancel(order, request.user.customer_profile)
+        return Response(
+            {"message": "Cancellation requested — awaiting manager approval", "order": OrderSerializer(order).data},
+        )
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def approve_cancel_order(request, order_id):
+    """
+    POST /api/orders/<order_id>/approve-cancel/
+
+    Manager approves the cancel request → CANCELLED → REFUNDED.
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can approve cancellations"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        order = Order.objects.get(pk=order_id, canteen__manager=request.user.manager_profile)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        order = order_service.approve_cancel(order)
+        return Response(OrderSerializer(order).data)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def reject_cancel_order(request, order_id):
+    """
+    POST /api/orders/<order_id>/reject-cancel/
+
+    Manager rejects the cancel request → order reverts to PENDING.
+    Customer is notified with the rejection reason.
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can reject cancellations"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        order = Order.objects.get(pk=order_id, canteen__manager=request.user.manager_profile)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = OrderActionSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        order = order_service.reject_cancel(order, serializer.validated_data.get("reason", ""))
+        return Response(OrderSerializer(order).data)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+

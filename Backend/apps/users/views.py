@@ -91,7 +91,8 @@ def verify_otp(request):
 @permission_classes([AllowAny])
 def login_view(request):
     """
-    POST /api/auth/login/
+    P
+    OST /api/auth/login/
 
     Sequence diagram (Login/phase1):
       FE → loginRequest(email, password, rememberMe)

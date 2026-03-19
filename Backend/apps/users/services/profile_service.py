@@ -95,3 +95,22 @@ def set_wallet_pin(profile, pin):
     profile.wallet_pin_hash = hash_wallet_pin(pin)
     profile.save(update_fields=["wallet_pin_hash"])
     logger.info("Wallet PIN updated for %s", profile.user.email)
+
+
+def credit_to_manager(manager_profile, amount):
+    """
+    Credit earnings to canteen manager's wallet on order completion.
+
+    Called by order_service.mark_order_completed() to transfer
+    order funds to the manager's wallet balance.
+    """
+    amount = Decimal(str(amount))
+    if amount <= 0:
+        raise ValueError("Amount must be positive")
+    manager_profile.wallet_balance += amount
+    manager_profile.save(update_fields=["wallet_balance"])
+    logger.info(
+        "Credited ₹%s to manager wallet of %s. New balance: ₹%s",
+        amount, manager_profile.user.email, manager_profile.wallet_balance,
+    )
+    return manager_profile.wallet_balance

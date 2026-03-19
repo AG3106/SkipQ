@@ -92,3 +92,26 @@ class AddReviewSerializer(serializers.Serializer):
     """Serializer for adding a dish review."""
     rating = serializers.IntegerField(min_value=1, max_value=5)
     review_text = serializers.CharField(required=False, default="")
+
+
+class PopularDishSerializer(serializers.ModelSerializer):
+    """Dish representation for the popular dishes endpoint — includes canteen info and popularity metrics."""
+    effective_price = serializers.SerializerMethodField()
+    canteen_id = serializers.IntegerField(source="canteen.id", read_only=True)
+    canteen_name = serializers.CharField(source="canteen.name", read_only=True)
+    canteen_location = serializers.CharField(source="canteen.location", read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Dish
+        fields = [
+            "id", "name", "price", "effective_price", "description",
+            "is_available", "discount", "photo", "rating", "category",
+            "canteen_id", "canteen_name", "canteen_location",
+            "review_count",
+        ]
+        read_only_fields = fields
+
+    def get_effective_price(self, obj):
+        return str(obj.get_effective_price())
+
