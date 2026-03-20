@@ -64,25 +64,30 @@ python manage.py runserver
 | POST         | `/register/`           | Register new canteen (manager) |
 | PATCH        | `/<id>/status/`        | Update operational status      |
 | GET          | `/<id>/menu/`          | View menu                      |
+| GET          | `/<id>/menu/popular/`  | Popular dishes for a canteen   |
 | POST         | `/<id>/menu/add/`      | Add dish (manager)             |
 | PATCH/DELETE | `/dishes/<id>/`        | Update/delete dish             |
 | POST         | `/dishes/<id>/toggle/` | Toggle availability            |
+| GET          | `/dishes/popular/`     | Globally ranked popular dishes |
 | POST         | `/dishes/<id>/review/` | Add review (customer)          |
 | GET/POST     | `/<id>/holidays/`      | Manage holidays                |
 | GET          | `/manager/dashboard/`  | Manager earnings & queue stats |
 
 ### Orders (`/api/orders/`)
-| Method | Endpoint          | Description                   |
-| ------ | ----------------- | ----------------------------- |
-| POST   | `/place/`         | Place order (with wallet PIN) |
-| GET    | `/<id>/`          | Order details                 |
-| GET    | `/history/`       | Customer order history        |
-| GET    | `/pending/`       | Pending orders (manager)      |
-| GET    | `/active/`        | Active orders (manager)       |
-| POST   | `/<id>/accept/`   | Accept order (manager)        |
-| POST   | `/<id>/reject/`   | Reject order + auto-refund    |
-| POST   | `/<id>/ready/`    | Mark ready for pickup         |
-| POST   | `/<id>/complete/` | Mark completed                |
+| Method | Endpoint                | Description                   |
+| ------ | ----------------------- | ----------------------------- |
+| POST   | `/place/`               | Place order (with wallet PIN) |
+| GET    | `/<id>/`                | Order details                 |
+| GET    | `/history/`             | Customer order history        |
+| GET    | `/pending/`             | Pending orders (manager)      |
+| GET    | `/active/`              | Active orders (manager)       |
+| POST   | `/<id>/accept/`         | Accept order (manager)        |
+| POST   | `/<id>/reject/`         | Reject order + auto-refund    |
+| POST   | `/<id>/ready/`          | Mark ready for pickup         |
+| POST   | `/<id>/complete/`       | Mark completed                |
+| POST   | `/<id>/cancel/`         | Mark cancelled                |
+| POST   | `/<id>/approve-cancel/` | Mark approved cancel          |
+| POST   | `/<id>/reject-cancel/`  | Mark rejected cancel          |
 
 ### Cake Reservations (`/api/cakes/`)
 | Method | Endpoint               | Description                    |

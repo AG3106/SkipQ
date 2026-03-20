@@ -113,6 +113,7 @@ class Canteen(models.Model):
             # Handles overnight hours (e.g., 14:00 – 02:00)
             return now >= self.opening_time or now < self.closing_time
 
+    # TODO: Improve estimated order time logic
     def get_estimated_wait_time(self):
         """
         getEstimatedWaitTime(): Time
@@ -125,7 +126,7 @@ class Canteen(models.Model):
             canteen=self,
             status__in=[Order.Status.PENDING, Order.Status.ACCEPTED],
         ).count()
-        return active_count * 5  # minutes
+        return active_count * 30  # minutes
 
     def check_availability(self, date):
         """

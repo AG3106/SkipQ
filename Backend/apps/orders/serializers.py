@@ -38,6 +38,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             "id", "customer_email", "canteen_name", "status",
             "book_time", "receive_time", "notes",
+            "reject_reason", "cancel_rejection_reason",
             "items", "payment", "total",
         ]
         read_only_fields = fields
@@ -58,6 +59,37 @@ class PlaceOrderSerializer(serializers.Serializer):
     )
     wallet_pin = serializers.CharField(write_only=True)
     notes = serializers.CharField(required=False, default="")
+
+    def validate_items(self, value):
+        """Validate that items list is well-formed."""
+        if not value:
+            raise serializers.ValidationError("Items list cannot be empty")
+
+        for i, item in enumerate(value):
+            if "dish_id" not in item:
+                raise serializers.ValidationError(
+                    f"Item {i}: 'dish_id' is required"
+                )
+            try:
+                item["dish_id"] = int(item["dish_id"])
+            except (ValueError, TypeError):
+                raise serializers.ValidationError(
+                    f"Item {i}: 'dish_id' must be an integer"
+                )
+
+            if "quantity" in item:
+                try:
+                    item["quantity"] = int(item["quantity"])
+                except (ValueError, TypeError):
+                    raise serializers.ValidationError(
+                        f"Item {i}: 'quantity' must be an integer"
+                    )
+                if item["quantity"] <= 0:
+                    raise serializers.ValidationError(
+                        f"Item {i}: 'quantity' must be positive"
+                    )
+
+        return value
 
 
 class OrderActionSerializer(serializers.Serializer):

@@ -15,8 +15,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.orders.models import Order, OrderItem, Payment
-from apps.users.services.auth_service import verify_wallet_pin
-from apps.users.services.profile_service import deduct_funds, refund_to_wallet
+from apps.orders.services import payment_service
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +50,13 @@ def place_order(customer_profile, canteen, items, wallet_pin, notes=""):
         wallet_pin: plaintext PIN for verification
         notes: optional order notes
     """
-    # Step 2: Verify wallet PIN
-    if not verify_wallet_pin(customer_profile.wallet_pin_hash, wallet_pin):
-        raise ValueError("Incorrect wallet PIN")
+    # Validate canteen is accepting orders
+    from apps.canteens.models import Canteen
+    if canteen.status not in (Canteen.Status.OPEN, Canteen.Status.BUSY):
+        raise ValueError(
+            f"Canteen '{canteen.name}' is not currently accepting orders "
+            f"(status: {canteen.get_status_display()})"
+        )
 
     # Calculate total
     from apps.canteens.models import Dish
@@ -76,11 +79,11 @@ def place_order(customer_profile, canteen, items, wallet_pin, notes=""):
             "price_at_order": effective_price,
         })
 
-    # Step 3: Deduct funds
-    deduct_funds(customer_profile, total)
+    # Verify PIN + deduct funds via payment service
+    payment_service.validate_and_deduct_funds(customer_profile, total, wallet_pin)
 
-    # Step 4: Create order
-    order = Order.objects.create(
+    # Create order using the class diagram method
+    order = Order.create_order(
         customer=customer_profile,
         canteen=canteen,
         status=Order.Status.PENDING,
@@ -122,6 +125,7 @@ def accept_order(order):
     """
     order.update_order_status(Order.Status.ACCEPTED)
     logger.info("Order #%s accepted by manager", order.pk)
+    # TODO: notify("Order Accepted") — push notification
     return order
 
 
@@ -134,16 +138,88 @@ def reject_order(order, reason=""):
       BE → processRefund(userID, amount)
       BE → updateOrderStatus(orderID, "REJECTED")
     """
+    order.reject_reason = reason
+    order.save(update_fields=["reject_reason"])
+
     order.update_order_status(Order.Status.REJECTED)
 
-    # Process automatic refund
-    payment = order.payment
-    refund_to_wallet(order.customer, payment.amount)
-    payment.status = Payment.Status.REFUNDED
-    payment.save()
+    # Process automatic refund via payment service
+    payment_service.process_refund(order.payment)
     order.update_order_status(Order.Status.REFUNDED)
 
     logger.info("Order #%s rejected and refunded. Reason: %s", order.pk, reason)
+    return order
+
+
+def request_cancel(order, customer_profile):
+    """
+    Customer requests cancellation of their order.
+
+    State diagram: PENDING/ACCEPTED → CANCEL_REQUESTED
+    Manager must then approve or reject the cancel request.
+    """
+    if order.customer != customer_profile:
+        raise ValueError("You can only cancel your own orders")
+
+    if order.status not in (Order.Status.PENDING, Order.Status.ACCEPTED):
+        raise ValueError(
+            f"Only PENDING or ACCEPTED orders can be cancelled "
+            f"(current: {order.get_status_display()})"
+        )
+
+    order.update_order_status(Order.Status.CANCEL_REQUESTED)
+    logger.info("Order #%s cancel requested by customer", order.pk)
+    # TODO: notify manager about cancel request
+    return order
+
+
+@transaction.atomic
+def approve_cancel(order):
+    """
+    Manager approves the customer's cancel request.
+
+    State diagram: CANCEL_REQUESTED → CANCELLED → REFUNDED
+    """
+    if order.status != Order.Status.CANCEL_REQUESTED:
+        raise ValueError(
+            f"Only CANCEL_REQUESTED orders can be approved for cancellation "
+            f"(current: {order.get_status_display()})"
+        )
+
+    order.update_order_status(Order.Status.CANCELLED)
+
+    # Process refund via payment service
+    payment_service.process_refund(order.payment)
+    order.update_order_status(Order.Status.REFUNDED)
+
+    logger.info("Order #%s cancel approved by manager and refunded", order.pk)
+    # TODO: notify customer — "Your cancellation has been approved and refunded"
+    return order
+
+
+def reject_cancel(order, reason=""):
+    """
+    Manager rejects the customer's cancel request — order reverts to PENDING.
+
+    State diagram: CANCEL_REQUESTED → PENDING
+    Customer should be notified that their cancel request was denied.
+    """
+    if order.status != Order.Status.CANCEL_REQUESTED:
+        raise ValueError(
+            f"Only CANCEL_REQUESTED orders can have cancellation rejected "
+            f"(current: {order.get_status_display()})"
+        )
+
+    order.cancel_rejection_reason = reason
+    order.save(update_fields=["cancel_rejection_reason"])
+
+    order.update_order_status(Order.Status.PENDING)
+
+    logger.info(
+        "Order #%s cancel request denied by manager. Reason: %s",
+        order.pk, reason,
+    )
+    # TODO: notify customer — "Your cancellation request was denied: {reason}"
     return order
 
 
@@ -158,20 +234,32 @@ def mark_order_ready(order):
     """
     order.update_order_status(Order.Status.READY)
     logger.info("Order #%s marked as ready for pickup", order.pk)
+    # TODO: notify("Your Order is Ready!") — push notification
     return order
 
 
+@transaction.atomic
 def mark_order_completed(order):
     """
     Sequence diagram (Order/phase3, steps 26–32):
       M → markOrderCompleted(orderID)
       BE → updateOrderStatus(orderID, "COMPLETED")
       BE → addToOrderHistory(orderID)
+      BE → creditManagerEarnings(amount)
 
     State diagram: PickUpReady → Completed
     """
     order.update_order_status(Order.Status.COMPLETED)
-    logger.info("Order #%s completed", order.pk)
+
+    # Credit earnings to canteen manager wallet
+    from apps.users.services.profile_service import credit_to_manager
+    payment = order.payment
+    credit_to_manager(order.canteen.manager, payment.amount)
+
+    # Add to order history (class diagram method)
+    order.add_to_order_history()
+
+    logger.info("Order #%s completed — ₹%s credited to manager", order.pk, payment.amount)
     return order
 
 
