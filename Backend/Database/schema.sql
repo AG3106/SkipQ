@@ -28,7 +28,6 @@ CREATE TABLE Dishes (
     price NUMERIC(10, 2) NOT NULL,
     is_available BOOLEAN DEFAULT TRUE,
     discount NUMERIC(5, 2) DEFAULT 0.00,
-    photo_url TEXT,
     rating NUMERIC(3, 2) DEFAULT 0.00
 );
 
