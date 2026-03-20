@@ -23,6 +23,8 @@ from apps.users.serializers import (
     CanteenManagerProfileSerializer,
     AddFundsSerializer,
     SetWalletPINSerializer,
+    ForgotPasswordSerializer,
+    ResetPasswordSerializer,
 )
 from apps.users.services import auth_service, profile_service
 
@@ -126,6 +128,45 @@ def logout_view(request):
     """
     auth_service.logout_user(request)
     return Response({"message": "Logged out successfully"})
+
+
+# ---------------------------------------------------------------------------
+# Forgot Password
+# ---------------------------------------------------------------------------
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def forgot_password_view(request):
+    """
+    POST /api/auth/forgot-password/
+
+    Step 1: Validates email exists and sends an OTP.
+    """
+    serializer = ForgotPasswordSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    try:
+        auth_service.forgot_password_request(serializer.validated_data["email"])
+        return Response({"message": "OTP sent to your email"}, status=status.HTTP_200_OK)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def reset_password_view(request):
+    """
+    POST /api/auth/reset-password/
+
+    Step 2: Verifies OTP and sets the new password.
+    """
+    serializer = ResetPasswordSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+    try:
+        auth_service.reset_password(data["email"], data["otp"], data["new_password"])
+        return Response({"message": "Password reset successful"}, status=status.HTTP_200_OK)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # ---------------------------------------------------------------------------

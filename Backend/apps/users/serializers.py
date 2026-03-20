@@ -99,3 +99,19 @@ class AddFundsSerializer(serializers.Serializer):
 
 class SetWalletPINSerializer(serializers.Serializer):
     pin = serializers.CharField(min_length=4, max_length=6)
+
+
+# ---------------------------------------------------------------------------
+# Forgot Password
+# ---------------------------------------------------------------------------
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    """Request: forgotPassword(email)"""
+    email = serializers.EmailField()
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    """Request: resetPassword(email, otp, new_password)"""
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+    new_password = serializers.CharField(min_length=8, write_only=True)

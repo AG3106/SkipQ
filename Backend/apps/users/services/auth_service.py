@@ -60,8 +60,18 @@ def generate_and_send_otp(email, password="", role="CUSTOMER", name=""):
         name=name,
     )
 
-    # TODO: integrate actual email service (e.g., SendGrid, SES)
-    logger.info("OTP for %s: %s (dev mode — not sent via email)", email, otp)
+    from django.core.mail import send_mail
+    from django.conf import settings
+
+    subject = 'Your SkipQ Verification Code'
+    message = f'Hello {name or "User"},\n\nYour One-Time Password (OTP) for SkipQ is: {otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you,\nThe SkipQ Team'
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@skipq.local')
+
+    try:
+        send_mail(subject, message, from_email, [email], fail_silently=False)
+        logger.info("OTP email sent successfully to %s", email)
+    except Exception as e:
+        logger.error("Failed to send OTP email to %s: %s", email, str(e))
 
     return otp
 
@@ -197,6 +207,39 @@ def logout_user(request):
     """
     logout(request)
     logger.info("User logged out")
+
+
+# ---------------------------------------------------------------------------
+# Forgot Password
+# ---------------------------------------------------------------------------
+
+def forgot_password_request(email):
+    """
+    Step 1 of Forgot Password flow.
+    Validates the email exists, then sends an OTP for verification.
+    """
+    if not User.objects.filter(email=email).exists():
+        raise ValueError("No account found with this email")
+
+    generate_and_send_otp(email)
+    logger.info("Forgot-password OTP requested for %s", email)
+
+
+def reset_password(email, otp, new_password):
+    """
+    Step 2 of Forgot Password flow.
+    Verifies the OTP, then updates the user's password.
+    """
+    verify_otp(email, otp)
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        raise ValueError("No account found with this email")
+
+    user.set_password(new_password)
+    user.save()
+    logger.info("Password reset successfully for %s", email)
 
 
 # ---------------------------------------------------------------------------
