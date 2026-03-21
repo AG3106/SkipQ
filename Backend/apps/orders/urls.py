@@ -27,4 +27,10 @@ urlpatterns = [
     path("<int:order_id>/cancel/", views.request_cancel_order, name="request-cancel"),
     path("<int:order_id>/approve-cancel/", views.approve_cancel_order, name="approve-cancel"),
     path("<int:order_id>/reject-cancel/", views.reject_cancel_order, name="reject-cancel"),
+
+    # Rate a completed order
+    path("<int:order_id>/rate/", views.rate_order, name="rate-order"),
+
+    # Manager order history
+    path("manager-history/", views.manager_order_history, name="manager-order-history"),
 ]

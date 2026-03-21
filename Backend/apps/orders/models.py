@@ -87,6 +87,10 @@ class Order(models.Model):
         blank=True,
         help_text="Reason provided by manager when cancel request is denied.",
     )
+    is_rated = models.BooleanField(
+        default=False,
+        help_text="Whether the customer has rated this order after completion.",
+    )
 
     class Meta:
         app_label = "orders"

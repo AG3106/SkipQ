@@ -2,3 +2,18 @@ references/
 Backend/.venv/
 Instructions.md
 .agent/
+# Backend/apps/cakes/__pycache__/
+# Backend/apps/users/__pycache__/
+# Backend/apps/orders/__pycache__/
+# Backend/apps/administration/__pycache__/
+# Backend/apps/canteens/__pycache__/
+# Backend/config/__pycache__/
+# Backend/apps/orders/services/__pycache__/
+# Backend/apps/users/services/__pycache__/
+# Backend/apps/administration/services/__pycache__/
+# Backend/apps/cakes/services/__pycache__/
+# Backend/apps/canteens/services/__pycache__/
+*.pyc
+
+
+

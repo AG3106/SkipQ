@@ -266,12 +266,58 @@ def mark_order_completed(order):
 def get_order_history(customer_profile):
     """
     viewOrderHistory(): void — from Customer class diagram.
-    Returns all completed orders for a customer.
+    Returns all terminal-state orders for a customer.
     """
     return Order.objects.filter(
         customer=customer_profile,
-        status__in=[Order.Status.COMPLETED, Order.Status.REFUNDED],
+        status__in=[
+            Order.Status.COMPLETED,
+            Order.Status.REFUNDED,
+            Order.Status.CANCELLED,
+            Order.Status.REJECTED,
+        ],
     )
+
+
+def get_manager_order_history(canteen):
+    """
+    Returns full order history for a canteen (all statuses),
+    ordered by most recent first.
+    """
+    return Order.objects.filter(canteen=canteen)
+
+
+def rate_order(order, customer_profile, rating, review_text=""):
+    """
+    Rate a completed order.
+
+    Creates a DishReview for each dish in the order and marks
+    the order as rated so it cannot be rated again.
+    """
+    if order.customer != customer_profile:
+        raise ValueError("You can only rate your own orders")
+
+    if order.status != Order.Status.COMPLETED:
+        raise ValueError("Only completed orders can be rated")
+
+    if order.is_rated:
+        raise ValueError("This order has already been rated")
+
+    from apps.canteens.services import menu_service
+
+    for item in order.items.select_related("dish"):
+        menu_service.add_review(
+            dish=item.dish,
+            customer_profile=customer_profile,
+            rating=rating,
+            review_text=review_text,
+        )
+
+    order.is_rated = True
+    order.save(update_fields=["is_rated"])
+
+    logger.info("Order #%s rated %d★ by %s", order.pk, rating, customer_profile.user.email)
+    return order
 
 
 def get_pending_orders(canteen):
@@ -294,3 +340,4 @@ def get_active_orders(canteen):
         canteen=canteen,
         status__in=[Order.Status.PENDING, Order.Status.ACCEPTED, Order.Status.READY],
     )
+

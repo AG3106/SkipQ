@@ -39,7 +39,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "id", "customer_email", "canteen_name", "status",
             "book_time", "receive_time", "notes",
             "reject_reason", "cancel_rejection_reason",
-            "items", "payment", "total",
+            "items", "payment", "total", "is_rated",
         ]
         read_only_fields = fields
 
@@ -95,3 +95,9 @@ class PlaceOrderSerializer(serializers.Serializer):
 class OrderActionSerializer(serializers.Serializer):
     """Serializer for manager order actions (accept, reject)."""
     reason = serializers.CharField(required=False, default="")
+
+
+class RateOrderSerializer(serializers.Serializer):
+    """Serializer for rating a completed order."""
+    rating = serializers.IntegerField(min_value=1, max_value=5)
+    review_text = serializers.CharField(required=False, default="")

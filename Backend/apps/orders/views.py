@@ -19,6 +19,7 @@ from apps.orders.serializers import (
     OrderSerializer,
     PlaceOrderSerializer,
     OrderActionSerializer,
+    RateOrderSerializer,
 )
 from apps.orders.services import order_service
 
@@ -330,4 +331,65 @@ def reject_cancel_order(request, order_id):
         return Response(OrderSerializer(order).data)
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# Rate order — post-completion feedback
+# ---------------------------------------------------------------------------
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def rate_order(request, order_id):
+    """
+    POST /api/orders/<order_id>/rate/
+
+    Allows a customer to rate a completed order.
+    Creates DishReview entries for each dish and marks the order as rated.
+    """
+    if request.user.role != User.Role.CUSTOMER:
+        return Response({"error": "Only customers can rate orders"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        order = Order.objects.get(pk=order_id)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = RateOrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    try:
+        order = order_service.rate_order(
+            order=order,
+            customer_profile=request.user.customer_profile,
+            rating=serializer.validated_data["rating"],
+            review_text=serializer.validated_data.get("review_text", ""),
+        )
+        return Response(
+            {"message": "Order rated successfully", "order": OrderSerializer(order).data},
+        )
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# Manager order history
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def manager_order_history(request):
+    """
+    GET /api/orders/manager-history/
+
+    Returns full order history for the manager's canteen.
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can view canteen order history"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        canteen = request.user.manager_profile.canteen
+    except Exception:
+        return Response({"error": "No canteen assigned"}, status=status.HTTP_404_NOT_FOUND)
+
+    orders = order_service.get_manager_order_history(canteen)
+    return Response(OrderSerializer(orders, many=True).data)
 
