@@ -120,6 +120,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Structured file storage (canteen images, dish images, documents)
+FILES_ROOT = BASE_DIR / "files"
+
 # ---------------------------------------------------------------------------
 # Default primary key field type
 # ---------------------------------------------------------------------------

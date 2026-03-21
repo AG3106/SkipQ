@@ -6,6 +6,7 @@ Maps Canteen and Dish entities to API representations.
 
 from rest_framework import serializers
 from apps.canteens.models import Canteen, Dish, DishReview, CanteenHoliday
+from apps.canteens.utils.file_handlers import canteen_image_exists, dish_image_exists
 
 
 class DishReviewSerializer(serializers.ModelSerializer):
@@ -19,21 +20,28 @@ class DishReviewSerializer(serializers.ModelSerializer):
 
 
 class DishSerializer(serializers.ModelSerializer):
-    """Dish representation with effective price and reviews."""
+    """Dish representation with effective price, photo URL, and reviews."""
     effective_price = serializers.SerializerMethodField()
+    photo_url = serializers.SerializerMethodField()
     reviews = DishReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Dish
         fields = [
             "id", "name", "price", "effective_price", "description",
-            "is_available", "discount", "photo", "rating", "category",
+            "is_available", "discount", "photo", "photo_url", "rating", "category",
             "is_veg", "reviews", "created_at",
         ]
         read_only_fields = ["id", "rating", "created_at"]
 
     def get_effective_price(self, obj):
         return str(obj.get_effective_price())
+
+    def get_photo_url(self, obj):
+        """Return /files/dish_images/<dish_id>.jpg if the file exists."""
+        if dish_image_exists(obj.pk):
+            return f"/files/dish_images/{obj.pk}.jpg"
+        return None
 
 
 class DishCreateUpdateSerializer(serializers.ModelSerializer):
@@ -54,6 +62,7 @@ class CanteenSerializer(serializers.ModelSerializer):
     """Canteen representation."""
     is_currently_open = serializers.SerializerMethodField()
     estimated_wait_time = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
     manager_email = serializers.CharField(source="manager.user.email", read_only=True)
     holidays = CanteenHolidaySerializer(many=True, read_only=True)
 
@@ -61,7 +70,7 @@ class CanteenSerializer(serializers.ModelSerializer):
         model = Canteen
         fields = [
             "id", "name", "location", "opening_time", "closing_time",
-            "lead_time_config", "status", "manager_email",
+            "lead_time_config", "status", "manager_email", "image_url",
             "is_currently_open", "estimated_wait_time", "holidays",
             "created_at",
         ]
@@ -73,6 +82,12 @@ class CanteenSerializer(serializers.ModelSerializer):
     def get_estimated_wait_time(self, obj):
         return f"{obj.get_estimated_wait_time()} mins"
 
+    def get_image_url(self, obj):
+        """Return /files/canteen_images/<canteen_id>.jpg if the file exists."""
+        if canteen_image_exists(obj.pk):
+            return f"/files/canteen_images/{obj.pk}.jpg"
+        return None
+
 
 class CanteenRegistrationSerializer(serializers.Serializer):
     """Serializer for canteen registration request."""
@@ -80,7 +95,9 @@ class CanteenRegistrationSerializer(serializers.Serializer):
     location = serializers.CharField(max_length=500)
     opening_time = serializers.TimeField()
     closing_time = serializers.TimeField()
-    documents = serializers.FileField(required=False)
+    image = serializers.ImageField(required=False)
+    aadhar_card = serializers.FileField(required=True)
+    hall_approval_form = serializers.FileField(required=True)
 
 
 class CanteenStatusUpdateSerializer(serializers.Serializer):

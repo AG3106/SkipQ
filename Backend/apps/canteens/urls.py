@@ -3,6 +3,7 @@
 from django.urls import path
 from apps.canteens import views
 
+# TODO: Review by PAI
 urlpatterns = [
     # Public canteen listing & detail
     path("", views.canteen_list, name="canteen-list"),
@@ -33,6 +34,7 @@ urlpatterns = [
 
     # Documents — getDocuments() from Canteen class diagram
     path("<int:canteen_id>/documents/", views.canteen_documents, name="canteen-documents"),
+    path("<int:canteen_id>/documents/<str:filename>/", views.serve_document, name="serve-document"),
 
     # Lead time config — getLeadTimeConfig() from Canteen class diagram
     path("<int:canteen_id>/lead-time/", views.lead_time_config, name="lead-time-config"),

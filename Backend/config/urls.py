@@ -55,6 +55,19 @@ urlpatterns = [
     path("api/admin/", include(("apps.administration.urls", "administration"))),
 ]
 
+# TODO: Review by PAI
 # Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # Serve public image files from the structured files/ directory
+    urlpatterns += static(
+        "/files/canteen_images/",
+        document_root=settings.FILES_ROOT / "canteen_images",
+    )
+    urlpatterns += static(
+        "/files/dish_images/",
+        document_root=settings.FILES_ROOT / "dish_images",
+    )
+    # NOTE: files/documents/ is NOT served publicly — accessed via authenticated view
+

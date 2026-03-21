@@ -4,10 +4,13 @@ API views for the canteens app.
 Thin views that delegate to canteen_service and menu_service.
 """
 
+import os
 import logging
 
+from django.http import FileResponse, Http404
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -24,6 +27,13 @@ from apps.canteens.serializers import (
     PopularDishSerializer,
 )
 from apps.canteens.services import canteen_service, menu_service
+from apps.canteens.utils.file_handlers import (
+    save_canteen_image,
+    save_dish_image,
+    save_canteen_document,
+    get_canteen_documents,
+    get_document_path,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -68,27 +78,48 @@ def canteen_detail(request, canteen_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def register_canteen(request):
     """
-    POST /api/canteens/register/
+    POST /api/canteens/register/  (multipart/form-data)
 
     Sequence diagram (NewCanteen/phase1, steps 12–16):
       M → Submit Registration (Docs, Location, Menu)
       FE → submitRequest()
       BE → createEntry(status="UNDER_REVIEW")
 
-    submitRequest(): void — from CanteenManager class diagram.
+    Accepts:
+      - name, location, opening_time, closing_time (text fields)
+      - image (optional, canteen cover photo)
+      - aadhar_card (required, Aadhar card of manager)
+      - hall_approval_form (required, Hall Approval Form)
     """
     if request.user.role != User.Role.MANAGER:
         return Response({"error": "Only managers can register canteens"}, status=status.HTTP_403_FORBIDDEN)
 
     serializer = CanteenRegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+
+    # Pop file fields — they are saved to disk after canteen creation
+    validated = serializer.validated_data
+    image_file = validated.pop("image", None)
+    aadhar_file = validated.pop("aadhar_card", None)
+    hall_form_file = validated.pop("hall_approval_form", None)
+
     try:
         canteen = canteen_service.submit_canteen_registration(
             manager_profile=request.user.manager_profile,
-            **serializer.validated_data,
+            **validated,
         )
+
+        # Save files to structured files/ directory using canteen PK
+        if image_file:
+            save_canteen_image(canteen.pk, image_file)
+        if aadhar_file:
+            save_canteen_document(canteen.pk, "aadhar_card", aadhar_file)
+        if hall_form_file:
+            save_canteen_document(canteen.pk, "hall_approval_form", hall_form_file)
+
         return Response(
             {"message": "Registration submitted", "canteen": CanteenSerializer(canteen).data},
             status=status.HTTP_201_CREATED,
@@ -151,11 +182,13 @@ def canteen_menu(request, canteen_id):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def add_dish(request, canteen_id):
     """
-    POST /api/canteens/<canteen_id>/menu/add/
+    POST /api/canteens/<canteen_id>/menu/add/  (multipart/form-data)
 
     updateMenu(dish: Dish): void — from Canteen class diagram.
+    Accepts a 'photo' file field which is saved as files/dish_images/<dish_id>.jpg.
     """
     if request.user.role != User.Role.MANAGER:
         return Response({"error": "Only managers can add dishes"}, status=status.HTTP_403_FORBIDDEN)
@@ -166,17 +199,27 @@ def add_dish(request, canteen_id):
 
     serializer = DishCreateUpdateSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+
+    # Pop fields not accepted by menu_service.add_dish()
+    photo_file = serializer.validated_data.pop("photo", None)
+    serializer.validated_data.pop("is_available", None)
     dish = menu_service.add_dish(canteen, **serializer.validated_data)
+
+    if photo_file:
+        save_dish_image(dish.pk, photo_file)
+
     return Response(DishSerializer(dish).data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def manage_dish(request, dish_id):
     """
-    PATCH/DELETE /api/canteens/dishes/<dish_id>/
+    PATCH/DELETE /api/canteens/dishes/<dish_id>/  (multipart/form-data for PATCH)
 
     updateDishDetails() / toggleAvailability() — from Dish class diagram.
+    If a 'photo' file is included in PATCH, it is saved as files/dish_images/<dish_id>.jpg.
     """
     if request.user.role != User.Role.MANAGER:
         return Response({"error": "Only managers can manage dishes"}, status=status.HTTP_403_FORBIDDEN)
@@ -191,7 +234,13 @@ def manage_dish(request, dish_id):
 
     serializer = DishCreateUpdateSerializer(dish, data=request.data, partial=True)
     serializer.is_valid(raise_exception=True)
+
+    # Save photo to disk if provided
+    photo_file = serializer.validated_data.pop("photo", None)
     serializer.save()
+    if photo_file:
+        save_dish_image(dish.pk, photo_file)
+
     return Response(DishSerializer(dish).data)
 
 
@@ -377,6 +426,9 @@ def canteen_documents(request, canteen_id):
 
     getDocuments(): List — from Canteen class diagram.
     Used by Admin during canteen verification (NewCanteen sequence diagram).
+
+    Returns download URLs for aadhar_card and hall_approval_form from
+    files/documents/<canteen_id>/.
     """
     try:
         canteen = Canteen.objects.get(pk=canteen_id)
@@ -391,13 +443,40 @@ def canteen_documents(request, canteen_id):
     elif user.role != User.Role.ADMIN:
         return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
 
-    document_url = canteen.documents.url if canteen.documents else None
+    documents = get_canteen_documents(canteen.pk)
     return Response({
         "canteen_id": canteen.pk,
         "canteen_name": canteen.name,
-        "document_url": document_url,
+        "documents": documents,
         "status": canteen.status,
     })
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def serve_document(request, canteen_id, filename):
+    """
+    GET /api/canteens/<canteen_id>/documents/<filename>/
+
+    Serves a specific document file. Admin and the canteen's manager only.
+    """
+    try:
+        canteen = Canteen.objects.get(pk=canteen_id)
+    except Canteen.DoesNotExist:
+        return Response({"error": "Canteen not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    user = request.user
+    if user.role == User.Role.MANAGER:
+        if canteen.manager.user != user:
+            return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
+    elif user.role != User.Role.ADMIN:
+        return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
+
+    file_path = get_document_path(canteen.pk, filename)
+    if not os.path.isfile(file_path):
+        raise Http404("Document not found")
+
+    return FileResponse(open(file_path, "rb"), as_attachment=True, filename=filename)
 
 
 # ---------------------------------------------------------------------------

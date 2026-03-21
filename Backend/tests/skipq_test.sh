@@ -851,11 +851,27 @@ echo "20. CANTEEN DOCUMENTS"
 
 RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_mgr.cookies "$BASE/canteens/1/documents/")
 CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
 check "Manager can view own canteen docs" "200" "$CODE"
+# Verify response includes documents dict
+HAS_DOCS=$(echo "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); print('yes' if 'documents' in d and isinstance(d['documents'], dict) else 'no')" 2>/dev/null)
+if [ "$HAS_DOCS" == "yes" ]; then
+    echo "  ✅ Response contains documents dict (aadhar_card + hall_approval_form)"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Expected documents dict in response"
+    FAIL=$((FAIL+1))
+fi
 
 RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_admin.cookies "$BASE/canteens/1/documents/")
 CODE=$(echo "$RESP" | tail -1)
 check "Admin can view canteen docs" "200" "$CODE"
+
+# Re-login customer (was logged out in section 22 tests — log in fresh here)
+curl -sw "\n%{http_code}" -X POST "$BASE/auth/login/" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"rahul@iitk.ac.in","password":"cust1234"}' \
+    -c /tmp/skipq_cust.cookies > /dev/null
 
 RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/canteens/1/documents/")
 CODE=$(echo "$RESP" | tail -1)
@@ -1073,6 +1089,151 @@ check "Manager logout" "200" "$CODE"
 RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_admin.cookies "$BASE/auth/logout/")
 CODE=$(echo "$RESP" | tail -1)
 check "Admin logout" "200" "$CODE"
+
+# -------------------------------------------------------
+# 23. FILE STORAGE — IMAGES & DOCUMENTS
+# -------------------------------------------------------
+echo ""
+echo "23. FILE STORAGE — IMAGES & DOCUMENTS"
+
+# Re-login all roles (previous tests may have logged out)
+curl -s -X POST "$BASE/auth/login/" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"rahul@iitk.ac.in","password":"cust1234"}' \
+    -c /tmp/skipq_cust.cookies > /dev/null
+curl -s -X POST "$BASE/auth/login/" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"manager1@iitk.ac.in","password":"mgr1234"}' \
+    -c /tmp/skipq_mgr.cookies > /dev/null
+curl -s -X POST "$BASE/auth/login/" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"admin@iitk.ac.in","password":"admin1234"}' \
+    -c /tmp/skipq_admin.cookies > /dev/null
+
+# --- Create dummy test files ---
+mkdir -p /tmp/skipq_test_files
+# Create a minimal valid JPEG using Python
+python3 -c "
+from PIL import Image
+img = Image.new('RGB', (2, 2), color='red')
+img.save('/tmp/skipq_test_files/test_image.jpg', 'JPEG')
+" 2>/dev/null || dd if=/dev/urandom bs=1024 count=1 of=/tmp/skipq_test_files/test_image.jpg 2>/dev/null
+# Dummy PDF-like documents
+echo "%PDF-1.4 Dummy Aadhar Card Document" > /tmp/skipq_test_files/aadhar_card.pdf
+echo "%PDF-1.4 Dummy Hall Approval Form" > /tmp/skipq_test_files/hall_approval_form.pdf
+echo "     Created dummy test files"
+
+# --- 23a. Canteen list has image_url field ---
+RESP=$(curl -sw "\n%{http_code}" "$BASE/canteens/")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Canteen list returns" "200" "$CODE"
+HAS_IMAGE_URL=$(echo "$BODY" | python3 -c "import sys,json; data=json.load(sys.stdin); print('yes' if len(data)>0 and 'image_url' in data[0] else 'no')" 2>/dev/null)
+if [ "$HAS_IMAGE_URL" == "yes" ]; then
+    echo "  ✅ Canteen list includes image_url field"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Canteen list missing image_url field"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23b. Dish list has photo_url field ---
+RESP=$(curl -sw "\n%{http_code}" "$BASE/canteens/1/menu/")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Menu returns" "200" "$CODE"
+HAS_PHOTO_URL=$(echo "$BODY" | python3 -c "import sys,json; data=json.load(sys.stdin); print('yes' if len(data)>0 and 'photo_url' in data[0] else 'no')" 2>/dev/null)
+if [ "$HAS_PHOTO_URL" == "yes" ]; then
+    echo "  ✅ Menu dishes include photo_url field"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Menu dishes missing photo_url field"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23c. Add dish with photo upload (multipart/form-data) ---
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/canteens/1/menu/add/" \
+    -F "name=Test Dish With Photo" \
+    -F "price=55.00" \
+    -F "description=A dish added with a photo" \
+    -F "category=test" \
+    -F "photo=@/tmp/skipq_test_files/test_image.jpg")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Add dish with photo (multipart)" "201" "$CODE" "$BODY"
+PHOTO_DISH_ID=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','?'))" 2>/dev/null)
+echo "     Dish with photo ID: $PHOTO_DISH_ID"
+
+# Verify the photo_url is returned for the new dish
+PHOTO_URL=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('photo_url',''))" 2>/dev/null)
+if [ -n "$PHOTO_URL" ] && [ "$PHOTO_URL" != "None" ]; then
+    echo "  ✅ photo_url returned: $PHOTO_URL"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Expected photo_url in response, got: $PHOTO_URL"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23d. Verify dish image file is accessible publicly ---
+if [ -n "$PHOTO_URL" ] && [ "$PHOTO_URL" != "None" ]; then
+    IMG_RESP=$(curl -sw "\n%{http_code}" "http://localhost:8000${PHOTO_URL}")
+    IMG_CODE=$(echo "$IMG_RESP" | tail -1)
+    check "Dish image accessible publicly" "200" "$IMG_CODE"
+fi
+
+# --- 23e. Update dish with new photo ---
+RESP=$(curl -sw "\n%{http_code}" -X PATCH -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$PHOTO_DISH_ID/" \
+    -F "description=Updated description with new photo" \
+    -F "photo=@/tmp/skipq_test_files/test_image.jpg")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Update dish with new photo (PATCH multipart)" "200" "$CODE"
+
+# --- 23f. Add dish WITHOUT photo (JSON still works) ---
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/canteens/1/menu/add/" \
+    -H "Content-Type: application/json" \
+    -d '{"name":"No Photo Dish","price":"30.00","description":"Plain dish","category":"test"}')
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Add dish without photo (JSON)" "201" "$CODE"
+NO_PHOTO_ID=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','?'))" 2>/dev/null)
+NO_PHOTO_URL=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('photo_url',''))" 2>/dev/null)
+if [ "$NO_PHOTO_URL" == "None" ] || [ -z "$NO_PHOTO_URL" ]; then
+    echo "  ✅ Dish without photo has null photo_url (correct)"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Expected null photo_url, got: $NO_PHOTO_URL"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23g. Document access: unauthenticated → 403 ---
+RESP=$(curl -sw "\n%{http_code}" "$BASE/canteens/1/documents/")
+CODE=$(echo "$RESP" | tail -1)
+check "Unauthenticated can't access documents" "403" "$CODE"
+
+# --- 23h. Document serving: non-existent file → 404 ---
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_admin.cookies "$BASE/canteens/1/documents/nonexistent.pdf/")
+CODE=$(echo "$RESP" | tail -1)
+check "Non-existent document file (404)" "404" "$CODE"
+
+# --- 23i. Document serving: customer can't download ---
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/canteens/1/documents/aadhar_card.pdf/")
+CODE=$(echo "$RESP" | tail -1)
+check "Customer can't download documents" "403" "$CODE"
+
+# --- 23j. Clean up test dishes ---
+if [ -n "$PHOTO_DISH_ID" ] && [ "$PHOTO_DISH_ID" != "?" ]; then
+    curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$PHOTO_DISH_ID/" > /dev/null
+    echo "     Cleaned up test dish $PHOTO_DISH_ID"
+fi
+if [ -n "$NO_PHOTO_ID" ] && [ "$NO_PHOTO_ID" != "?" ]; then
+    curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$NO_PHOTO_ID/" > /dev/null
+    echo "     Cleaned up test dish $NO_PHOTO_ID"
+fi
+
+# Clean up tmp files
+rm -rf /tmp/skipq_test_files
+echo "     Cleaned up test files"
 
 # -------------------------------------------------------
 # SUMMARY

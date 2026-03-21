@@ -80,7 +80,16 @@ class Canteen(models.Model):
     )
 
     # Registration documents (for admin review — NewCanteen sequence diagram)
-    documents = models.FileField(upload_to="canteen_docs/", blank=True, null=True)
+    aadhar_card = models.FileField(upload_to="documents/", blank=True, null=True,
+        help_text="Aadhar card of the canteen manager.",
+    )
+    hall_approval_form = models.FileField(upload_to="documents/", blank=True, null=True,
+        help_text="Hall Approval Form for the canteen.",
+    )
+    # Canteen cover image (public)
+    image = models.ImageField(upload_to="canteen_images/", blank=True, null=True,
+        help_text="Cover photo of the canteen.",
+    )
     rejection_reason = models.TextField(
         blank=True,
         help_text="Reason provided by Admin if registration is rejected.",

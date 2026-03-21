@@ -21,12 +21,19 @@ logger = logging.getLogger(__name__)
 # Canteen Registration — NewCanteen/phase1 sequence diagram
 # ---------------------------------------------------------------------------
 
-def submit_canteen_registration(manager_profile, name, location, opening_time, closing_time, documents=None):
+def submit_canteen_registration(
+    manager_profile, name, location, opening_time, closing_time,
+    image=None, aadhar_card=None, hall_approval_form=None,
+):
     """
     Sequence diagram (NewCanteen/phase1, steps 12–16):
       M → Submit Registration (Docs, Location, Menu)
       FE → submitRequest()
       BE → createEntry(status="UNDER_REVIEW")
+
+    Files (image, aadhar_card, hall_approval_form) are saved to structured
+    files/ directory by the calling view after this function returns the
+    canteen instance (we need the canteen PK for the folder/file name).
     """
     canteen = Canteen.objects.create(
         name=name,
@@ -35,7 +42,6 @@ def submit_canteen_registration(manager_profile, name, location, opening_time, c
         closing_time=closing_time,
         manager=manager_profile,
         status=Canteen.Status.UNDER_REVIEW,
-        documents=documents,
     )
     logger.info(
         "Canteen registration submitted: '%s' by %s (status: UNDER_REVIEW)",
