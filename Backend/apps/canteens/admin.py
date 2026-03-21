@@ -13,7 +13,7 @@ class CanteenAdmin(admin.ModelAdmin):
 
 @admin.register(Dish)
 class DishAdmin(admin.ModelAdmin):
-    list_display = ["name", "canteen", "price", "is_available", "discount", "rating", "category"]
+    list_display = ["name", "canteen", "price", "is_available", "discount", "rating", "category", "is_veg"]
     list_filter = ["is_available", "category", "canteen"]
     search_fields = ["name"]
 

@@ -885,10 +885,175 @@ RECIP=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).g
 echo "     Target: $RECIP"
 
 # -------------------------------------------------------
-# 22. LOGOUT & SESSION
+# 22. MANAGER ORDER HISTORY
 # -------------------------------------------------------
 echo ""
-echo "22. LOGOUT & SESSION"
+echo "22. MANAGER ORDER HISTORY"
+
+# Re-login manager (cookies may still be valid but let's be safe)
+curl -sw "\n%{http_code}" -X POST "$BASE/auth/login/" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"manager1@iitk.ac.in","password":"mgr1234"}' \
+    -c /tmp/skipq_mgr.cookies > /dev/null
+
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_mgr.cookies "$BASE/orders/manager-history/")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Manager order history" "200" "$CODE"
+MGR_HIST=$(echo "$BODY" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null)
+echo "     Manager history orders: $MGR_HIST"
+
+# Customer can't access manager history
+curl -sw "\n%{http_code}" -X POST "$BASE/auth/login/" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"rahul@iitk.ac.in","password":"cust1234"}' \
+    -c /tmp/skipq_cust.cookies > /dev/null
+
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/orders/manager-history/")
+CODE=$(echo "$RESP" | tail -1)
+check "Customer can't access manager history (403)" "403" "$CODE"
+
+# -------------------------------------------------------
+# 23. ORDER RATING (post-completion feedback)
+# -------------------------------------------------------
+echo ""
+echo "23. ORDER RATING"
+
+# Customer order history — find a completed order
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/orders/history/")
+BODY=$(echo "$RESP" | sed '$d')
+check "Customer order history for rating" "200" "$(echo "$RESP" | tail -1)"
+
+# Get first COMPLETED order ID
+COMPLETED_ID=$(echo "$BODY" | python3 -c "
+import sys, json
+orders = json.load(sys.stdin)
+completed = [o for o in orders if o['status'] == 'COMPLETED']
+print(completed[0]['id'] if completed else '')
+" 2>/dev/null)
+
+if [ -n "$COMPLETED_ID" ]; then
+    echo "     Rating order #$COMPLETED_ID"
+
+    # Rate the order
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d '{"rating":4,"review_text":"Great food, fast service!"}')
+    CODE=$(echo "$RESP" | tail -1)
+    BODY=$(echo "$RESP" | sed '$d')
+    check "Rate completed order" "200" "$CODE" "$BODY"
+
+    # Verify is_rated is now true
+    IS_RATED=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('order',{}).get('is_rated','?'))" 2>/dev/null)
+    if [ "$IS_RATED" == "True" ]; then
+        echo "  ✅ is_rated = True"
+        PASS=$((PASS+1))
+    else
+        echo "  ❌ Expected is_rated=True, got $IS_RATED"
+        FAIL=$((FAIL+1))
+    fi
+
+    # Try rating same order again — should fail (already rated)
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d '{"rating":5,"review_text":"Trying again"}')
+    CODE=$(echo "$RESP" | tail -1)
+    check "Duplicate rating (should fail)" "400" "$CODE"
+else
+    echo "  ⚠️  No COMPLETED orders found to test rating — skipping"
+fi
+
+# Manager can't rate orders
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/orders/1/rate/" \
+    -H "Content-Type: application/json" \
+    -d '{"rating":5}')
+CODE=$(echo "$RESP" | tail -1)
+check "Manager can't rate orders (403)" "403" "$CODE"
+
+# Invalid rating value
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/1/rate/" \
+    -H "Content-Type: application/json" \
+    -d '{"rating":10}')
+CODE=$(echo "$RESP" | tail -1)
+check "Invalid rating value (should fail)" "400" "$CODE"
+
+# -------------------------------------------------------
+# 24. MANAGER MONTHLY ANALYTICS
+# -------------------------------------------------------
+echo ""
+echo "24. MANAGER MONTHLY ANALYTICS"
+
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_mgr.cookies "$BASE/canteens/manager/analytics/")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Manager monthly analytics (all time)" "200" "$CODE"
+MONTHS=$(echo "$BODY" | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('monthly_breakdown',[])))" 2>/dev/null)
+echo "     Months of data: $MONTHS"
+
+# With year filter
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_mgr.cookies "$BASE/canteens/manager/analytics/?year=2026")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Manager monthly analytics (year=2026)" "200" "$CODE"
+YEAR_FILTER=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('year_filter','?'))" 2>/dev/null)
+if [ "$YEAR_FILTER" == "2026" ]; then
+    echo "  ✅ Year filter applied: $YEAR_FILTER"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Expected year_filter=2026, got $YEAR_FILTER"
+    FAIL=$((FAIL+1))
+fi
+
+# Invalid year
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_mgr.cookies "$BASE/canteens/manager/analytics/?year=abc")
+CODE=$(echo "$RESP" | tail -1)
+check "Invalid year parameter (400)" "400" "$CODE"
+
+# Customer can't access manager analytics
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/canteens/manager/analytics/")
+CODE=$(echo "$RESP" | tail -1)
+check "Customer can't access manager analytics (403)" "403" "$CODE"
+
+# -------------------------------------------------------
+# 25. MANAGER DISH ANALYTICS (frequency & revenue)
+# -------------------------------------------------------
+echo ""
+echo "25. MANAGER DISH ANALYTICS"
+
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_mgr.cookies "$BASE/canteens/manager/dish-analytics/")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Manager dish analytics" "200" "$CODE"
+
+# Verify response structure has all three datasets
+HAS_FREQ=$(echo "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); print('dish_frequency' in d and 'top_5_by_frequency' in d and 'top_5_by_revenue' in d)" 2>/dev/null)
+if [ "$HAS_FREQ" == "True" ]; then
+    echo "  ✅ Response contains dish_frequency, top_5_by_frequency, top_5_by_revenue"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Missing expected fields in response"
+    FAIL=$((FAIL+1))
+fi
+
+PERIOD=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('period','?'))" 2>/dev/null)
+echo "     Period: $PERIOD"
+
+FREQ_COUNT=$(echo "$BODY" | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('dish_frequency',[])))" 2>/dev/null)
+echo "     Dishes with orders in last 30 days: $FREQ_COUNT"
+
+TOP5_COUNT=$(echo "$BODY" | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('top_5_by_frequency',[])))" 2>/dev/null)
+echo "     Top dishes returned: $TOP5_COUNT"
+
+# Customer can't access dish analytics
+RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/canteens/manager/dish-analytics/")
+CODE=$(echo "$RESP" | tail -1)
+check "Customer can't access dish analytics (403)" "403" "$CODE"
+
+# -------------------------------------------------------
+# 26. LOGOUT & SESSION
+# -------------------------------------------------------
+echo ""
+echo "26. LOGOUT & SESSION"
 
 RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/auth/logout/")
 CODE=$(echo "$RESP" | tail -1)
@@ -916,3 +1081,4 @@ echo ""
 echo "============================================"
 echo "  RESULTS: $PASS passed, $FAIL failed"
 echo "============================================"
+

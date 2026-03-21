@@ -39,4 +39,10 @@ urlpatterns = [
 
     # Manager dashboard — viewEarningStats() + manageOrderQueue() from CanteenManager class diagram
     path("manager/dashboard/", views.manager_dashboard, name="manager-dashboard"),
+
+    # Manager analytics — monthly revenue & order breakdown
+    path("manager/analytics/", views.manager_analytics, name="manager-analytics"),
+
+    # Manager dish analytics — frequency & revenue for last 30 days
+    path("manager/dish-analytics/", views.manager_dish_analytics, name="manager-dish-analytics"),
 ]

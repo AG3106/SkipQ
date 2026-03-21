@@ -476,3 +476,85 @@ def manager_dashboard(request):
             "estimated_wait_minutes": canteen.get_estimated_wait_time(),
         },
     })
+
+
+# ---------------------------------------------------------------------------
+# Manager analytics — monthly revenue & order breakdown
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def manager_analytics(request):
+    """
+    GET /api/canteens/manager/analytics/
+
+    Returns per-month revenue and order count for the manager's canteen.
+    Optional query param: ?year=2026
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can view analytics"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        canteen = request.user.manager_profile.canteen
+    except Exception:
+        return Response({"error": "No canteen assigned"}, status=status.HTTP_404_NOT_FOUND)
+
+    from apps.canteens.services import analytics_service
+
+    year = request.query_params.get("year", None)
+    if year:
+        try:
+            year = int(year)
+        except (ValueError, TypeError):
+            return Response({"error": "Invalid year parameter"}, status=status.HTTP_400_BAD_REQUEST)
+
+    monthly_data = analytics_service.get_monthly_analytics(canteen, year=year)
+    return Response({
+        "canteen_id": canteen.pk,
+        "canteen_name": canteen.name,
+        "year_filter": year,
+        "monthly_breakdown": monthly_data,
+    })
+
+
+# ---------------------------------------------------------------------------
+# Manager dish analytics — frequency & revenue for the last 30 days
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def manager_dish_analytics(request):
+    """
+    GET /api/canteens/manager/dish-analytics/
+
+    Returns dish-level analytics for the manager's canteen over the last 30 days:
+      - Full frequency table (all dishes, sorted by order count)
+      - Top 5 dishes by order frequency
+      - Top 5 dishes by revenue
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can view dish analytics"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        canteen = request.user.manager_profile.canteen
+    except Exception:
+        return Response({"error": "No canteen assigned"}, status=status.HTTP_404_NOT_FOUND)
+
+    from apps.canteens.services import analytics_service
+
+    dish_frequency = analytics_service.get_dish_frequency(canteen)
+    top_by_frequency = analytics_service.get_top_dishes_by_frequency(canteen, limit=5)
+    top_by_revenue = analytics_service.get_top_dishes_by_revenue(canteen, limit=5)
+
+    # Stringify revenue decimals for JSON safety
+    for entry in top_by_revenue:
+        entry["revenue"] = str(entry["revenue"])
+
+    return Response({
+        "canteen_id": canteen.pk,
+        "canteen_name": canteen.name,
+        "period": "last_30_days",
+        "dish_frequency": dish_frequency,
+        "top_5_by_frequency": top_by_frequency,
+        "top_5_by_revenue": top_by_revenue,
+    })

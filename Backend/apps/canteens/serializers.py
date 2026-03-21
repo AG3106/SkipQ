@@ -28,7 +28,7 @@ class DishSerializer(serializers.ModelSerializer):
         fields = [
             "id", "name", "price", "effective_price", "description",
             "is_available", "discount", "photo", "rating", "category",
-            "reviews", "created_at",
+            "is_veg", "reviews", "created_at",
         ]
         read_only_fields = ["id", "rating", "created_at"]
 
@@ -40,7 +40,7 @@ class DishCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating dishes."""
     class Meta:
         model = Dish
-        fields = ["name", "price", "description", "is_available", "discount", "photo", "category"]
+        fields = ["name", "price", "description", "is_available", "discount", "photo", "category", "is_veg"]
 
 
 class CanteenHolidaySerializer(serializers.ModelSerializer):
@@ -107,7 +107,7 @@ class PopularDishSerializer(serializers.ModelSerializer):
         fields = [
             "id", "name", "price", "effective_price", "description",
             "is_available", "discount", "photo", "rating", "category",
-            "canteen_id", "canteen_name", "canteen_location",
+            "is_veg", "canteen_id", "canteen_name", "canteen_location",
             "review_count",
         ]
         read_only_fields = fields

@@ -110,9 +110,18 @@ def login_view(request):
             password=serializer.validated_data["password"],
             remember_me=serializer.validated_data["remember_me"],
         )
+        has_wallet_pin=False
+        if user.role == User.Role.CUSTOMER:
+            has_wallet_pin=bool(user.customer_profile.wallet_pin_hash)
+        elif user.role == User.Role.MANAGER:
+            has_wallet_pin=bool(user.manager_profile.wallet_pin_hash)
+        else:
+            has_wallet_pin=False
+        
         return Response({
             "message": "Login successful",
             "user": UserSerializer(user).data,
+            "has_wallet_pin": has_wallet_pin,
         })
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

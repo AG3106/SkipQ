@@ -224,6 +224,10 @@ class Dish(models.Model):
     photo = models.ImageField(upload_to="dish_photos/", blank=True, null=True)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     category = models.CharField(max_length=50, blank=True)
+    is_veg = models.BooleanField(
+        default=True,
+        help_text="True for vegetarian, False for non-vegetarian.",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
