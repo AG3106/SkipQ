@@ -8,8 +8,10 @@ Directory structure under Backend/files/:
 """
 
 import os
+import io
 import logging
 
+from PIL import Image
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -21,19 +23,46 @@ def _ensure_dir(path):
 
 
 def _get_extension(filename):
-    """Extract file extension from filename (e.g. '.jpg')."""
+    """Extract file extension from filename (e.g. '.pdf')."""
     _, ext = os.path.splitext(filename)
-    return ext.lower() if ext else ".jpg"
+    return ext.lower() if ext else ""
+
+
+def _convert_to_jpg(image_file):
+    """
+    Convert any uploaded image (PNG, WEBP, BMP, etc.) to JPEG bytes.
+
+    Opens the uploaded file with Pillow, converts RGBA/P modes to RGB
+    (JPEG doesn't support transparency), then writes JPEG bytes to a
+    BytesIO buffer and returns it.
+    """
+    img = Image.open(image_file)
+
+    # JPEG doesn't support transparency — flatten onto white background
+    if img.mode in ("RGBA", "P", "LA"):
+        background = Image.new("RGB", img.size, (255, 255, 255))
+        if img.mode == "P":
+            img = img.convert("RGBA")
+        background.paste(img, mask=img.split()[-1])  # use alpha as mask
+        img = background
+    elif img.mode != "RGB":
+        img = img.convert("RGB")
+
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=85, optimize=True)
+    buf.seek(0)
+    return buf
 
 
 # ---------------------------------------------------------------------------
 # Canteen Images  —  files/canteen_images/<canteen_id>.jpg
 # ---------------------------------------------------------------------------
-# TODO: Change in server according to its global path
+
 def save_canteen_image(canteen_id, image_file):
     """
-    Save a canteen cover image as files/canteen_images/<canteen_id>.jpg.
-    Converts/renames regardless of upload extension — always stored as .jpg.
+    Convert any uploaded image to JPEG and save as
+    files/canteen_images/<canteen_id>.jpg.
+
     Returns the relative URL path.
     """
     dest_dir = os.path.join(settings.FILES_ROOT, "canteen_images")
@@ -41,9 +70,9 @@ def save_canteen_image(canteen_id, image_file):
     filename = f"{canteen_id}.jpg"
     dest_path = os.path.join(dest_dir, filename)
 
-    with open(dest_path, "wb+") as f:
-        for chunk in image_file.chunks():
-            f.write(chunk)
+    jpg_buf = _convert_to_jpg(image_file)
+    with open(dest_path, "wb") as f:
+        f.write(jpg_buf.read())
 
     logger.info("Saved canteen image: %s", dest_path)
     return f"/files/canteen_images/{filename}"
@@ -69,7 +98,9 @@ def canteen_image_exists(canteen_id):
 
 def save_dish_image(dish_id, image_file):
     """
-    Save a dish photo as files/dish_images/<dish_id>.jpg.
+    Convert any uploaded image to JPEG and save as
+    files/dish_images/<dish_id>.jpg.
+
     Returns the relative URL path.
     """
     dest_dir = os.path.join(settings.FILES_ROOT, "dish_images")
@@ -77,9 +108,9 @@ def save_dish_image(dish_id, image_file):
     filename = f"{dish_id}.jpg"
     dest_path = os.path.join(dest_dir, filename)
 
-    with open(dest_path, "wb+") as f:
-        for chunk in image_file.chunks():
-            f.write(chunk)
+    jpg_buf = _convert_to_jpg(image_file)
+    with open(dest_path, "wb") as f:
+        f.write(jpg_buf.read())
 
     logger.info("Saved dish image: %s", dest_path)
     return f"/files/dish_images/{filename}"

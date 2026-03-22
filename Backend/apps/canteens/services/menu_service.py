@@ -31,7 +31,7 @@ def get_menu(canteen):
     return canteen.dishes.all()
 
 
-def add_dish(canteen, name, price, description="", category="", discount=0, photo=None):
+def add_dish(canteen, name, price, description="", category="", discount=0, photo=None, is_veg=True):
     """
     updateMenu(dish: Dish): void — from class diagram (Canteen).
     Adds a new dish to the canteen's menu.
@@ -44,6 +44,7 @@ def add_dish(canteen, name, price, description="", category="", discount=0, phot
         category=category,
         discount=Decimal(str(discount)),
         photo=photo,
+        is_veg=is_veg,
     )
     logger.info("Dish '%s' added to canteen '%s'", name, canteen.name)
     return dish

@@ -83,16 +83,36 @@ def register_canteen(request):
     """
     POST /api/canteens/register/  (multipart/form-data)
 
-    Sequence diagram (NewCanteen/phase1, steps 12–16):
-      M → Submit Registration (Docs, Location, Menu)
-      FE → submitRequest()
-      BE → createEntry(status="UNDER_REVIEW")
+    Register a new canteen for review by an admin.
 
-    Accepts:
-      - name, location, opening_time, closing_time (text fields)
-      - image (optional, canteen cover photo)
-      - aadhar_card (required, Aadhar card of manager)
-      - hall_approval_form (required, Hall Approval Form)
+    Upload instructions (multipart/form-data):
+    ─────────────────────────────────────────────
+    Text fields:
+      • name            (required)  — Canteen name
+      • location        (required)  — Physical location
+      • opening_time    (required)  — HH:MM format
+      • closing_time    (required)  — HH:MM format
+
+    File fields:
+      • image               (optional) — Canteen cover photo.
+                               Accepts JPEG, PNG, WEBP, BMP, etc.
+                               Automatically converted to JPEG and saved
+                               as files/canteen_images/<canteen_id>.jpg
+      • aadhar_card          (required) — Aadhar card of the canteen manager.
+                               Saved as files/documents/<canteen_id>/aadhar_card.<ext>
+      • hall_approval_form   (required) — Hall Approval Form.
+                               Saved as files/documents/<canteen_id>/hall_approval_form.<ext>
+
+    Example curl:
+      curl -X POST http://localhost:8000/api/canteens/register/ \
+        -b cookies.txt \
+        -F "name=My Canteen" \
+        -F "location=Hall 5" \
+        -F "opening_time=08:00" \
+        -F "closing_time=22:00" \
+        -F "image=@/path/to/photo.png" \
+        -F "aadhar_card=@/path/to/aadhar.pdf" \
+        -F "hall_approval_form=@/path/to/approval.pdf"
     """
     if request.user.role != User.Role.MANAGER:
         return Response({"error": "Only managers can register canteens"}, status=status.HTTP_403_FORBIDDEN)
@@ -185,10 +205,19 @@ def canteen_menu(request, canteen_id):
 @parser_classes([MultiPartParser, FormParser, JSONParser])
 def add_dish(request, canteen_id):
     """
-    POST /api/canteens/<canteen_id>/menu/add/  (multipart/form-data)
+    POST /api/canteens/<canteen_id>/menu/add/  (multipart/form-data or JSON)
 
-    updateMenu(dish: Dish): void — from Canteen class diagram.
-    Accepts a 'photo' file field which is saved as files/dish_images/<dish_id>.jpg.
+    Add a new dish to a canteen's menu.
+
+    File fields (multipart/form-data):
+      • image  (optional) — Dish photo. Accepts JPEG, PNG, WEBP, BMP, etc.
+                            Converted to JPEG → saved as files/dish_images/<dish_id>.jpg
+
+    Example curl:
+      curl -X POST http://localhost:8000/api/canteens/1/menu/add/ \
+        -b cookies.txt \
+        -F "name=Paneer Tikka" -F "price=120.00" -F "category=North Indian" \
+        -F "image=@/path/to/dish_photo.png"
     """
     if request.user.role != User.Role.MANAGER:
         return Response({"error": "Only managers can add dishes"}, status=status.HTTP_403_FORBIDDEN)
@@ -201,12 +230,15 @@ def add_dish(request, canteen_id):
     serializer.is_valid(raise_exception=True)
 
     # Pop fields not accepted by menu_service.add_dish()
-    photo_file = serializer.validated_data.pop("photo", None)
+    image_file = serializer.validated_data.pop("photo", None)
+    # Also accept 'image' as field name from multipart form
+    if image_file is None:
+        image_file = request.FILES.get("image")
     serializer.validated_data.pop("is_available", None)
     dish = menu_service.add_dish(canteen, **serializer.validated_data)
 
-    if photo_file:
-        save_dish_image(dish.pk, photo_file)
+    if image_file:
+        save_dish_image(dish.pk, image_file)
 
     return Response(DishSerializer(dish).data, status=status.HTTP_201_CREATED)
 
@@ -218,8 +250,16 @@ def manage_dish(request, dish_id):
     """
     PATCH/DELETE /api/canteens/dishes/<dish_id>/  (multipart/form-data for PATCH)
 
-    updateDishDetails() / toggleAvailability() — from Dish class diagram.
-    If a 'photo' file is included in PATCH, it is saved as files/dish_images/<dish_id>.jpg.
+    Update or delete a dish.
+
+    PATCH file fields (multipart/form-data):
+      • image  (optional) — New dish photo. Accepts JPEG, PNG, WEBP, BMP, etc.
+                            Converted to JPEG → saved as files/dish_images/<dish_id>.jpg
+
+    Example curl:
+      curl -X PATCH http://localhost:8000/api/canteens/dishes/5/ \
+        -b cookies.txt \
+        -F "price=150.00" -F "image=@/path/to/new_photo.png"
     """
     if request.user.role != User.Role.MANAGER:
         return Response({"error": "Only managers can manage dishes"}, status=status.HTTP_403_FORBIDDEN)
@@ -235,11 +275,13 @@ def manage_dish(request, dish_id):
     serializer = DishCreateUpdateSerializer(dish, data=request.data, partial=True)
     serializer.is_valid(raise_exception=True)
 
-    # Save photo to disk if provided
-    photo_file = serializer.validated_data.pop("photo", None)
+    # Save image to disk if provided (accept both 'photo' and 'image' field names)
+    image_file = serializer.validated_data.pop("photo", None)
+    if image_file is None:
+        image_file = request.FILES.get("image")
     serializer.save()
-    if photo_file:
-        save_dish_image(dish.pk, photo_file)
+    if image_file:
+        save_dish_image(dish.pk, image_file)
 
     return Response(DishSerializer(dish).data)
 

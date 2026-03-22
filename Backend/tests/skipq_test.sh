@@ -1221,6 +1221,118 @@ RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/canteens/1/do
 CODE=$(echo "$RESP" | tail -1)
 check "Customer can't download documents" "403" "$CODE"
 
+# --- 23k. PNG upload → JPEG conversion ---
+# Create a PNG image (not JPEG) to verify conversion
+python3 -c "
+from PIL import Image
+img = Image.new('RGBA', (10, 10), (0, 128, 255, 180))
+img.save('/tmp/skipq_test_files/test_png.png', 'PNG')
+" 2>/dev/null
+
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/canteens/1/menu/add/" \
+    -F "name=PNG Conversion Test" \
+    -F "price=45.00" \
+    -F "category=test" \
+    -F "photo=@/tmp/skipq_test_files/test_png.png")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Add dish with PNG image (should convert to JPEG)" "201" "$CODE"
+PNG_DISH_ID=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','?'))" 2>/dev/null)
+PNG_PHOTO_URL=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('photo_url',''))" 2>/dev/null)
+if [ -n "$PNG_PHOTO_URL" ] && [ "$PNG_PHOTO_URL" != "None" ]; then
+    echo "  ✅ PNG uploaded → photo_url returned: $PNG_PHOTO_URL"
+    PASS=$((PASS+1))
+    # Verify the saved file is actually JPEG (check magic bytes)
+    curl -s "http://localhost:8000${PNG_PHOTO_URL}" -o /tmp/skipq_test_files/downloaded.jpg
+    FILE_TYPE=$(python3 -c "
+from PIL import Image
+img = Image.open('/tmp/skipq_test_files/downloaded.jpg')
+print(img.format)
+" 2>/dev/null)
+    if [ "$FILE_TYPE" == "JPEG" ]; then
+        echo "  ✅ Saved file is valid JPEG (PNG was converted)"
+        PASS=$((PASS+1))
+    else
+        echo "  ❌ Expected JPEG format, got: $FILE_TYPE"
+        FAIL=$((FAIL+1))
+    fi
+else
+    echo "  ❌ Expected photo_url after PNG upload, got: $PNG_PHOTO_URL"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23l. Add dish using 'image' field name (not 'photo') ---
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/canteens/1/menu/add/" \
+    -F "name=Image Field Test" \
+    -F "price=35.00" \
+    -F "category=test" \
+    -F "image=@/tmp/skipq_test_files/test_image.jpg")
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Add dish with 'image' field name" "201" "$CODE"
+IMG_FIELD_DISH_ID=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','?'))" 2>/dev/null)
+IMG_FIELD_URL=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('photo_url',''))" 2>/dev/null)
+if [ -n "$IMG_FIELD_URL" ] && [ "$IMG_FIELD_URL" != "None" ]; then
+    echo "  ✅ 'image' field name works: $IMG_FIELD_URL"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ 'image' field name didn't save photo, got: $IMG_FIELD_URL"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23m. PATCH dish using 'image' field name ---
+RESP=$(curl -sw "\n%{http_code}" -X PATCH -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$IMG_FIELD_DISH_ID/" \
+    -F "description=Updated via image field" \
+    -F "image=@/tmp/skipq_test_files/test_png.png")
+CODE=$(echo "$RESP" | tail -1)
+check "PATCH dish with 'image' field name" "200" "$CODE"
+
+# --- 23n. Add dish with is_veg=true ---
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/canteens/1/menu/add/" \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Veg Test Dish","price":"25.00","category":"test","is_veg":true}')
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Add veg dish (is_veg=true)" "201" "$CODE"
+VEG_DISH_ID=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','?'))" 2>/dev/null)
+IS_VEG=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('is_veg','?'))" 2>/dev/null)
+if [ "$IS_VEG" == "True" ]; then
+    echo "  ✅ is_veg=True correctly set"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Expected is_veg=True, got: $IS_VEG"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23o. Add dish with is_veg=false ---
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/canteens/1/menu/add/" \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Non-Veg Test Dish","price":"80.00","category":"test","is_veg":false}')
+CODE=$(echo "$RESP" | tail -1)
+BODY=$(echo "$RESP" | sed '$d')
+check "Add non-veg dish (is_veg=false)" "201" "$CODE"
+NONVEG_DISH_ID=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','?'))" 2>/dev/null)
+IS_VEG=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('is_veg','?'))" 2>/dev/null)
+if [ "$IS_VEG" == "False" ]; then
+    echo "  ✅ is_veg=False correctly set"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Expected is_veg=False, got: $IS_VEG"
+    FAIL=$((FAIL+1))
+fi
+
+# --- 23p. Verify is_veg appears in menu response ---
+RESP=$(curl -sw "\n%{http_code}" "$BASE/canteens/1/menu/")
+BODY=$(echo "$RESP" | sed '$d')
+HAS_IS_VEG=$(echo "$BODY" | python3 -c "import sys,json; data=json.load(sys.stdin); print('yes' if len(data)>0 and 'is_veg' in data[0] else 'no')" 2>/dev/null)
+if [ "$HAS_IS_VEG" == "yes" ]; then
+    echo "  ✅ Menu dishes include is_veg field"
+    PASS=$((PASS+1))
+else
+    echo "  ❌ Menu dishes missing is_veg field"
+    FAIL=$((FAIL+1))
+fi
+
 # --- 23j. Clean up test dishes ---
 if [ -n "$PHOTO_DISH_ID" ] && [ "$PHOTO_DISH_ID" != "?" ]; then
     curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$PHOTO_DISH_ID/" > /dev/null
@@ -1229,6 +1341,22 @@ fi
 if [ -n "$NO_PHOTO_ID" ] && [ "$NO_PHOTO_ID" != "?" ]; then
     curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$NO_PHOTO_ID/" > /dev/null
     echo "     Cleaned up test dish $NO_PHOTO_ID"
+fi
+if [ -n "$PNG_DISH_ID" ] && [ "$PNG_DISH_ID" != "?" ]; then
+    curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$PNG_DISH_ID/" > /dev/null
+    echo "     Cleaned up test dish $PNG_DISH_ID"
+fi
+if [ -n "$IMG_FIELD_DISH_ID" ] && [ "$IMG_FIELD_DISH_ID" != "?" ]; then
+    curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$IMG_FIELD_DISH_ID/" > /dev/null
+    echo "     Cleaned up test dish $IMG_FIELD_DISH_ID"
+fi
+if [ -n "$VEG_DISH_ID" ] && [ "$VEG_DISH_ID" != "?" ]; then
+    curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$VEG_DISH_ID/" > /dev/null
+    echo "     Cleaned up test dish $VEG_DISH_ID"
+fi
+if [ -n "$NONVEG_DISH_ID" ] && [ "$NONVEG_DISH_ID" != "?" ]; then
+    curl -s -X DELETE -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/$NONVEG_DISH_ID/" > /dev/null
+    echo "     Cleaned up test dish $NONVEG_DISH_ID"
 fi
 
 # Clean up tmp files
