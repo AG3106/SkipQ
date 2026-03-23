@@ -79,18 +79,32 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------------------
-# Database — SQLite for development
+# Database — PostgreSQL for production, SQLite for tests
 # ---------------------------------------------------------------------------
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "skipq_db",
-        "USER": "postgres",
-        "PASSWORD": os.environ.get("DB_PASSWORD", "sppsql"),
-        "HOST": "localhost",
-        "PORT": "5432",
+import sys
+
+if "test" in sys.argv or "test_coverage" in sys.argv:
+    # Use SQLite in-memory for fast, portable test runs
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+    # Prevent real emails during test runs
+    EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "skipq_db",
+            "USER": "postgres",
+            "PASSWORD": os.environ.get("DB_PASSWORD", "sppsql"),
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
+
 
 # ---------------------------------------------------------------------------
 # Custom User model (maps to User entity in class diagram)
@@ -212,4 +226,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "skipq69@gmail.com"
 EMAIL_HOST_PASSWORD = "cyou ebbg aozw pvgy"
 
-DEFAULT_FROM_EMAIL=EMAIL_HOST
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

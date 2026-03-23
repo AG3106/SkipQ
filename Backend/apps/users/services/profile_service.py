@@ -107,7 +107,9 @@ def credit_to_manager(manager_profile, amount):
     amount = Decimal(str(amount))
     if amount <= 0:
         raise ValueError("Amount must be positive")
-    manager_profile.wallet_balance += amount
+    # Ensure wallet_balance is Decimal (may come as float from DB in some backends)
+    current_balance = Decimal(str(manager_profile.wallet_balance))
+    manager_profile.wallet_balance = current_balance + amount
     manager_profile.save(update_fields=["wallet_balance"])
     logger.info(
         "Credited ₹%s to manager wallet of %s. New balance: ₹%s",
