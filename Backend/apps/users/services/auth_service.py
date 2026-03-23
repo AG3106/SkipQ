@@ -65,7 +65,7 @@ def generate_and_send_otp(email, password="", role="CUSTOMER", name=""):
 
     subject = 'Your SkipQ Verification Code'
     message = f'Hello {name or "User"},\n\nYour One-Time Password (OTP) for SkipQ is: {otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you,\nThe SkipQ Team'
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@skipq.local')
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'skipq69@gmail.com')
 
     try:
         send_mail(subject, message, from_email, [email], fail_silently=False)
