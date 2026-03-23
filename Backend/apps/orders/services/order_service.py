@@ -287,12 +287,17 @@ def get_manager_order_history(canteen):
     return Order.objects.filter(canteen=canteen)
 
 
-def rate_order(order, customer_profile, rating, review_text=""):
+def rate_order(order, customer_profile, ratings):
     """
-    Rate a completed order.
+    Rate dishes in a completed order.
 
-    Creates a DishReview for each dish in the order and marks
-    the order as rated so it cannot be rated again.
+    Args:
+        order: Order instance
+        customer_profile: CustomerProfile instance
+        ratings: list of dicts [{"dish_id": int, "rating": int}, ...]
+
+    Each dish in the order can be rated once per order.
+    Sets order.is_rated = True to prevent double-submission.
     """
     if order.customer != customer_profile:
         raise ValueError("You can only rate your own orders")
@@ -304,19 +309,32 @@ def rate_order(order, customer_profile, rating, review_text=""):
         raise ValueError("This order has already been rated")
 
     from apps.canteens.services import menu_service
+    from apps.canteens.models import Dish
 
-    for item in order.items.select_related("dish"):
-        menu_service.add_review(
-            dish=item.dish,
+    # Get all dish IDs that belong to this order
+    order_dish_ids = set(
+        order.items.select_related("dish").values_list("dish_id", flat=True)
+    )
+
+    for entry in ratings:
+        dish_id = entry["dish_id"]
+        rating_value = entry["rating"]
+
+        if dish_id not in order_dish_ids:
+            raise ValueError(f"Dish {dish_id} is not part of this order")
+
+        dish = Dish.objects.get(pk=dish_id)
+        menu_service.add_rating(
+            dish=dish,
             customer_profile=customer_profile,
-            rating=rating,
-            review_text=review_text,
+            rating=rating_value,
+            order=order,
         )
 
     order.is_rated = True
     order.save(update_fields=["is_rated"])
 
-    logger.info("Order #%s rated %d★ by %s", order.pk, rating, customer_profile.user.email)
+    logger.info("Order #%s rated by %s", order.pk, customer_profile.user.email)
     return order
 
 

@@ -22,7 +22,6 @@ from apps.canteens.serializers import (
     CanteenStatusUpdateSerializer,
     DishSerializer,
     DishCreateUpdateSerializer,
-    AddReviewSerializer,
     CanteenHolidaySerializer,
     PopularDishSerializer,
 )
@@ -303,37 +302,6 @@ def toggle_dish_availability(request, dish_id):
 
     dish.toggle_availability()
     return Response(DishSerializer(dish).data)
-
-
-# ---------------------------------------------------------------------------
-# Reviews — Customer class diagram: rateAndReview()
-# ---------------------------------------------------------------------------
-
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def add_review(request, dish_id):
-    """
-    POST /api/canteens/dishes/<dish_id>/review/
-
-    rateAndReview(rate: Int, review: String): void — from Customer class diagram.
-    """
-    if request.user.role != User.Role.CUSTOMER:
-        return Response({"error": "Only customers can review"}, status=status.HTTP_403_FORBIDDEN)
-    try:
-        dish = Dish.objects.get(pk=dish_id)
-    except Dish.DoesNotExist:
-        return Response({"error": "Dish not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    serializer = AddReviewSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    try:
-        review = menu_service.add_review(
-            dish, request.user.customer_profile, **serializer.validated_data,
-        )
-        from apps.canteens.serializers import DishReviewSerializer
-        return Response(DishReviewSerializer(review).data, status=status.HTTP_201_CREATED)
-    except ValueError as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # ---------------------------------------------------------------------------

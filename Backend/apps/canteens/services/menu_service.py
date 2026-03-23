@@ -6,7 +6,7 @@ Implements Dish methods from the class diagram:
   - toggleAvailability()
   - updatePrice(newPrice)
   - updateDiscount(newDiscount)
-  - updateRatingAndReviews(rating, review)
+  - updateRating(rating)
 
 Also implements Canteen methods:
   - updateMenu(dish): void
@@ -18,7 +18,7 @@ from decimal import Decimal
 
 from django.db.models import Avg
 
-from apps.canteens.models import Dish, DishReview
+from apps.canteens.models import Dish, DishRating
 
 logger = logging.getLogger(__name__)
 
@@ -76,33 +76,36 @@ def update_discount(dish, new_discount):
     logger.info("Dish '%s' discount updated to %s%%", dish.name, new_discount)
 
 
-def add_review(dish, customer_profile, rating, review_text=""):
+def add_rating(dish, customer_profile, rating, order=None):
     """
-    updateRatingAndReviews(rating, review): void — from class diagram.
+    updateRating(rating): void — from class diagram.
 
     Also maps to Customer method:
-      rateAndReview(rate: Int, review: String): void
+      rateDish(rate: Int): void
+
+    Creates a DishRating entry and recalculates average dish rating.
+    Uniqueness is enforced at the DB level via (dish, customer, order).
     """
     if not 1 <= rating <= 5:
         raise ValueError("Rating must be between 1 and 5")
 
-    review = DishReview.objects.create(
+    rating_obj = DishRating.objects.create(
         dish=dish,
         customer=customer_profile,
         rating=rating,
-        review_text=review_text,
+        order=order,
     )
 
     # Recalculate average rating
-    avg_rating = dish.reviews.aggregate(avg=Avg("rating"))["avg"] or 0
+    avg_rating = dish.ratings.aggregate(avg=Avg("rating"))["avg"] or 0
     dish.rating = round(avg_rating, 2)
     dish.save(update_fields=["rating"])
 
     logger.info(
-        "Review added for '%s' by %s: %d★",
+        "Rating added for '%s' by %s: %d★",
         dish.name, customer_profile.user.email, rating,
     )
-    return review
+    return rating_obj
 
 
 def get_popular_dishes(limit=20, category=None, available_only=True):
@@ -136,8 +139,8 @@ def get_popular_dishes(limit=20, category=None, available_only=True):
         queryset = queryset.filter(category__iexact=category)
 
     queryset = queryset.annotate(
-        review_count=Count("reviews"),
-    ).order_by("-rating", "-review_count")[:limit]
+        rating_count=Count("ratings"),
+    ).order_by("-rating", "-rating_count")[:limit]
 
     return queryset
 
@@ -165,7 +168,7 @@ def get_canteen_popular_dishes(canteen, limit=20, category=None, available_only=
         queryset = queryset.filter(category__iexact=category)
 
     queryset = queryset.annotate(
-        review_count=Count("reviews"),
-    ).order_by("-rating", "-review_count")[:limit]
+        rating_count=Count("ratings"),
+    ).order_by("-rating", "-rating_count")[:limit]
 
     return queryset

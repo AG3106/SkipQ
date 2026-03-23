@@ -27,7 +27,6 @@ urlpatterns = [
     path("dishes/popular/", views.popular_dishes, name="popular-dishes"),
     path("dishes/<int:dish_id>/", views.manage_dish, name="manage-dish"),
     path("dishes/<int:dish_id>/toggle/", views.toggle_dish_availability, name="toggle-dish"),
-    path("dishes/<int:dish_id>/review/", views.add_review, name="add-review"),
 
     # Holidays — canteen schedule management
     path("<int:canteen_id>/holidays/", views.manage_holidays, name="manage-holidays"),

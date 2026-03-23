@@ -8,7 +8,7 @@ Implements Customer class diagram methods:
   - manageProfile()       → update_profile()
   - verifyWalletPIN()     → handled in auth_service
   - deductFunds()         → deduct_funds()
-  - rateAndReview()       → handled in canteens app (DishReview)
+  - rateDish()            → handled in canteens app (DishRating)
 """
 
 import logging

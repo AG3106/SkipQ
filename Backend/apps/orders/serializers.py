@@ -97,7 +97,31 @@ class OrderActionSerializer(serializers.Serializer):
     reason = serializers.CharField(required=False, default="")
 
 
-class RateOrderSerializer(serializers.Serializer):
-    """Serializer for rating a completed order."""
+class DishRatingInputSerializer(serializers.Serializer):
+    """Single dish rating entry."""
+    dish_id = serializers.IntegerField()
     rating = serializers.IntegerField(min_value=1, max_value=5)
-    review_text = serializers.CharField(required=False, default="")
+
+
+class RateOrderSerializer(serializers.Serializer):
+    """
+    Serializer for rating dishes in a completed order.
+
+    Expects per-dish ratings:
+      {"ratings": [{"dish_id": 1, "rating": 5}, {"dish_id": 2, "rating": 3}]}
+    """
+    ratings = serializers.ListField(
+        child=DishRatingInputSerializer(),
+        help_text='List of {"dish_id": int, "rating": int (1-5)}',
+    )
+
+    def validate_ratings(self, value):
+        if not value:
+            raise serializers.ValidationError("Ratings list cannot be empty")
+
+        # Ensure no duplicate dish_ids
+        dish_ids = [r["dish_id"] for r in value]
+        if len(dish_ids) != len(set(dish_ids)):
+            raise serializers.ValidationError("Duplicate dish_id entries are not allowed")
+
+        return value

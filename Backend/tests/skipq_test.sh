@@ -659,25 +659,6 @@ else
     FAIL=$((FAIL+1))
 fi
 
-# -------------------------------------------------------
-# 14. REVIEW SYSTEM (Customer class diagram: rateAndReview)
-# -------------------------------------------------------
-echo ""
-echo "14. REVIEW SYSTEM"
-
-RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/canteens/dishes/1/review/" \
-    -H "Content-Type: application/json" \
-    -d '{"rating":5,"comment":"Absolutely delicious paneer!"}')
-CODE=$(echo "$RESP" | tail -1)
-BODY=$(echo "$RESP" | sed '$d')
-check "Submit dish review" "201" "$CODE" "$BODY"
-
-# Manager can't review — wrong role
-RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/canteens/dishes/1/review/" \
-    -H "Content-Type: application/json" \
-    -d '{"rating":3,"comment":"test"}')
-CODE=$(echo "$RESP" | tail -1)
-check "Manager review (should fail — wrong role)" "403" "$CODE"
 
 # -------------------------------------------------------
 # 15. ADMIN — SUSPEND / UNSUSPEND (User Status state diagram)
@@ -720,12 +701,12 @@ check "Can't suspend admin" "400" "$CODE"
 echo ""
 echo "16. CONTENT MODERATION"
 
-# Moderate a non-existent review
+# Moderate a non-existent rating
 RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_admin.cookies "$BASE/admin/moderate/" \
     -H "Content-Type: application/json" \
-    -d '{"content_type":"review","content_id":9999,"action":"delete","reason":"Test"}')
+    -d '{"content_type":"rating","content_id":9999,"action":"delete","reason":"Test"}')
 CODE=$(echo "$RESP" | tail -1)
-check "Moderate non-existent review (404)" "404" "$CODE"
+check "Moderate non-existent rating (404)" "404" "$CODE"
 
 # Missing parameters
 RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_admin.cookies "$BASE/admin/moderate/" \
@@ -930,34 +911,100 @@ CODE=$(echo "$RESP" | tail -1)
 check "Customer can't access manager history (403)" "403" "$CODE"
 
 # -------------------------------------------------------
-# 23. ORDER RATING (post-completion feedback)
+# 23. PER-DISH RATING SYSTEM
 # -------------------------------------------------------
 echo ""
-echo "23. ORDER RATING"
+echo "23. PER-DISH RATING SYSTEM"
 
 # Customer order history — find a completed order
 RESP=$(curl -sw "\n%{http_code}" -b /tmp/skipq_cust.cookies "$BASE/orders/history/")
 BODY=$(echo "$RESP" | sed '$d')
 check "Customer order history for rating" "200" "$(echo "$RESP" | tail -1)"
 
-# Get first COMPLETED order ID
-COMPLETED_ID=$(echo "$BODY" | python3 -c "
+# Get first COMPLETED order ID and its dish IDs
+COMPLETED_INFO=$(echo "$BODY" | python3 -c "
 import sys, json
 orders = json.load(sys.stdin)
 completed = [o for o in orders if o['status'] == 'COMPLETED']
-print(completed[0]['id'] if completed else '')
+if completed:
+    order = completed[0]
+    items = order.get('items', [])
+    dish_ids = list(set(i['dish'] for i in items))
+    print(f\"{order['id']}|{json.dumps(dish_ids)}\")
+else:
+    print('')
 " 2>/dev/null)
 
-if [ -n "$COMPLETED_ID" ]; then
-    echo "     Rating order #$COMPLETED_ID"
+COMPLETED_ID=$(echo "$COMPLETED_INFO" | cut -d'|' -f1)
+COMPLETED_DISH_IDS=$(echo "$COMPLETED_INFO" | cut -d'|' -f2)
 
-    # Rate the order
+if [ -n "$COMPLETED_ID" ]; then
+    echo "     Rating order #$COMPLETED_ID (dishes: $COMPLETED_DISH_IDS)"
+
+    # --- 23a. Empty ratings list — should fail ---
     RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
         -H "Content-Type: application/json" \
-        -d '{"rating":4,"review_text":"Great food, fast service!"}')
+        -d '{"ratings":[]}')
+    CODE=$(echo "$RESP" | tail -1)
+    check "Empty ratings list (should fail)" "400" "$CODE"
+
+    # --- 23b. Duplicate dish_id entries — should fail ---
+    FIRST_DISH=$(echo "$COMPLETED_DISH_IDS" | python3 -c "import sys,json; ids=json.load(sys.stdin); print(ids[0])" 2>/dev/null)
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d "{\"ratings\":[{\"dish_id\":$FIRST_DISH,\"rating\":5},{\"dish_id\":$FIRST_DISH,\"rating\":3}]}")
+    CODE=$(echo "$RESP" | tail -1)
+    check "Duplicate dish_id in ratings (should fail)" "400" "$CODE"
+
+    # --- 23c. Dish not in order — should fail ---
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d '{"ratings":[{"dish_id":99999,"rating":4}]}')
+    CODE=$(echo "$RESP" | tail -1)
+    check "Dish not in order (should fail)" "400" "$CODE"
+
+    # --- 23d. Invalid rating value (0) — should fail ---
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d "{\"ratings\":[{\"dish_id\":$FIRST_DISH,\"rating\":0}]}")
+    CODE=$(echo "$RESP" | tail -1)
+    check "Rating value 0 (should fail)" "400" "$CODE"
+
+    # --- 23e. Invalid rating value (6) — should fail ---
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d "{\"ratings\":[{\"dish_id\":$FIRST_DISH,\"rating\":6}]}")
+    CODE=$(echo "$RESP" | tail -1)
+    check "Rating value 6 (should fail)" "400" "$CODE"
+
+    # --- 23f. Missing required field (no rating) — should fail ---
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d "{\"ratings\":[{\"dish_id\":$FIRST_DISH}]}")
+    CODE=$(echo "$RESP" | tail -1)
+    check "Missing rating field (should fail)" "400" "$CODE"
+
+    # --- 23g. Missing required field (no dish_id) — should fail ---
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d '{"ratings":[{"rating":4}]}')
+    CODE=$(echo "$RESP" | tail -1)
+    check "Missing dish_id field (should fail)" "400" "$CODE"
+
+    # --- 23h. Successful per-dish rating ---
+    DISH_RATINGS=$(echo "$COMPLETED_DISH_IDS" | python3 -c "
+import sys, json
+ids = json.load(sys.stdin)
+ratings = [{'dish_id': d, 'rating': 5} for d in ids]
+print(json.dumps(ratings))
+" 2>/dev/null)
+
+    RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
+        -H "Content-Type: application/json" \
+        -d "{\"ratings\":$DISH_RATINGS}")
     CODE=$(echo "$RESP" | tail -1)
     BODY=$(echo "$RESP" | sed '$d')
-    check "Rate completed order" "200" "$CODE" "$BODY"
+    check "Rate completed order (per-dish, all 5★)" "200" "$CODE" "$BODY"
 
     # Verify is_rated is now true
     IS_RATED=$(echo "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('order',{}).get('is_rated','?'))" 2>/dev/null)
@@ -969,29 +1016,72 @@ if [ -n "$COMPLETED_ID" ]; then
         FAIL=$((FAIL+1))
     fi
 
-    # Try rating same order again — should fail (already rated)
+    # --- 23i. Duplicate submission — should fail (already rated) ---
     RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/$COMPLETED_ID/rate/" \
         -H "Content-Type: application/json" \
-        -d '{"rating":5,"review_text":"Trying again"}')
+        -d "{\"ratings\":$DISH_RATINGS}")
     CODE=$(echo "$RESP" | tail -1)
-    check "Duplicate rating (should fail)" "400" "$CODE"
+    check "Duplicate order rating (should fail)" "400" "$CODE"
+
+    # --- 23j. Verify dish rating was updated ---
+    RESP=$(curl -sw "\n%{http_code}" "$BASE/canteens/1/menu/")
+    BODY=$(echo "$RESP" | sed '$d')
+    DISH_RATING=$(echo "$BODY" | python3 -c "
+import sys, json
+dishes = json.load(sys.stdin)
+target = [d for d in dishes if d['id'] == $FIRST_DISH]
+if target:
+    print(target[0].get('rating', '0.00'))
+else:
+    print('not_found')
+" 2>/dev/null)
+    if [ "$DISH_RATING" != "0.00" ] && [ "$DISH_RATING" != "not_found" ]; then
+        echo "  ✅ Dish #$FIRST_DISH rating updated to $DISH_RATING"
+        PASS=$((PASS+1))
+    else
+        echo "  ❌ Expected dish rating > 0, got $DISH_RATING"
+        FAIL=$((FAIL+1))
+    fi
+
 else
     echo "  ⚠️  No COMPLETED orders found to test rating — skipping"
 fi
 
-# Manager can't rate orders
+# --- 23k. Manager can't rate orders (wrong role) ---
 RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_mgr.cookies "$BASE/orders/1/rate/" \
     -H "Content-Type: application/json" \
-    -d '{"rating":5}')
+    -d '{"ratings":[{"dish_id":1,"rating":5}]}')
 CODE=$(echo "$RESP" | tail -1)
 check "Manager can't rate orders (403)" "403" "$CODE"
 
-# Invalid rating value
+# --- 23l. Rating non-existent order ---
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/99999/rate/" \
+    -H "Content-Type: application/json" \
+    -d '{"ratings":[{"dish_id":1,"rating":5}]}')
+CODE=$(echo "$RESP" | tail -1)
+check "Rate non-existent order (404)" "404" "$CODE"
+
+# --- 23m. Rating a non-completed order (should fail) ---
+# Seed order #2 is PENDING (belongs to rahul) — can't rate non-completed orders
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/2/rate/" \
+    -H "Content-Type: application/json" \
+    -d '{"ratings":[{"dish_id":2,"rating":5}]}')
+CODE=$(echo "$RESP" | tail -1)
+check "Rating non-completed (PENDING) order (should fail)" "400" "$CODE"
+
+# --- 23n. No review_text field accepted ---
 RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/orders/1/rate/" \
     -H "Content-Type: application/json" \
-    -d '{"rating":10}')
+    -d '{"rating":4,"review_text":"Should not work"}')
 CODE=$(echo "$RESP" | tail -1)
-check "Invalid rating value (should fail)" "400" "$CODE"
+check "Old review_text format rejected (400)" "400" "$CODE"
+
+# --- 23o. Standalone review endpoint removed ---
+RESP=$(curl -sw "\n%{http_code}" -X POST -b /tmp/skipq_cust.cookies "$BASE/canteens/dishes/1/review/" \
+    -H "Content-Type: application/json" \
+    -d '{"rating":5}')
+CODE=$(echo "$RESP" | tail -1)
+check "Standalone review endpoint removed (404)" "404" "$CODE"
 
 # -------------------------------------------------------
 # 24. MANAGER MONTHLY ANALYTICS

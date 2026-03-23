@@ -343,8 +343,9 @@ def rate_order(request, order_id):
     """
     POST /api/orders/<order_id>/rate/
 
-    Allows a customer to rate a completed order.
-    Creates DishReview entries for each dish and marks the order as rated.
+    Allows a customer to rate dishes in a completed order.
+    Accepts per-dish ratings: {"ratings": [{"dish_id": 1, "rating": 5}, ...]}
+    Each dish in the order can be rated once.
     """
     if request.user.role != User.Role.CUSTOMER:
         return Response({"error": "Only customers can rate orders"}, status=status.HTTP_403_FORBIDDEN)
@@ -360,8 +361,7 @@ def rate_order(request, order_id):
         order = order_service.rate_order(
             order=order,
             customer_profile=request.user.customer_profile,
-            rating=serializer.validated_data["rating"],
-            review_text=serializer.validated_data.get("review_text", ""),
+            ratings=serializer.validated_data["ratings"],
         )
         return Response(
             {"message": "Order rated successfully", "order": OrderSerializer(order).data},

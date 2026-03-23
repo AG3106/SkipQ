@@ -1,7 +1,7 @@
 """Django admin configuration for the canteens app."""
 
 from django.contrib import admin
-from apps.canteens.models import Canteen, Dish, DishReview, CanteenHoliday
+from apps.canteens.models import Canteen, Dish, DishRating, CanteenHoliday
 
 
 @admin.register(Canteen)
@@ -18,9 +18,9 @@ class DishAdmin(admin.ModelAdmin):
     search_fields = ["name"]
 
 
-@admin.register(DishReview)
-class DishReviewAdmin(admin.ModelAdmin):
-    list_display = ["dish", "customer", "rating", "created_at"]
+@admin.register(DishRating)
+class DishRatingAdmin(admin.ModelAdmin):
+    list_display = ["dish", "customer", "rating", "order", "created_at"]
     list_filter = ["rating"]
 
 

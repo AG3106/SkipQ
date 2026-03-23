@@ -17,7 +17,7 @@ Backend/
 │
 ├── apps/
 │   ├── users/                 # Auth, profiles, wallets
-│   ├── canteens/              # Canteen registration, menus, reviews, schedules
+│   ├── canteens/              # Canteen registration, menus, ratings, schedules
 │   ├── orders/                # Order lifecycle, payments, cancellation
 │   ├── cakes/                 # Cake reservations (advance ordering)
 │   └── administration/        # Admin panel (canteen approval, user mgmt, analytics)
@@ -144,21 +144,21 @@ Stores email, OTP, hashed password, role, and name during registration. OTP vali
 ## 4. Canteens App
 
 ### Purpose
-Canteen registration/approval, menu management, dish reviews, holiday scheduling, wait time estimation, and manager dashboard.
+Canteen registration/approval, menu management, dish ratings, holiday scheduling, wait time estimation, and manager dashboard.
 
 ### File Structure
 ```
 canteens/
-├── models.py             # Canteen, CanteenHoliday, Dish, DishReview
-├── serializers.py        # Canteen, Dish, DishReview, Holiday, Registration, Status, Review serializers
-├── views.py              # 12 views: list, detail, register, status, menu, add_dish,
-│                         #   manage_dish, toggle, review, holidays, wait_time, documents,
+├── models.py             # Canteen, CanteenHoliday, Dish, DishRating
+├── serializers.py        # Canteen, Dish, DishRating, Holiday, Registration, Status, Popular serializers
+├── views.py              # 11 views: list, detail, register, status, menu, add_dish,
+│                         #   manage_dish, toggle, holidays, wait_time, documents,
 │                         #   lead_time, manager_dashboard
-├── urls.py               # 14 URL patterns
+├── urls.py               # 13 URL patterns
 ├── admin.py              # Admin config for all canteen models
 └── services/
     ├── canteen_service.py # Registration (submit/approve/reject), state transitions, holidays
-    └── menu_service.py    # CRUD dishes, reviews, rating recalculation
+    └── menu_service.py    # CRUD dishes, ratings, rating recalculation
 ```
 
 ### Data Models
@@ -204,8 +204,8 @@ CLOSED → OPEN
 
 **Key methods:** `toggle_availability()`, `get_effective_price()`
 
-#### `DishReview` (FK → Dish, FK → CustomerProfile)
-`rating` (1–5), `review_text`, `created_at`
+#### `DishRating` (FK → Dish, FK → CustomerProfile, FK → Order)
+`rating` (1–5), `created_at` — `unique_together = (dish, customer, order)`
 
 ### API Endpoints
 
@@ -222,7 +222,6 @@ CLOSED → OPEN
 | PATCH/DELETE | `api/canteens/dishes/<id>/`        | `manage_dish`              | Manager       | Update/delete dish             |
 | POST         | `api/canteens/dishes/<id>/toggle/` | `toggle_dish_availability` | Manager       | Toggle availability            |
 | GET          | `api/canteens/dishes/popular/`     | `popular_dishes`           | Public        | Globally ranked popular dishes |
-| POST         | `api/canteens/dishes/<id>/review/` | `add_review`               | Customer      | Rate & review                  |
 | GET/POST     | `api/canteens/<id>/holidays/`      | `manage_holidays`          | Auth          | List/add holidays              |
 | GET          | `api/canteens/<id>/documents/`     | `canteen_documents`        | Manager/Admin | View registration docs         |
 | GET          | `api/canteens/<id>/lead-time/`     | `lead_time_config`         | Public        | Lead time config               |
@@ -232,7 +231,7 @@ CLOSED → OPEN
 
 **`canteen_service.py`**: `submit_canteen_registration()`, `approve_canteen()`, `reject_canteen()`, `update_canteen_operational_status()` (validates state transitions), `add_holiday()`, `remove_holiday()`, `get_holidays()`
 
-**`menu_service.py`**: `get_menu()`, `add_dish()`, `update_dish()`, `update_price()`, `update_discount()`, `add_review()` (recalculates average rating)
+**`menu_service.py`**: `get_menu()`, `add_dish()`, `update_dish()`, `update_price()`, `update_discount()`, `add_rating()` (recalculates average rating)
 
 ---
 
@@ -245,7 +244,7 @@ Full order lifecycle — placement with wallet payment, manager actions (accept/
 ```
 orders/
 ├── models.py             # Order, OrderItem, Payment
-├── serializers.py        # OrderSerializer, PlaceOrderSerializer, OrderActionSerializer
+├── serializers.py        # OrderSerializer, PlaceOrderSerializer, OrderActionSerializer, RateOrderSerializer
 ├── views.py              # 12 views: place, detail, history, pending, active,
 │                         #   accept, reject, ready, complete,
 │                         #   request_cancel, approve_cancel, reject_cancel
@@ -323,7 +322,7 @@ PENDING_APPROVAL ──→ CONFIRMED ──→ READY ──→ COMPLETED
 
 ### Service Layer
 
-**`order_service.py`**: `place_order()` (`@transaction.atomic` — validates canteen status, checks dish availability, PIN verify + deduct, creates Order + OrderItems + Payment), `accept_order()`, `reject_order()` (auto-refund), `mark_order_ready()`, `mark_order_completed()` (credits manager wallet), `request_cancel()`, `approve_cancel()` (`@transaction.atomic`), `reject_cancel()`, `get_order_history()`, `get_pending_orders()`, `get_active_orders()`
+**`order_service.py`**: `place_order()` (`@transaction.atomic` — validates canteen status, checks dish availability, PIN verify + deduct, creates Order + OrderItems + Payment), `accept_order()`, `reject_order()` (auto-refund), `mark_order_ready()`, `mark_order_completed()` (credits manager wallet), `request_cancel()`, `approve_cancel()` (`@transaction.atomic`), `reject_cancel()`, `rate_order()` (per-dish ratings), `get_order_history()`, `get_pending_orders()`, `get_active_orders()`
 
 **`payment_service.py`**: `authorize_payment()` (PIN + balance check), `process_payment()`, `process_refund()` (refund to wallet + update payment status), `validate_and_deduct_funds()` (combined authorize + deduct)
 
@@ -417,7 +416,7 @@ administration/
 | GET    | `api/admin/analytics/`                     | `global_analytics`         | User/canteen/order/revenue stats  |
 | GET    | `api/admin/activity-log/`                  | `activity_log`             | Last 50 admin actions             |
 | POST   | `api/admin/broadcast/`                     | `broadcast_notification`   | Message to users (by role filter) |
-| POST   | `api/admin/moderate/`                      | `moderate_content`         | Delete reviews or canteens        |
+| POST   | `api/admin/moderate/`                      | `moderate_content`         | Delete ratings or canteens        |
 
 All endpoints require admin role. Actions are logged via `AdminActivityLog`.
 
@@ -435,8 +434,9 @@ graph LR
     subgraph canteens
         C[Canteen] --> MP
         D[Dish] --> C
-        DR[DishReview] --> D
+        DR[DishRating] --> D
         DR --> CP
+        DR --> O
         CH[CanteenHoliday] --> C
     end
     subgraph orders
@@ -469,7 +469,7 @@ graph LR
 | `cakes`          | `users.services`                 | PIN verify + fund deduction/refund                            |
 | `cakes`          | `canteens.Canteen`               | FK; availability + holiday check                              |
 | `canteens`       | `users.CanteenManagerProfile`    | OneToOne on Canteen                                           |
-| `canteens`       | `users.CustomerProfile`          | FK on DishReview                                              |
+| `canteens`       | `users.CustomerProfile`          | FK on DishRating                                              |
 | `canteens`       | `orders.models`                  | Active order count for wait time                              |
 | `administration` | `users`, `canteens`, `orders`    | Reads all app models for admin ops                            |
 
@@ -497,6 +497,6 @@ graph LR
 | App          | Registered Models                                                                             | Key Features                                        |
 | ------------ | --------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | **users**    | User, CustomerProfile, CanteenManagerProfile, AdminProfile, AdminActivityLog, OTPVerification | Filters by role/status; search by email             |
-| **canteens** | Canteen, Dish, DishReview, CanteenHoliday                                                     | Filter by status/category/canteen                   |
+| **canteens** | Canteen, Dish, DishRating, CanteenHoliday                                                     | Filter by status/category/canteen                   |
 | **orders**   | Order (with OrderItemInline), Payment                                                         | Filter by status/canteen; search by customer email  |
 | **cakes**    | CakeReservation                                                                               | Filter by status/canteen; search by customer/flavor |

@@ -5,32 +5,31 @@ Maps Canteen and Dish entities to API representations.
 """
 
 from rest_framework import serializers
-from apps.canteens.models import Canteen, Dish, DishReview, CanteenHoliday
+from apps.canteens.models import Canteen, Dish, DishRating, CanteenHoliday
 from apps.canteens.utils.file_handlers import canteen_image_exists, dish_image_exists
 
 
-class DishReviewSerializer(serializers.ModelSerializer):
-    """Review representation."""
+class DishRatingSerializer(serializers.ModelSerializer):
+    """Rating representation."""
     customer_email = serializers.CharField(source="customer.user.email", read_only=True)
 
     class Meta:
-        model = DishReview
-        fields = ["id", "customer_email", "rating", "review_text", "created_at"]
+        model = DishRating
+        fields = ["id", "customer_email", "rating", "created_at"]
         read_only_fields = ["id", "customer_email", "created_at"]
 
 
 class DishSerializer(serializers.ModelSerializer):
-    """Dish representation with effective price, photo URL, and reviews."""
+    """Dish representation with effective price and photo URL."""
     effective_price = serializers.SerializerMethodField()
     photo_url = serializers.SerializerMethodField()
-    reviews = DishReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Dish
         fields = [
             "id", "name", "price", "effective_price", "description",
             "is_available", "discount", "photo", "photo_url", "rating", "category",
-            "is_veg", "reviews", "created_at",
+            "is_veg", "created_at",
         ]
         read_only_fields = ["id", "rating", "created_at"]
 
@@ -105,19 +104,13 @@ class CanteenStatusUpdateSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=Canteen.Status.choices)
 
 
-class AddReviewSerializer(serializers.Serializer):
-    """Serializer for adding a dish review."""
-    rating = serializers.IntegerField(min_value=1, max_value=5)
-    review_text = serializers.CharField(required=False, default="")
-
-
 class PopularDishSerializer(serializers.ModelSerializer):
     """Dish representation for the popular dishes endpoint — includes canteen info and popularity metrics."""
     effective_price = serializers.SerializerMethodField()
     canteen_id = serializers.IntegerField(source="canteen.id", read_only=True)
     canteen_name = serializers.CharField(source="canteen.name", read_only=True)
     canteen_location = serializers.CharField(source="canteen.location", read_only=True)
-    review_count = serializers.IntegerField(read_only=True)
+    rating_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Dish
@@ -125,10 +118,9 @@ class PopularDishSerializer(serializers.ModelSerializer):
             "id", "name", "price", "effective_price", "description",
             "is_available", "discount", "photo", "rating", "category",
             "is_veg", "canteen_id", "canteen_name", "canteen_location",
-            "review_count",
+            "rating_count",
         ]
         read_only_fields = fields
 
     def get_effective_price(self, obj):
         return str(obj.get_effective_price())
-

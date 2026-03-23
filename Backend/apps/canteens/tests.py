@@ -19,7 +19,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from apps.users.models import User, CustomerProfile, CanteenManagerProfile, AdminProfile
-from apps.canteens.models import Canteen, Dish, DishReview, CanteenHoliday
+from apps.canteens.models import Canteen, Dish, DishRating, CanteenHoliday
 
 
 # ============================================================

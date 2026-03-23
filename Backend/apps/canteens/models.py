@@ -5,7 +5,7 @@ Maps to class diagram entities:
   - Canteen → id, name, location, openingTime, closingTime, foodQueue,
               holidays, leadTimeConfig, operational status
   - Dish    → id, name, price, description, isAvailable, discount,
-              photo, rating, reviews
+              photo, rating
 
 State diagram reference (Canteen Operational):
   Default → Closed (OutOfHours ↔ OnHoliday)
@@ -205,14 +205,13 @@ class Dish(models.Model):
       - discount: Float        → DecimalField (percentage)
       - photo: String          → ImageField
       - rating: Float          → DecimalField
-      - reviews: List          → DishReview model (1..* relationship from class diagram)
 
     Methods mapped:
       - updateDishDetails() → via serializer / service
       - toggleAvailability()   → toggle_availability()
       - updatePrice()          → via service
       - updateDiscount()       → via service
-      - updateRatingAndReviews() → via service
+      - updateRating() → via service
     """
 
     canteen = models.ForeignKey(
@@ -261,34 +260,46 @@ class Dish(models.Model):
 
 
 # ---------------------------------------------------------------------------
-# DishReview — implements reviews: List from class diagram
+# DishRating — implements ratings for dishes (ratings only, no text reviews)
 # ---------------------------------------------------------------------------
-class DishReview(models.Model):
+class DishRating(models.Model):
     """
-    Review entries for a dish.
-    Maps to the reviews attribute and updateRatingAndReviews() method
+    Rating entries for a dish.
+    Maps to the rating attribute and updateRating() method
     in the Dish class from the class diagram.
+
+    Constraints:
+      - One rating per (dish, customer, order) combination.
+      - Same dish in different orders can be rated separately.
     """
 
     dish = models.ForeignKey(
         Dish,
         on_delete=models.CASCADE,
-        related_name="reviews",
+        related_name="ratings",
     )
     customer = models.ForeignKey(
         "users.CustomerProfile",
         on_delete=models.CASCADE,
-        related_name="reviews",
+        related_name="ratings",
+    )
+    order = models.ForeignKey(
+        "orders.Order",
+        on_delete=models.CASCADE,
+        related_name="dish_ratings",
+        null=True,
+        blank=True,
     )
     rating = models.IntegerField(
         help_text="Rating from 1 to 5.",
     )
-    review_text = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = "canteens"
         ordering = ["-created_at"]
+        unique_together = ("dish", "customer", "order")
 
     def __str__(self):
-        return f"Review of {self.dish.name} by {self.customer.user.email} — {self.rating}★"
+        return f"Rating of {self.dish.name} by {self.customer.user.email} — {self.rating}★"
+
