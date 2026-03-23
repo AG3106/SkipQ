@@ -1,4 +1,25 @@
 """
+Unit tests for the dynamic wait time feature.
+
+Covers:
+  1. Order.get_dynamic_wait_time() — model method
+     - Returns 0 for terminal states (READY, COMPLETED, REJECTED, REFUNDED)
+     - Returns 0 when no orders are ahead
+     - Returns correct value based on FIFO queue position
+     - Correctly isolates orders per canteen
+     - Only counts PENDING and ACCEPTED orders (not READY/COMPLETED/etc.)
+     - WAIT_TIME_PER_ORDER constant is respected
+
+  2. GET /api/orders/<order_id>/wait-time/ — API view
+     - 404 when order does not exist
+     - 403 when a customer requests another customer's order
+     - 403 when a manager requests an order from another canteen
+     - 200 with correct payload for the owning customer
+     - 200 with correct payload for the correct manager
+"""
+
+import datetime
+"""
 Unit and component tests for the orders app.
 
 Covers:
@@ -11,6 +32,285 @@ Covers:
 from decimal import Decimal
 
 from django.test import TestCase
+from django.urls import reverse
+from django.utils import timezone
+from rest_framework.test import APIClient
+
+from apps.users.models import User, CustomerProfile, CanteenManagerProfile
+from apps.canteens.models import Canteen
+from apps.orders.models import Order
+
+
+# ---------------------------------------------------------------------------
+# Helper factories
+# ---------------------------------------------------------------------------
+
+def make_user(email, role=User.Role.CUSTOMER, password="pass1234"):
+    user = User.objects.create_user(email=email, password=password, role=role)
+    user.is_verified = True
+    user.save()
+    return user
+
+
+def make_customer(email):
+    user = make_user(email, role=User.Role.CUSTOMER)
+    profile = CustomerProfile.objects.create(user=user, name=email.split("@")[0])
+    return user, profile
+
+
+def make_manager(email):
+    user = make_user(email, role=User.Role.MANAGER)
+    profile = CanteenManagerProfile.objects.create(user=user)
+    return user, profile
+
+
+def make_canteen(manager_profile, name="Test Canteen"):
+    return Canteen.objects.create(
+        name=name,
+        location="Block A",
+        opening_time=datetime.time(8, 0),
+        closing_time=datetime.time(22, 0),
+        status=Canteen.Status.ACTIVE,
+        manager=manager_profile,
+    )
+
+
+def make_order(customer_profile, canteen, status=Order.Status.PENDING, minutes_ago=0):
+    """Create an Order, optionally backdating book_time."""
+    order = Order.objects.create(
+        customer=customer_profile,
+        canteen=canteen,
+        status=status,
+    )
+    if minutes_ago:
+        # Override auto_now_add by using update()
+        back = timezone.now() - datetime.timedelta(minutes=minutes_ago)
+        Order.objects.filter(pk=order.pk).update(book_time=back)
+        order.refresh_from_db()
+    return order
+
+
+# ---------------------------------------------------------------------------
+# 1. Model unit tests — Order.get_dynamic_wait_time()
+# ---------------------------------------------------------------------------
+
+class GetDynamicWaitTimeModelTest(TestCase):
+    """Tests for Order.get_dynamic_wait_time()."""
+
+    def setUp(self):
+        _, self.manager_profile = make_manager("manager@test.com")
+        self.canteen = make_canteen(self.manager_profile)
+        _, self.customer = make_customer("customer@test.com")
+
+    # --- Terminal states return 0 ---
+
+    def test_returns_zero_for_ready_status(self):
+        order = make_order(self.customer, self.canteen, status=Order.Status.READY)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    def test_returns_zero_for_completed_status(self):
+        order = make_order(self.customer, self.canteen, status=Order.Status.COMPLETED)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    def test_returns_zero_for_rejected_status(self):
+        order = make_order(self.customer, self.canteen, status=Order.Status.REJECTED)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    def test_returns_zero_for_refunded_status(self):
+        order = make_order(self.customer, self.canteen, status=Order.Status.REFUNDED)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    # --- Queue position math ---
+
+    def test_returns_zero_when_no_orders_ahead(self):
+        """First order in queue — nothing is ahead of it."""
+        order = make_order(self.customer, self.canteen, status=Order.Status.PENDING)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    def test_single_pending_order_ahead(self):
+        """One PENDING order placed before → 1 × 5 = 5 minutes."""
+        _, c2 = make_customer("c2@test.com")
+        older = make_order(c2, self.canteen, status=Order.Status.PENDING, minutes_ago=10)
+        newer = make_order(self.customer, self.canteen, status=Order.Status.PENDING)
+        self.assertEqual(newer.get_dynamic_wait_time(), Order.WAIT_TIME_PER_ORDER)
+
+    def test_single_accepted_order_ahead(self):
+        """One ACCEPTED order placed before → 1 × 5 = 5 minutes."""
+        _, c2 = make_customer("c2@test.com")
+        make_order(c2, self.canteen, status=Order.Status.ACCEPTED, minutes_ago=10)
+        newer = make_order(self.customer, self.canteen, status=Order.Status.PENDING)
+        self.assertEqual(newer.get_dynamic_wait_time(), Order.WAIT_TIME_PER_ORDER)
+
+    def test_multiple_orders_ahead(self):
+        """Two orders ahead → 2 × 5 = 10 minutes."""
+        _, c2 = make_customer("c2@test.com")
+        _, c3 = make_customer("c3@test.com")
+        make_order(c2, self.canteen, status=Order.Status.PENDING, minutes_ago=20)
+        make_order(c3, self.canteen, status=Order.Status.ACCEPTED, minutes_ago=10)
+        newest = make_order(self.customer, self.canteen, status=Order.Status.PENDING)
+        self.assertEqual(newest.get_dynamic_wait_time(), 2 * Order.WAIT_TIME_PER_ORDER)
+
+    def test_does_not_count_own_order(self):
+        """An order should not count itself in the queue."""
+        order = make_order(self.customer, self.canteen, status=Order.Status.PENDING)
+        # Only this order exists → nothing ahead
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    def test_does_not_count_orders_placed_after(self):
+        """Orders placed *after* the target order are not ahead."""
+        order = make_order(self.customer, self.canteen, status=Order.Status.PENDING,
+                           minutes_ago=10)
+        _, c2 = make_customer("c2@test.com")
+        # c2's order is newer → should NOT be counted
+        make_order(c2, self.canteen, status=Order.Status.PENDING)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    def test_terminal_orders_ahead_not_counted(self):
+        """READY / COMPLETED / REJECTED orders placed earlier are NOT in the queue."""
+        _, c2 = make_customer("c2@test.com")
+        _, c3 = make_customer("c3@test.com")
+        _, c4 = make_customer("c4@test.com")
+        make_order(c2, self.canteen, status=Order.Status.READY,     minutes_ago=30)
+        make_order(c3, self.canteen, status=Order.Status.COMPLETED,  minutes_ago=25)
+        make_order(c4, self.canteen, status=Order.Status.REJECTED,   minutes_ago=20)
+        order = make_order(self.customer, self.canteen, status=Order.Status.PENDING)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    # --- Canteen isolation ---
+
+    def test_orders_from_different_canteen_not_counted(self):
+        """Active orders at a *different* canteen must not affect wait time."""
+        _, mgr2 = make_manager("mgr2@test.com")
+        other_canteen = make_canteen(mgr2, name="Other Canteen")
+        _, c2 = make_customer("c2@test.com")
+        # Place orders at other canteen
+        make_order(c2, other_canteen, status=Order.Status.PENDING, minutes_ago=20)
+        make_order(c2, other_canteen, status=Order.Status.ACCEPTED, minutes_ago=10)
+
+        order = make_order(self.customer, self.canteen, status=Order.Status.PENDING)
+        self.assertEqual(order.get_dynamic_wait_time(), 0)
+
+    # --- Constant verification ---
+
+    def test_wait_time_per_order_constant(self):
+        """WAIT_TIME_PER_ORDER should equal 5 minutes as documented."""
+        self.assertEqual(Order.WAIT_TIME_PER_ORDER, 5)
+
+    def test_accepted_order_wait_time_is_zero(self):
+        """An ACCEPTED order (being prepared) should still return a positive wait."""
+        _, c2 = make_customer("c2@test.com")
+        make_order(c2, self.canteen, status=Order.Status.PENDING, minutes_ago=10)
+        order = make_order(self.customer, self.canteen, status=Order.Status.ACCEPTED)
+        self.assertEqual(order.get_dynamic_wait_time(), 1 * Order.WAIT_TIME_PER_ORDER)
+
+
+# ---------------------------------------------------------------------------
+# 2. API view tests — GET /api/orders/<order_id>/wait-time/
+# ---------------------------------------------------------------------------
+
+class OrderWaitTimeViewTest(TestCase):
+    """Tests for the order_wait_time API endpoint."""
+
+    def setUp(self):
+        self.client = APIClient()
+
+        # Customer 1 (owns the order under test)
+        self.cust1_user, self.cust1 = make_customer("cust1@test.com")
+
+        # Customer 2 (a different customer)
+        self.cust2_user, self.cust2 = make_customer("cust2@test.com")
+
+        # Manager for canteen 1
+        self.mgr1_user, self.mgr1_profile = make_manager("mgr1@test.com")
+        self.canteen1 = make_canteen(self.mgr1_profile, name="Canteen 1")
+
+        # Manager for canteen 2 (different canteen)
+        self.mgr2_user, self.mgr2_profile = make_manager("mgr2@test.com")
+        self.canteen2 = make_canteen(self.mgr2_profile, name="Canteen 2")
+
+        # The order under test — belongs to cust1 at canteen1
+        self.order = make_order(self.cust1, self.canteen1, status=Order.Status.PENDING)
+
+    def _url(self, order_id=None):
+        oid = order_id if order_id is not None else self.order.pk
+        return f"/api/orders/{oid}/wait-time/"
+
+    # --- 404 ---
+
+    def test_404_for_nonexistent_order(self):
+        self.client.force_authenticate(user=self.cust1_user)
+        response = self.client.get(self._url(order_id=99999))
+        self.assertEqual(response.status_code, 404)
+
+    # --- Unauthenticated ---
+
+    def test_401_for_unauthenticated_request(self):
+        response = self.client.get(self._url())
+        self.assertIn(response.status_code, [401, 403])
+
+    # --- 403 authorization ---
+
+    def test_403_customer_cannot_see_another_customers_order(self):
+        self.client.force_authenticate(user=self.cust2_user)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 403)
+
+    def test_403_manager_cannot_see_order_from_different_canteen(self):
+        self.client.force_authenticate(user=self.mgr2_user)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 403)
+
+    # --- 200 success ---
+
+    def test_200_owner_customer_gets_correct_payload(self):
+        self.client.force_authenticate(user=self.cust1_user)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["order_id"], self.order.pk)
+        self.assertEqual(data["status"], Order.Status.PENDING)
+        self.assertIn("estimated_wait_minutes", data)
+        self.assertIsInstance(data["estimated_wait_minutes"], int)
+
+    def test_200_canteen_manager_gets_correct_payload(self):
+        self.client.force_authenticate(user=self.mgr1_user)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["order_id"], self.order.pk)
+        self.assertIn("estimated_wait_minutes", data)
+
+    def test_200_wait_time_value_matches_model(self):
+        """API-returned wait time must match Order.get_dynamic_wait_time()."""
+        # Add one order ahead
+        _, c3 = make_customer("c3@test.com")
+        make_order(c3, self.canteen1, status=Order.Status.PENDING, minutes_ago=10)
+
+        self.client.force_authenticate(user=self.cust1_user)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+
+        expected = self.order.get_dynamic_wait_time()
+        self.assertEqual(response.json()["estimated_wait_minutes"], expected)
+
+    def test_200_terminal_order_returns_zero_wait(self):
+        """Completed orders should return 0 wait time via the API."""
+        # Bypass state machine and set status directly for test isolation
+        Order.objects.filter(pk=self.order.pk).update(status=Order.Status.COMPLETED)
+        self.order.refresh_from_db()
+
+        self.client.force_authenticate(user=self.cust1_user)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["estimated_wait_minutes"], 0)
+
+    def test_response_contains_required_keys(self):
+        """Response JSON must include order_id, status, estimated_wait_minutes."""
+        self.client.force_authenticate(user=self.cust1_user)
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        keys = set(response.json().keys())
+        self.assertSetEqual(keys, {"order_id", "status", "estimated_wait_minutes"})
 from rest_framework.test import APIClient
 
 from apps.users.models import User, CustomerProfile, CanteenManagerProfile

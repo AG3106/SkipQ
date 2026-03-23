@@ -141,6 +141,40 @@ class Order(models.Model):
             self.pk, old_status, new_status,
         )
 
+    # --- Queue-based dynamic wait time ---
+
+    WAIT_TIME_PER_ORDER = 5  # minutes per active order ahead in queue
+
+    def get_dynamic_wait_time(self):
+        """
+        Returns the estimated remaining wait time (in minutes) for this
+        specific order based on how many active orders are ahead of it
+        in the canteen's preparation queue.
+
+        Queue logic:
+          - An order enters the queue when its status is PENDING or ACCEPTED.
+          - An order leaves the queue when it transitions to READY / COMPLETED /
+            REJECTED / REFUNDED.
+          - Position is determined by book_time (FIFO).
+        """
+        # Terminal / post-queue states → no waiting
+        if self.status in (
+            self.Status.READY,
+            self.Status.COMPLETED,
+            self.Status.REJECTED,
+            self.Status.REFUNDED,
+        ):
+            return 0
+
+        # Count orders that are still active AND were placed before this one
+        orders_ahead = Order.objects.filter(
+            canteen=self.canteen,
+            status__in=[self.Status.PENDING, self.Status.ACCEPTED],
+            book_time__lt=self.book_time,
+        ).count()
+
+        return orders_ahead * self.WAIT_TIME_PER_ORDER
+
     def calculate_total(self):
         """
         calculateTotal(items: List): Float

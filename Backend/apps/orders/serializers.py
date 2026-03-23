@@ -30,6 +30,7 @@ class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     payment = PaymentSerializer(read_only=True)
     total = serializers.SerializerMethodField()
+    estimated_wait_minutes = serializers.SerializerMethodField()
     customer_email = serializers.CharField(source="customer.user.email", read_only=True)
     canteen_name = serializers.CharField(source="canteen.name", read_only=True)
 
@@ -40,11 +41,15 @@ class OrderSerializer(serializers.ModelSerializer):
             "book_time", "receive_time", "notes",
             "reject_reason", "cancel_rejection_reason",
             "items", "payment", "total", "is_rated",
+            "estimated_wait_minutes",
         ]
         read_only_fields = fields
 
     def get_total(self, obj):
         return str(obj.calculate_total())
+
+    def get_estimated_wait_minutes(self, obj):  
+        return obj.get_dynamic_wait_time()
 
 
 class PlaceOrderSerializer(serializers.Serializer):

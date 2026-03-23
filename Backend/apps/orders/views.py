@@ -254,6 +254,39 @@ def mark_completed(request, order_id):
 
 
 # ---------------------------------------------------------------------------
+# Dynamic wait time for a specific order
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def order_wait_time(request, order_id):
+    """
+    GET /api/orders/<order_id>/wait-time/
+
+    Returns the dynamic, personalized wait time for a specific order
+    based on its position in the canteen's preparation queue.
+    """
+    try:
+        order = Order.objects.get(pk=order_id)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Authorization: only the customer who owns the order or the canteen manager
+    user = request.user
+    if user.role == User.Role.CUSTOMER and order.customer.user != user:
+        return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
+    if user.role == User.Role.MANAGER and order.canteen.manager.user != user:
+        return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
+
+    wait_minutes = order.get_dynamic_wait_time()
+    return Response({
+        "order_id": order.pk,
+        "status": order.status,
+        "estimated_wait_minutes": wait_minutes,
+    })
+
+
+# ---------------------------------------------------------------------------
 # Cancel request flow — customer requests, manager approves/rejects
 # ---------------------------------------------------------------------------
 

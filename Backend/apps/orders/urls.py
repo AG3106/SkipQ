@@ -33,4 +33,7 @@ urlpatterns = [
 
     # Manager order history
     path("manager-history/", views.manager_order_history, name="manager-order-history"),
+
+    # Dynamic wait time for a specific order
+    path("<int:order_id>/wait-time/", views.order_wait_time, name="order-wait-time"),
 ]
