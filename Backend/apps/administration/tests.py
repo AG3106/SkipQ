@@ -147,3 +147,65 @@ class CanteenApprovalTest(AdminTestBase):
         self.canteen.save()
         resp = self.client.post(f"/api/admin/canteen-requests/{self.canteen.pk}/approve/")
         self.assertEqual(resp.status_code, 404)
+
+
+class ManagerRegistrationApprovalTest(AdminTestBase):
+    """Tests for admin approval/rejection of manager registrations."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from apps.users.models import PendingManagerRegistration
+        from django.contrib.auth.hashers import make_password
+        cls.pending = PendingManagerRegistration.objects.create(
+            email="newmgr@gmail.com",
+            password_hash=make_password("securepass"),
+            name="New Manager",
+        )
+
+    def test_pending_manager_registrations_list(self):
+        """Admin can see pending manager registrations."""
+        self.login_as_admin()
+        resp = self.client.get("/api/admin/manager-registrations/")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data), 1)
+        self.assertEqual(resp.data[0]["email"], "newmgr@gmail.com")
+
+    def test_approve_manager_creates_user(self):
+        """Approving creates a User + CanteenManagerProfile and sends email."""
+        self.login_as_admin()
+        resp = self.client.post(f"/api/admin/manager-registrations/{self.pending.pk}/approve/")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(User.objects.filter(email="newmgr@gmail.com").exists())
+        user = User.objects.get(email="newmgr@gmail.com")
+        self.assertEqual(user.role, User.Role.MANAGER)
+        self.assertTrue(hasattr(user, "manager_profile"))
+        self.pending.refresh_from_db()
+        self.assertEqual(self.pending.status, "APPROVED")
+
+    def test_reject_manager_no_user_created(self):
+        """Rejecting does NOT create a user."""
+        from apps.users.models import PendingManagerRegistration
+        from django.contrib.auth.hashers import make_password
+        pending2 = PendingManagerRegistration.objects.create(
+            email="reject@gmail.com",
+            password_hash=make_password("pass"),
+            name="Reject Me",
+        )
+        self.login_as_admin()
+        resp = self.client.post(
+            f"/api/admin/manager-registrations/{pending2.pk}/reject/",
+            {"reason": "Invalid credentials"},
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertFalse(User.objects.filter(email="reject@gmail.com").exists())
+        pending2.refresh_from_db()
+        self.assertEqual(pending2.status, "REJECTED")
+        self.assertEqual(pending2.rejection_reason, "Invalid credentials")
+
+    def test_non_admin_cannot_access_manager_registrations(self):
+        """Non-admin users get 403."""
+        self.login_as_customer()
+        resp = self.client.get("/api/admin/manager-registrations/")
+        self.assertEqual(resp.status_code, 403)
+

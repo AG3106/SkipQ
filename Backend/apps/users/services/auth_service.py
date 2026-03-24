@@ -15,7 +15,10 @@ from django.contrib.auth import login, logout
 from django.utils import timezone
 from datetime import timedelta
 
-from apps.users.models import User, CustomerProfile, CanteenManagerProfile, AdminProfile, OTPVerification
+from apps.users.models import (
+    User, CustomerProfile, CanteenManagerProfile, AdminProfile,
+    OTPVerification, PendingManagerRegistration,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -124,11 +127,30 @@ def complete_registration(email, password=None, password_hash=None, role="CUSTOM
     Sequence diagram (NewUser/phase1, step 36):
       BE → createUserRecord(role, email, passwordHash)
 
+    For MANAGER role: creates a PendingManagerRegistration record instead
+    of a User. The admin must approve before the account is created.
+
     Accepts either a plaintext password or a pre-hashed password_hash.
     """
+    # --- Manager flow: pending admin approval ---
+    if role == User.Role.MANAGER:
+        if not password_hash and password:
+            from django.contrib.auth.hashers import make_password
+            password_hash = make_password(password)
+        if not password_hash:
+            raise ValueError("Password is required")
+
+        PendingManagerRegistration.objects.create(
+            email=email,
+            password_hash=password_hash,
+            name=name,
+        )
+        logger.info("Manager registration pending approval for %s", email)
+        return None  # No user created yet
+
+    # --- Customer / Admin flow: immediate account creation ---
     user = User(email=email, role=role, is_verified=True)
     if password_hash:
-        # Use pre-hashed password stored during initiate_signup
         user.password = password_hash
     elif password:
         user.set_password(password)
@@ -136,11 +158,8 @@ def complete_registration(email, password=None, password_hash=None, role="CUSTOM
         raise ValueError("Password is required")
     user.save()
 
-    # Create role-specific profile
     if role == User.Role.CUSTOMER:
         CustomerProfile.objects.create(user=user, name=name)
-    elif role == User.Role.MANAGER:
-        CanteenManagerProfile.objects.create(user=user, contact_details=name)
     elif role == User.Role.ADMIN:
         AdminProfile.objects.create(user=user)
 
@@ -257,3 +276,98 @@ def verify_wallet_pin(stored_hash, pin):
       BE → verifyWalletPIN(userID, pinHash)
     """
     return stored_hash == hash_wallet_pin(pin)
+
+
+# ---------------------------------------------------------------------------
+# Manager Registration Approval / Rejection
+# ---------------------------------------------------------------------------
+
+def approve_manager_registration(pending_id):
+    """
+    Admin approves a pending manager registration:
+      1. Creates User with role MANAGER + CanteenManagerProfile
+      2. Marks PendingManagerRegistration as APPROVED
+      3. Sends approval email to manager
+    """
+    try:
+        pending = PendingManagerRegistration.objects.get(
+            pk=pending_id, status=PendingManagerRegistration.Status.PENDING,
+        )
+    except PendingManagerRegistration.DoesNotExist:
+        raise ValueError("Pending registration not found")
+
+    # Create the user account
+    user = User(email=pending.email, role=User.Role.MANAGER, is_verified=True)
+    user.password = pending.password_hash
+    user.save()
+    CanteenManagerProfile.objects.create(user=user, contact_details=pending.name)
+
+    # Mark as approved
+    pending.status = PendingManagerRegistration.Status.APPROVED
+    pending.save()
+
+    # Send approval email
+    try:
+        from django.core.mail import send_mail
+        from django.conf import settings
+        send_mail(
+            subject="SkipQ — Your Manager Account Has Been Approved!",
+            message=(
+                f"Hello {pending.name or 'Manager'},\n\n"
+                f"Congratulations! Your manager account has been approved.\n\n"
+                f"You can now log in with your email ({pending.email}) and "
+                f"register your canteen on SkipQ.\n\n"
+                f"Thank you,\nThe SkipQ Team"
+            ),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipq69@gmail.com"),
+            recipient_list=[pending.email],
+            fail_silently=True,
+        )
+        logger.info("Manager approval email sent to %s", pending.email)
+    except Exception as e:
+        logger.error("Failed to send approval email to %s: %s", pending.email, str(e))
+
+    logger.info("Manager registration approved for %s", pending.email)
+    return user
+
+
+def reject_manager_registration(pending_id, reason=""):
+    """
+    Admin rejects a pending manager registration:
+      1. Marks PendingManagerRegistration as REJECTED (no User created)
+      2. Sends rejection email to manager with reason
+    """
+    try:
+        pending = PendingManagerRegistration.objects.get(
+            pk=pending_id, status=PendingManagerRegistration.Status.PENDING,
+        )
+    except PendingManagerRegistration.DoesNotExist:
+        raise ValueError("Pending registration not found")
+
+    pending.status = PendingManagerRegistration.Status.REJECTED
+    pending.rejection_reason = reason
+    pending.save()
+
+    # Send rejection email
+    try:
+        from django.core.mail import send_mail
+        from django.conf import settings
+        send_mail(
+            subject="SkipQ — Manager Registration Update",
+            message=(
+                f"Hello {pending.name or 'Manager'},\n\n"
+                f"Unfortunately, your manager registration has been rejected.\n\n"
+                f"Reason: {reason or 'No reason provided.'}\n\n"
+                f"You may re-register with valid credentials.\n\n"
+                f"Thank you,\nThe SkipQ Team"
+            ),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipq69@gmail.com"),
+            recipient_list=[pending.email],
+            fail_silently=True,
+        )
+        logger.info("Manager rejection email sent to %s", pending.email)
+    except Exception as e:
+        logger.error("Failed to send rejection email to %s: %s", pending.email, str(e))
+
+    logger.info("Manager registration rejected for %s: %s", pending.email, reason)
+    return pending

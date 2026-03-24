@@ -256,3 +256,41 @@ class OTPVerification(models.Model):
 
     def __str__(self):
         return f"OTP for {self.email} ({'used' if self.is_used else 'pending'})"
+
+
+# ---------------------------------------------------------------------------
+# PendingManagerRegistration — holds manager signups until admin approval
+# ---------------------------------------------------------------------------
+class PendingManagerRegistration(models.Model):
+    """
+    Stores canteen-manager registration data after OTP verification.
+    The admin must approve before the User + CanteenManagerProfile are created.
+
+    Workflow:
+      1. Manager signs up → OTP verified → PendingManagerRegistration created (PENDING)
+      2. Admin approves → User + profile created, status → APPROVED, approval email sent
+      3. Admin rejects  → status → REJECTED, rejection email sent, no account created
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        APPROVED = "APPROVED", "Approved"
+        REJECTED = "REJECTED", "Rejected"
+
+    email = models.EmailField(unique=True)
+    password_hash = models.CharField(max_length=128, help_text="Pre-hashed password from OTP step")
+    name = models.CharField(max_length=255, blank=True)
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
+    rejection_reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = "users"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"PendingManager: {self.email} ({self.get_status_display()})"

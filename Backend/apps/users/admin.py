@@ -1,7 +1,10 @@
 """Django admin configuration for the users app."""
 
 from django.contrib import admin
-from apps.users.models import User, CustomerProfile, CanteenManagerProfile, AdminProfile, AdminActivityLog, OTPVerification
+from apps.users.models import (
+    User, CustomerProfile, CanteenManagerProfile, AdminProfile,
+    AdminActivityLog, OTPVerification, PendingManagerRegistration,
+)
 
 
 @admin.register(User)
@@ -40,3 +43,11 @@ class AdminActivityLogAdmin(admin.ModelAdmin):
 class OTPVerificationAdmin(admin.ModelAdmin):
     list_display = ["email", "otp", "is_used", "created_at"]
     list_filter = ["is_used"]
+
+
+@admin.register(PendingManagerRegistration)
+class PendingManagerRegistrationAdmin(admin.ModelAdmin):
+    list_display = ["email", "name", "status", "created_at"]
+    list_filter = ["status"]
+    search_fields = ["email", "name"]
+    readonly_fields = ["created_at"]

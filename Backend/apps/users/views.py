@@ -77,6 +77,12 @@ def verify_otp(request):
             role=otp_record.role or "CUSTOMER",
             name=otp_record.name or "",
         )
+        # Manager flow: pending admin approval (no user created yet)
+        if user is None:
+            return Response(
+                {"message": "Registration pending admin approval. You will receive an email once reviewed."},
+                status=status.HTTP_200_OK,
+            )
         return Response(
             {"message": "Registration successful", "user": UserSerializer(user).data},
             status=status.HTTP_201_CREATED,

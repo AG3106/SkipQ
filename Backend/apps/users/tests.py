@@ -18,7 +18,8 @@ from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
 from apps.users.models import (
-    User, CustomerProfile, CanteenManagerProfile, AdminProfile, OTPVerification,
+    User, CustomerProfile, CanteenManagerProfile, AdminProfile,
+    OTPVerification, PendingManagerRegistration,
 )
 from apps.users.services import auth_service, profile_service
 
@@ -107,10 +108,13 @@ class AuthServiceTest(TestCase):
         self.assertTrue(u.is_verified)
         self.assertTrue(hasattr(u, "customer_profile"))
 
-    def test_complete_registration_manager(self):
-        u = auth_service.complete_registration("mr@gmail.com", password="pw123", role="MANAGER", name="MR")
-        self.assertEqual(u.role, User.Role.MANAGER)
-        self.assertTrue(hasattr(u, "manager_profile"))
+    def test_complete_registration_manager_creates_pending(self):
+        result = auth_service.complete_registration("mr@gmail.com", password="pw123", role="MANAGER", name="MR")
+        self.assertIsNone(result)  # No user created
+        self.assertFalse(User.objects.filter(email="mr@gmail.com").exists())
+        pending = PendingManagerRegistration.objects.get(email="mr@gmail.com")
+        self.assertEqual(pending.status, PendingManagerRegistration.Status.PENDING)
+        self.assertEqual(pending.name, "MR")
 
     def test_hash_wallet_pin(self):
         h = auth_service.hash_wallet_pin("1234")
