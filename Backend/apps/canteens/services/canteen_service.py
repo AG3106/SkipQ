@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 def submit_canteen_registration(
     manager_profile, name, location, opening_time, closing_time,
-    image=None, aadhar_card=None, hall_approval_form=None,
 ):
     """
     Sequence diagram (NewCanteen/phase1, steps 12–16):
@@ -31,9 +30,9 @@ def submit_canteen_registration(
       FE → submitRequest()
       BE → createEntry(status="UNDER_REVIEW")
 
-    Files (image, aadhar_card, hall_approval_form) are saved to structured
-    files/ directory by the calling view after this function returns the
-    canteen instance (we need the canteen PK for the folder/file name).
+    Files (image, documents) are saved to structured files/ directory
+    by the calling view after this function returns the canteen instance
+    (we need the canteen PK for the folder/file name).
     """
     canteen = Canteen.objects.create(
         name=name,
@@ -86,7 +85,7 @@ def approve_canteen(canteen):
                 f"You can now log in and start managing your menu, orders, and more.\n\n"
                 f"Thank you,\nThe SkipQ Team"
             ),
-            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipq69@gmail.com"),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipqiitk@gmail.com"),
             recipient_list=[manager_user.email],
             fail_silently=True,
         )
@@ -126,7 +125,7 @@ def reject_canteen(canteen, reason):
                 f"You may re-submit your registration with updated documents.\n\n"
                 f"Thank you,\nThe SkipQ Team"
             ),
-            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipq69@gmail.com"),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipqiitk@gmail.com"),
             recipient_list=[canteen.manager.user.email],
             fail_silently=True,
         )

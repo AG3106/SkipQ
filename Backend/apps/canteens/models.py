@@ -79,13 +79,8 @@ class Canteen(models.Model):
         related_name="canteen",
     )
 
-    # Registration documents (for admin review — NewCanteen sequence diagram)
-    aadhar_card = models.FileField(upload_to="documents/", blank=True, null=True,
-        help_text="Aadhar card of the canteen manager.",
-    )
-    hall_approval_form = models.FileField(upload_to="documents/", blank=True, null=True,
-        help_text="Hall Approval Form for the canteen.",
-    )
+    # Registration documents stored on disk at files/documents/<canteen_id>/
+    # (managed by file_handlers, not DB columns)
     # Canteen cover image (public)
     image = models.ImageField(upload_to="canteen_images/", blank=True, null=True,
         help_text="Cover photo of the canteen.",

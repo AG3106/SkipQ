@@ -68,7 +68,7 @@ def generate_and_send_otp(email, password="", role="CUSTOMER", name=""):
 
     subject = 'Your SkipQ Verification Code'
     message = f'Hello {name or "User"},\n\nYour One-Time Password (OTP) for SkipQ is: {otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you,\nThe SkipQ Team'
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'skipq69@gmail.com')
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'skipqiitk@gmail.com')
 
     try:
         send_mail(subject, message, from_email, [email], fail_silently=False)
@@ -319,7 +319,7 @@ def approve_manager_registration(pending_id):
                 f"register your canteen on SkipQ.\n\n"
                 f"Thank you,\nThe SkipQ Team"
             ),
-            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipq69@gmail.com"),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipqiitk@gmail.com"),
             recipient_list=[pending.email],
             fail_silently=True,
         )
@@ -361,7 +361,7 @@ def reject_manager_registration(pending_id, reason=""):
                 f"You may re-register with valid credentials.\n\n"
                 f"Thank you,\nThe SkipQ Team"
             ),
-            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipq69@gmail.com"),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "skipqiitk@gmail.com"),
             recipient_list=[pending.email],
             fail_silently=True,
         )

@@ -46,7 +46,7 @@
 | Wallet balance | `GET /api/users/wallet/` | ✅ |
 | Add funds | `POST /api/users/wallet/add-funds/` | ✅ |
 | Set wallet PIN | `POST /api/users/wallet/set-pin/` | ✅ |
-| **Email sending (SMTP)** | — | ✅ Gmail SMTP configured (`skipq69@gmail.com`) |
+| **Email sending (SMTP)** | — | ✅ Gmail SMTP configured (`skipqiitk@gmail.com`) |
 
 ### Canteens
 | Feature | Endpoint | Status |
@@ -98,8 +98,8 @@
 |---|---|
 | PostgreSQL database backend | ✅ Configured in settings (prod) |
 | SQLite fallback for tests | ✅ Auto-detected via `sys.argv` |
-| Gmail SMTP email | ✅ `skipq69@gmail.com` with App Password |
-| `DEFAULT_FROM_EMAIL` | ✅ Fixed (was `smtp.gmail.com`, now `skipq69@gmail.com`) |
+| Gmail SMTP email | ✅ `skipqiitk@gmail.com` with App Password |
+| `DEFAULT_FROM_EMAIL` | ✅ Fixed (was `smtp.gmail.com`, now `skipqiitk@gmail.com`) |
 | File storage (canteen images, dish images, documents) | ✅ |
 | `psycopg2-binary` dependency | ✅ Added to `requirements.txt` |
 
