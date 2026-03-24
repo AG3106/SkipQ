@@ -1,20 +1,26 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router";
-import { ArrowLeft, Search, Star, Flame, ShoppingBag, X } from "lucide-react";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router";
+import { ArrowLeft, Search, Star, Flame, ShoppingBag, X, TrendingUp, MessageSquare } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { foodItems, foodCategories, hostels } from "../data/data";
+import { foodItems, foodCategories, hostels, getPopularDishesForCanteen } from "../data/data";
 import { Button } from "../components/ui/button";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { AddToCartButton } from "../components/AddToCartButton";
+import { getDishRating, getDishReviews } from "../utils/ratings";
 
 export default function MenuBrowsing() {
   const { hostelId } = useParams();
+  const [searchParams] = useSearchParams();
+  const urlQuery = searchParams.get("q") || "";
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(urlQuery);
+  const [isSearchFocused, setIsSearchFocused] = useState(!!urlQuery);
+  const navigate = useNavigate();
 
   const hostel = hostels.find((h) => h.id === hostelId);
+
+  const popularDishes = hostelId ? getPopularDishesForCanteen(hostelId) : [];
 
   const filteredItems = foodItems.filter((item) => {
     const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
@@ -60,7 +66,7 @@ export default function MenuBrowsing() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950">
+    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -112,6 +118,103 @@ export default function MenuBrowsing() {
             </div>
           </div>
         </div>
+
+        {/* Popular Dishes Section */}
+        {popularDishes.length > 0 && !searchQuery && (
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#D4725C]/10 to-[#B85A4A]/10 dark:from-[#D4725C]/20 dark:to-[#B85A4A]/20 rounded-xl flex items-center justify-center border border-[#D4725C]/15 dark:border-[#D4725C]/25">
+                <TrendingUp className="size-5 text-[#D4725C]" />
+              </div>
+              <div>
+                <h2 className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">Popular Dishes</h2>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Most ordered from this canteen</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
+              {popularDishes.map((dish) => {
+                const finalPrice = dish.discount
+                  ? dish.price * (1 - dish.discount / 100)
+                  : dish.price;
+
+                return (
+                  <div
+                    key={dish.id}
+                    className="min-w-[260px] max-w-[280px] bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/40 transition-all duration-300 flex-shrink-0 group"
+                  >
+                    {/* Image */}
+                    <div className="relative h-36 overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10" />
+                      <ImageWithFallback
+                        src={dish.image}
+                        alt={dish.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+
+                      {/* Veg/Non-veg badge */}
+                      <div className="absolute top-3 right-3 z-20">
+                        <div className={`w-5 h-5 rounded flex items-center justify-center border bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm ${dish.isVeg ? 'border-green-600' : 'border-red-600'}`}>
+                          <div className={`w-2.5 h-2.5 rounded-full ${dish.isVeg ? 'bg-green-600' : 'bg-red-600'}`} />
+                        </div>
+                      </div>
+
+                      {/* Discount badge */}
+                      {dish.discount && (
+                        <div className="absolute top-3 left-3 z-20">
+                          <span className="bg-red-500/90 backdrop-blur-sm text-white px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1">
+                            <Flame className="size-2.5 fill-white" /> {dish.discount}% OFF
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Order count */}
+                      <div className="absolute bottom-3 left-3 z-20">
+                        <span className="bg-black/40 backdrop-blur-sm text-white/90 px-2 py-0.5 rounded-md text-[10px] font-medium">
+                          {dish.orders.toLocaleString()}+ orders
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4">
+                      <h3 className="font-bold text-gray-900 dark:text-white mb-0.5 line-clamp-1">{dish.name}</h3>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1 mb-3">{dish.description}</p>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold text-[#D4725C]">₹{finalPrice.toFixed(0)}</span>
+                          {dish.discount && (
+                            <span className="text-gray-400 line-through text-xs">₹{dish.price}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-950/30 px-1.5 py-0.5 rounded-md">
+                          <Star className="size-3 text-yellow-500 fill-current" />
+                          <span className="text-[11px] font-bold text-gray-700 dark:text-gray-300">{dish.rating}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-3">
+                        <AddToCartButton
+                          item={{
+                            id: dish.id,
+                            name: dish.name,
+                            description: dish.description,
+                            price: dish.price,
+                            image: dish.image,
+                            category: dish.category,
+                            discount: dish.discount,
+                          }}
+                          size="sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Search & Filter Section */}
         <div className="relative z-30 bg-[#FDFCFB]/80 dark:bg-gray-950/80 backdrop-blur-md py-4 -mx-4 px-4 mb-6">
@@ -204,6 +307,10 @@ export default function MenuBrowsing() {
             // Random diet type for demo if not in data, or derive from logic
             const dietType = item.category === 'cake' || item.category === 'pizza' ? 'veg' : 'non-veg'; 
 
+            const itemRating = getDishRating(item.id);
+            const itemReviews = getDishReviews(item.id);
+            const displayRating = itemRating.count > 0 ? itemRating.avg.toFixed(1) : "4.2";
+
             return (
               <div
                 key={item.id}
@@ -252,9 +359,15 @@ export default function MenuBrowsing() {
                           <span className="text-gray-400 dark:text-gray-500 line-through text-sm">₹{item.price}</span>
                         )}
                      </div>
-                     <div className="flex items-center gap-1 text-yellow-500 bg-yellow-50 dark:bg-yellow-950/30 px-2 py-1 rounded-lg">
+                     <div 
+                        className="flex items-center gap-1 text-yellow-500 bg-yellow-50 dark:bg-yellow-950/30 px-2 py-1 rounded-lg"
+                        title={itemRating.count > 0 ? `${itemRating.count} rating${itemRating.count > 1 ? "s" : ""}` : "No ratings yet"}
+                     >
                         <Star className="size-3.5 fill-current" />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300">4.2</span>
+                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{displayRating}</span>
+                        {itemRating.count > 0 && (
+                          <span className="text-[10px] text-gray-400 dark:text-gray-500">({itemRating.count})</span>
+                        )}
                      </div>
                   </div>
 

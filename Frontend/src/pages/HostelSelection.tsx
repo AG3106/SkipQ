@@ -1,34 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { MapPin, Clock, Star, ChevronRight, Leaf, Egg, Search, Flame, TrendingUp } from "lucide-react";
+import { MapPin, Clock, Star, ChevronRight, Search, Flame } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { hostels } from "../data/data";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { AddToCartButton } from "../components/AddToCartButton";
 
-type DietaryFilter = "all" | "veg" | "non-veg" | "jain" | "eggitarian";
-
-interface FoodCategory {
-  id: string;
-  name: string;
-  emoji: string;
-}
-
-const foodCategories: FoodCategory[] = [
-  { id: "burger", name: "Burgers", emoji: "🍔" },
-  { id: "pizza", name: "Pizza", emoji: "🍕" },
-  { id: "south-indian", name: "South Indian", emoji: "🫓" },
-  { id: "north-indian", name: "North Indian", emoji: "🍛" },
-  { id: "snacks", name: "Snacks", emoji: "🍿" },
-  { id: "drinks", name: "Drinks", emoji: "🥤" },
-  { id: "chicken", name: "Chicken", emoji: "🍗" },
-  { id: "rice", name: "Rice", emoji: "🍚" },
-  { id: "biryani", name: "Biryani", emoji: "🍲" },
-  { id: "chinese", name: "Chinese", emoji: "🥡" },
-  { id: "desserts", name: "Desserts", emoji: "🍰" },
-  { id: "healthy", name: "Healthy", emoji: "🥗" },
-];
+type DietaryFilter = "all" | "veg" | "non-veg";
 
 const POPULAR_DISHES = [
   {
@@ -67,8 +46,18 @@ const POPULAR_DISHES = [
     price: 70,
     rating: 4.4,
     image: "veg burger",
-    tag: "Quick Bite",
+    tag: "Quick Pickup",
     category: "burger",
+    diet: "veg" as const
+  },
+  {
+    name: "Chocolate Cake",
+    canteen: "Hall 3 Canteen",
+    price: 80,
+    rating: 4.3,
+    image: "chocolate cake slice",
+    tag: "Bestseller",
+    category: "cake",
     diet: "veg" as const
   },
 ];
@@ -92,83 +81,9 @@ const PREVIOUS_ORDERS = [
   },
 ];
 
-const RECOMMENDED_DISHES = [
-  {
-    name: "Chole Bhature",
-    canteen: "Hall 2 Canteen",
-    price: 90,
-    rating: 4.6,
-    image: "north indian food",
-    tag: "You might like",
-    category: "north-indian",
-    diet: "veg" as const
-  },
-  {
-    name: "Veg Thali",
-    canteen: "Hall 4 Canteen",
-    price: 120,
-    rating: 4.7,
-    image: "indian thali",
-    tag: "Popular choice",
-    category: "north-indian",
-    diet: "veg" as const
-  },
-  {
-    name: "Hakka Noodles",
-    canteen: "Hall 8 Canteen",
-    price: 100,
-    rating: 4.5,
-    image: "hakka noodles",
-    tag: "Trending",
-    category: "chinese",
-    diet: "veg" as const
-  },
-  {
-    name: "Pav Bhaji",
-    canteen: "Hall 1 Canteen",
-    price: 80,
-    rating: 4.6,
-    image: "pav bhaji",
-    tag: "Student favorite",
-    category: "snacks",
-    diet: "veg" as const
-  },
-  {
-    name: "Chicken Fried Rice",
-    canteen: "Hall 11 Canteen",
-    price: 110,
-    rating: 4.5,
-    image: "fried rice",
-    tag: "Quick meal",
-    category: "chinese",
-    diet: "non-veg" as const
-  },
-  {
-    name: "Egg Curry & Rice",
-    canteen: "Hall 6 Canteen",
-    price: 90,
-    rating: 4.3,
-    image: "egg curry",
-    tag: "Protein Packed",
-    category: "rice",
-    diet: "eggitarian" as const
-  },
-  {
-    name: "Jain Pizza",
-    canteen: "Hall 1 Canteen",
-    price: 190,
-    rating: 4.7,
-    image: "veg pizza",
-    tag: "Jain Special",
-    category: "pizza",
-    diet: "jain" as const
-  }
-];
-
 export default function HostelSelection() {
   const navigate = useNavigate();
   const [selectedDiet, setSelectedDiet] = useState<DietaryFilter>("all");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredHostels = hostels.filter((hostel) => {
@@ -182,70 +97,21 @@ export default function HostelSelection() {
     dish.canteen.toLowerCase().includes(searchQuery.toLowerCase()) ||
     dish.image.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = selectedCategory === "all" || dish.category === selectedCategory;
-    
-    // Diet Filter Logic
-    let matchesDiet = true;
-    if (selectedDiet !== "all") {
-        if (selectedDiet === "veg") {
-             // Veg filter shows Veg and Jain items
-             matchesDiet = dish.diet === "veg" || dish.diet === "jain";
-        } else if (selectedDiet === "eggitarian") {
-             // Eggitarian filter shows Veg, Jain, and Egg items
-             matchesDiet = dish.diet === "veg" || dish.diet === "jain" || dish.diet === "eggitarian";
-        } else {
-             // Exact match for non-veg or jain specific queries
-             matchesDiet = dish.diet === selectedDiet;
-        }
-    }
-
-    let extendedCategoryMatch = matchesCategory;
-    if (!matchesCategory && selectedCategory !== "all") {
-        if (selectedCategory === "chicken" && (dish.name.toLowerCase().includes("chicken") || dish.category === "biryani")) {
-            extendedCategoryMatch = true;
-        }
-        if (selectedCategory === "rice" && (dish.name.toLowerCase().includes("rice") || dish.category === "biryani")) {
-            extendedCategoryMatch = true;
-        }
-    }
-
-    return matchesSearch && extendedCategoryMatch && matchesDiet;
-  });
-
-  const filteredRecommendedDishes = RECOMMENDED_DISHES.filter((dish) => {
-    const matchesSearch = dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    dish.canteen.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    dish.image.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "all" || dish.category === selectedCategory;
-
     // Diet Filter Logic
     let matchesDiet = true;
     if (selectedDiet !== "all") {
         if (selectedDiet === "veg") {
              matchesDiet = dish.diet === "veg" || dish.diet === "jain";
-        } else if (selectedDiet === "eggitarian") {
-             matchesDiet = dish.diet === "veg" || dish.diet === "jain" || dish.diet === "eggitarian";
         } else {
              matchesDiet = dish.diet === selectedDiet;
         }
     }
 
-    let extendedCategoryMatch = matchesCategory;
-    if (!matchesCategory && selectedCategory !== "all") {
-        if (selectedCategory === "chicken" && (dish.name.toLowerCase().includes("chicken") || dish.category === "biryani")) {
-            extendedCategoryMatch = true;
-        }
-        if (selectedCategory === "rice" && (dish.name.toLowerCase().includes("rice") || dish.category === "biryani")) {
-            extendedCategoryMatch = true;
-        }
-    }
-
-    return matchesSearch && extendedCategoryMatch && matchesDiet;
+    return matchesSearch && matchesDiet;
   });
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 overflow-x-hidden">
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-orange-50 via-orange-50/50 to-transparent dark:from-orange-950/20 dark:via-orange-950/10 -z-10" />
       
       <Header />
@@ -305,8 +171,6 @@ export default function HostelSelection() {
                { id: 'all', label: 'All', icon: null, activeColor: 'bg-gray-900 dark:bg-white dark:text-gray-900', border: 'border-transparent' },
                { id: 'veg', label: 'Pure Veg', icon: <div className="w-2 h-2 bg-green-600 rounded-full mx-auto" />, activeColor: 'bg-green-600', border: 'border-green-600' },
                { id: 'non-veg', label: 'Non-Veg', icon: <div className="w-2 h-2 bg-red-600 rounded-full mx-auto" />, activeColor: 'bg-red-600', border: 'border-red-600' },
-               { id: 'jain', label: 'Jain', icon: <Leaf className="w-3 h-3 text-current" />, activeColor: 'bg-purple-600', border: 'border-purple-600' },
-               { id: 'eggitarian', label: 'Eggitarian', icon: <Egg className="w-3 h-3 text-current" />, activeColor: 'bg-orange-500', border: 'border-orange-500' },
              ].map((filter) => (
                 <button
                   key={filter.id}
@@ -328,63 +192,11 @@ export default function HostelSelection() {
           </div>
         </div>
 
-        {/* Food Categories */}
-        <div id="browse-categories" className="mb-16">
-          <div className="flex items-center justify-between mb-6 px-2">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              Browse by Category <span className="text-sm font-normal text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full ml-2">12+</span>
-            </h2>
-            <button className="text-[#D4725C] font-semibold flex items-center gap-1 hover:gap-2 transition-all text-sm">
-              See all
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide px-2">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`flex flex-col items-center gap-3 min-w-[100px] group cursor-pointer transition-transform duration-300 active:scale-95`}
-            >
-              <div
-                className={`w-24 h-24 rounded-[2rem] flex items-center justify-center text-4xl transition-all duration-300 ${
-                  selectedCategory === "all"
-                    ? "bg-[#D4725C] shadow-xl shadow-orange-200 dark:shadow-orange-900/50 -translate-y-2"
-                    : "bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 group-hover:shadow-md group-hover:border-orange-200 dark:group-hover:border-orange-700"
-                }`}
-              >
-                {selectedCategory === "all" ? "🍽️" : "✨"}
-              </div>
-              <span className={`text-sm font-semibold text-center transition-colors ${selectedCategory === 'all' ? 'text-[#D4725C]' : 'text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'}`}>All</span>
-            </button>
-            {foodCategories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex flex-col items-center gap-3 min-w-[100px] group cursor-pointer transition-transform duration-300 active:scale-95`}
-              >
-                <div
-                  className={`w-24 h-24 rounded-[2rem] flex items-center justify-center text-4xl transition-all duration-300 mt-2 ${
-                    selectedCategory === category.id
-                      ? "bg-[#D4725C] shadow-xl shadow-orange-200 dark:shadow-orange-900/50 -translate-y-2"
-                      : "bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 group-hover:shadow-md group-hover:border-orange-200 dark:group-hover:border-orange-700"
-                  }`}
-                >
-                  {category.emoji}
-                </div>
-                <span className={`text-sm font-semibold text-center transition-colors ${selectedCategory === category.id ? 'text-[#D4725C]' : 'text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'}`}>{category.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Hostel Canteens - Horizontal Scroll */}
-        {filteredHostels.length > 0 && selectedCategory === 'all' && (
+        {filteredHostels.length > 0 && (
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6 px-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Canteens Near You 📍</h2>
-              <button className="text-[#D4725C] font-semibold flex items-center gap-1 hover:gap-2 transition-all text-sm">
-                View all
-                <ChevronRight className="w-4 h-4" />
-              </button>
             </div>
             <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-2">
               {filteredHostels.map((hostel) => (
@@ -432,29 +244,16 @@ export default function HostelSelection() {
  
                     {/* Canteen Info */}
                     <div className="p-5">
-                      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-50 dark:border-gray-800">
-                        <div className="flex items-center gap-2 bg-yellow-50 dark:bg-yellow-950/30 px-2 py-1 rounded-lg">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-bold text-sm text-gray-800 dark:text-gray-200">4.5</span>
-                          <span className="text-gray-400 dark:text-gray-500 text-xs">(250+)</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 px-2 py-1 rounded-lg">
+                          <Star className="w-4 h-4 fill-current text-green-600 dark:text-green-400" />
+                          <span className="font-bold text-sm text-green-700 dark:text-green-400">4.5</span>
+                          <span className="text-green-500/70 dark:text-green-500/50 text-xs">(250+)</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                           <Clock className="w-4 h-4" />
                           <span className="text-sm font-medium">15-20 min</span>
                         </div>
-                      </div>
-
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2">
-                        <span className="bg-orange-50 dark:bg-orange-950/30 text-[#D4725C] dark:text-orange-400 px-2.5 py-1 rounded-md text-xs font-semibold">
-                          Fast Delivery
-                        </span>
-                        <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md text-xs font-medium">
-                          North Indian
-                        </span>
-                        <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md text-xs font-medium">
-                          Snacks
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -472,22 +271,25 @@ export default function HostelSelection() {
                 Popular Dishes Today <Flame className="w-5 h-5 fill-orange-500 text-orange-500" />
               </h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2">
+            <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-2">
               {filteredPopularDishes.map((dish, index) => (
-                <DishCard key={index} dish={dish} featured={index === 0} />
+                <div key={index} className="min-w-[180px] md:min-w-[220px] shrink-0">
+                  <DishCard dish={dish} featured={index === 0} />
+                </div>
               ))}
             </div>
           </div>
         )}
 
         {/* Previous Orders */}
-        {searchQuery === "" && selectedCategory === "all" && selectedDiet === "all" && (
+        {searchQuery === "" && selectedDiet === "all" && (
           <div className="mb-16 bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Your Previous Orders 🕐</h2>
-              <button className="text-[#D4725C] font-semibold flex items-center gap-1 hover:gap-2 transition-all text-sm">
+              <Link to="/track-orders" className="text-[#D4725C] font-semibold flex items-center gap-1 hover:gap-2 transition-all text-sm">
                 View all
-              </button>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {PREVIOUS_ORDERS.map((order, index) => {
@@ -509,7 +311,7 @@ export default function HostelSelection() {
                     <div>
                       <div className="flex items-start justify-between mb-1">
                         <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1">{order.name}</h3>
-                        <span className="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-bold">
+                        <span className="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-[10px] px-1.5 py-0.5 rounded font-bold">
                            {order.rating} ★
                         </span>
                       </div>
@@ -539,24 +341,8 @@ export default function HostelSelection() {
           </div>
         )}
 
-        {/* Recommendations For You */}
-        {filteredRecommendedDishes.length > 0 && (
-          <div className="mb-10">
-            <div className="flex items-center justify-between mb-6 px-2">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                Recommended For You <TrendingUp className="w-5 h-5 text-blue-500" />
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 px-2">
-              {filteredRecommendedDishes.map((dish, index) => (
-                <DishCard key={index} dish={dish} />
-              ))}
-            </div>
-          </div>
-        )}
-        
         {/* No results state */}
-        {searchQuery !== "" && filteredHostels.length === 0 && filteredPopularDishes.length === 0 && filteredRecommendedDishes.length === 0 && (
+        {searchQuery !== "" && filteredHostels.length === 0 && filteredPopularDishes.length === 0 && (
            <div className="text-center py-20 text-gray-500 dark:text-gray-400">
              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">🔍</div>
              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No matches found</p>
@@ -565,7 +351,7 @@ export default function HostelSelection() {
         )}
         
          {/* No category/diet results state */}
-         {searchQuery === "" && (selectedCategory !== "all" || selectedDiet !== "all") && filteredPopularDishes.length === 0 && filteredRecommendedDishes.length === 0 && (
+         {searchQuery === "" && selectedDiet !== "all" && filteredPopularDishes.length === 0 && (
            <div className="text-center py-20 text-gray-500 dark:text-gray-400">
              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">🥣</div>
              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No items found</p>

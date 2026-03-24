@@ -1,26 +1,30 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { ArrowLeft, CreditCard, Wallet, MapPin, User, Phone, ClipboardList } from "lucide-react";
+import {
+  ArrowLeft, CreditCard, Wallet, MapPin, User, Phone,
+  ClipboardList,
+} from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
+import { useWallet } from "../context/WalletContext";
 import { Button } from "../components/ui/button";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { cart, getTotalPrice, clearCart } = useCart();
+  const { balance, deductMoney } = useWallet();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     hostel: "",
     roomNumber: "",
-    deliveryInstructions: "",
-    paymentMethod: "online",
+    paymentMethod: "wallet",
   });
 
-  const deliveryFee = cart.length > 0 ? (getTotalPrice() >= 100 ? 0 : 20) : 0;
-  const tax = getTotalPrice() * 0.05;
-  const totalAmount = getTotalPrice() + deliveryFee + tax;
+  const subtotal = getTotalPrice();
+  const tax = subtotal * 0.05;
+  const totalAmount = subtotal + tax;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -31,20 +35,36 @@ export default function Checkout() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Generate a random order ID
+
     const orderId = `ORD${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-    
-    // Clear the cart
-    clearCart();
-    
-    // Navigate to confirmation page
-    navigate(`/order-confirmation/${orderId}`);
+    const prevBal = balance;
+    const hasPin = !!localStorage.getItem("skipq_wallet_pin");
+
+    if (hasPin) {
+      const params = new URLSearchParams({
+        orderId,
+        total: totalAmount.toFixed(2),
+        prevBalance: prevBal.toFixed(2),
+      });
+      navigate(`/wallet/verify-pin?${params.toString()}`);
+    } else {
+      if (totalAmount > balance) {
+        navigate(
+          `/payment-result?status=failed&orderId=${orderId}&total=${totalAmount.toFixed(2)}&prevBalance=${prevBal.toFixed(2)}`
+        );
+      } else {
+        deductMoney(totalAmount);
+        clearCart();
+        navigate(
+          `/payment-result?status=success&orderId=${orderId}&total=${totalAmount.toFixed(2)}&prevBalance=${prevBal.toFixed(2)}`
+        );
+      }
+    }
   };
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex flex-col">
+      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex flex-col overflow-x-hidden">
         <Header />
         <div className="flex-1 container mx-auto px-4 flex items-center justify-center">
           <div className="max-w-md w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl p-10 shadow-xl border border-white/20 dark:border-gray-800 text-center">
@@ -68,7 +88,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950">
+    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
          <div className="absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -90,12 +110,12 @@ export default function Checkout() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-white/40 dark:border-gray-800 p-8">
+            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-white/40 dark:border-gray-800 p-6 md:p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-orange-50 dark:bg-orange-950/30 p-2.5 rounded-xl">
                   <MapPin className="size-6 text-[#D4725C]" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Delivery Details</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Pickup Details</h2>
               </div>
 
               <form id="checkout-form" onSubmit={handleSubmit} className="space-y-6">
@@ -132,9 +152,9 @@ export default function Checkout() {
 
                 <div className="border-t border-gray-100 dark:border-gray-800 my-6" />
 
-                {/* Delivery Address */}
+                {/* Pickup Location */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</h3>
+                  <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pickup Location</h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
@@ -166,23 +186,12 @@ export default function Checkout() {
                       />
                     </div>
                   </div>
-
-                  <div>
-                    <textarea
-                      name="deliveryInstructions"
-                      value={formData.deliveryInstructions}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className="w-full px-4 py-3 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
-                      placeholder="Add delivery instructions (optional)..."
-                    />
-                  </div>
                 </div>
               </form>
             </div>
 
              {/* Payment Method */}
-             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-white/40 dark:border-gray-800 p-8">
+             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-white/40 dark:border-gray-800 p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="bg-orange-50 dark:bg-orange-950/30 p-2.5 rounded-xl">
                     <Wallet className="size-6 text-[#D4725C]" />
@@ -191,43 +200,23 @@ export default function Checkout() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <label className={`relative flex items-start gap-4 p-5 border rounded-2xl cursor-pointer transition-all duration-300 ${formData.paymentMethod === "online" ? "border-[#D4725C] bg-orange-50/50 dark:bg-orange-950/20 shadow-sm" : "border-gray-200 dark:border-gray-700 hover:border-orange-200 dark:hover:border-orange-800"}`}>
+                  <label className="relative flex items-start gap-4 p-5 border rounded-2xl cursor-pointer transition-all duration-300 border-[#D4725C] bg-orange-50/50 dark:bg-orange-950/20 shadow-sm">
                     <div className="mt-1">
                       <input
                         type="radio"
                         name="paymentMethod"
-                        value="online"
-                        checked={formData.paymentMethod === "online"}
-                        onChange={handleInputChange}
+                        value="wallet"
+                        checked
+                        readOnly
                         className="accent-[#D4725C] size-5"
                       />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <CreditCard className={`size-5 ${formData.paymentMethod === "online" ? "text-[#D4725C]" : "text-gray-500 dark:text-gray-400"}`} />
-                        <span className={`font-bold ${formData.paymentMethod === "online" ? "text-[#D4725C]" : "text-gray-900 dark:text-white"}`}>Pay Online</span>
+                        <Wallet className="size-5 text-[#D4725C]" />
+                        <span className="font-bold text-[#D4725C]">SkipQ Wallet</span>
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">UPI, Cards, NetBanking</p>
-                    </div>
-                  </label>
-
-                  <label className={`relative flex items-start gap-4 p-5 border rounded-2xl cursor-pointer transition-all duration-300 ${formData.paymentMethod === "cod" ? "border-[#D4725C] bg-orange-50/50 dark:bg-orange-950/20 shadow-sm" : "border-gray-200 dark:border-gray-700 hover:border-orange-200 dark:hover:border-orange-800"}`}>
-                    <div className="mt-1">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="cod"
-                        checked={formData.paymentMethod === "cod"}
-                        onChange={handleInputChange}
-                        className="accent-[#D4725C] size-5"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Wallet className={`size-5 ${formData.paymentMethod === "cod" ? "text-[#D4725C]" : "text-gray-500 dark:text-gray-400"}`} />
-                        <span className={`font-bold ${formData.paymentMethod === "cod" ? "text-[#D4725C]" : "text-gray-900 dark:text-white"}`}>Cash on Delivery</span>
-                      </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Pay when delivered</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Available Balance: <span className={`font-bold ${balance >= totalAmount ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>₹{balance.toFixed(2)}</span></p>
                     </div>
                   </label>
                 </div>
@@ -236,7 +225,7 @@ export default function Checkout() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/40 dark:border-gray-800 p-6 sticky top-24">
+            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-lg border border-white/40 dark:border-gray-800 p-5 md:p-6 sticky top-24">
               <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Order Summary</h2>
 
               <div className="space-y-4 mb-6">
@@ -248,11 +237,11 @@ export default function Checkout() {
 
                     return (
                       <div key={item.id} className="flex justify-between items-start text-sm py-2 border-b border-gray-50 dark:border-gray-800 last:border-0">
-                        <div className="flex-1 pr-4">
-                          <div className="font-semibold text-gray-800 dark:text-gray-200">{item.name}</div>
-                          <div className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">Quantity: {item.quantity}</div>
+                        <div className="flex-1 pr-4 min-w-0">
+                          <div className="font-semibold text-gray-800 dark:text-gray-200 truncate">{item.name}</div>
+                          <div className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">Qty: {item.quantity}</div>
                         </div>
-                        <div className="font-bold text-[#D4725C]">
+                        <div className="font-bold text-[#D4725C] shrink-0">
                           ₹{(finalPrice * item.quantity).toFixed(0)}
                         </div>
                       </div>
@@ -260,15 +249,11 @@ export default function Checkout() {
                   })}
                 </div>
 
+                {/* Price breakdown */}
                 <div className="border-t border-dashed border-gray-200 dark:border-gray-700 pt-4 space-y-3">
                   <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
                     <span>Subtotal</span>
-                    <span className="font-semibold text-gray-900 dark:text-white">₹{getTotalPrice().toFixed(2)}</span>
-                  </div>
-                  
-                  <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
-                    <span>Delivery Fee</span>
-                    <span className="font-semibold text-gray-900 dark:text-white">₹{deliveryFee.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">₹{subtotal.toFixed(2)}</span>
                   </div>
                   
                   <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
@@ -279,7 +264,9 @@ export default function Checkout() {
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-gray-900 dark:text-white">Total Amount</span>
-                      <span className="text-2xl font-black text-[#D4725C]">₹{totalAmount.toFixed(2)}</span>
+                      <div className="text-right">
+                        <span className="text-2xl font-black text-[#D4725C]">₹{totalAmount.toFixed(2)}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -298,7 +285,7 @@ export default function Checkout() {
                     <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-pulse" />
                  </div>
                  <p className="text-xs text-green-800 dark:text-green-300 leading-relaxed">
-                   <strong>Free Delivery</strong> applies on orders above ₹100. Delivered in 20-30 mins.
+                   <strong>Quick Pickup</strong> — your order will be ready in 15-20 mins. Skip the queue!
                  </p>
               </div>
             </div>

@@ -12,7 +12,18 @@ import DiscountManagement from "./pages/DiscountManagement";
 import ScheduleManagement from "./pages/ScheduleManagement";
 import Statistics from "./pages/Statistics";
 import SearchResults from "./pages/SearchResults";
-import CanteenOffers from "./pages/CanteenOffers";
+import PaymentResult from "./pages/PaymentResult";
+import WalletPage from "./pages/WalletPage";
+import SetWalletPin from "./pages/SetWalletPin";
+import VerifyWalletPin from "./pages/VerifyWalletPin";
+import UserProfile from "./pages/UserProfile";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import AdminPanel from "./pages/AdminPanel";
+import AdminLogin from "./pages/AdminLogin";
+import CanteenRegistration from "./pages/CanteenRegistration";
+import OwnerRegistration from "./pages/OwnerRegistration";
+import TrackOrders from "./pages/TrackOrders";
+import CakeReservation from "./pages/CakeReservation";
 
 export const router = createBrowserRouter([
   {
@@ -20,12 +31,32 @@ export const router = createBrowserRouter([
     Component: UnifiedLogin,
   },
   {
+    path: "/login",
+    Component: UnifiedLogin,
+  },
+  {
     path: "/search",
     Component: SearchResults,
   },
   {
-    path: "/offers",
-    Component: CanteenOffers,
+    path: "/payment-result",
+    Component: PaymentResult,
+  },
+  {
+    path: "/wallet",
+    Component: WalletPage,
+  },
+  {
+    path: "/wallet/set-pin",
+    Component: SetWalletPin,
+  },
+  {
+    path: "/wallet/verify-pin",
+    Component: VerifyWalletPin,
+  },
+  {
+    path: "/profile",
+    Component: UserProfile,
   },
   {
     path: "/hostels",
@@ -70,5 +101,33 @@ export const router = createBrowserRouter([
   {
     path: "/owner/stats",
     Component: Statistics,
+  },
+  {
+    path: "/forgot-password",
+    Component: ForgotPassword,
+  },
+  {
+    path: "/admin",
+    Component: AdminPanel,
+  },
+  {
+    path: "/admin/login",
+    Component: AdminLogin,
+  },
+  {
+    path: "/canteen-register",
+    Component: CanteenRegistration,
+  },
+  {
+    path: "/owner-register",
+    Component: OwnerRegistration,
+  },
+  {
+    path: "/track-orders",
+    Component: TrackOrders,
+  },
+  {
+    path: "/cake-reservation",
+    Component: CakeReservation,
   },
 ]);

@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { ArrowLeft, TrendingUp, DollarSign, ShoppingBag, Star, Calendar, ChevronDown } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from "recharts";
 
 const monthlyOrders = [
   { month: "Jan", orders: 120, revenue: 15600 },
@@ -35,7 +35,7 @@ const stats = [
 
 export default function Statistics() {
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative">
+    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -110,16 +110,17 @@ export default function Statistics() {
             <div className="w-full h-[300px]">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <LineChart data={monthlyOrders}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" className="dark:stroke-gray-700" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} dy={10} />
-                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
-                  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
-                  <Tooltip 
+                  <CartesianGrid key="grid" strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" className="dark:stroke-gray-700" />
+                  <XAxis key="xaxis" dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} dy={10} />
+                  <YAxis key="yaxis-left" yAxisId="left" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
+                  <YAxis key="yaxis-right" yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
+                  <Tooltip
+                    key="tooltip"
                     contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
                     itemStyle={{ fontSize: '12px', fontWeight: 600 }}
                   />
-                  <Line yAxisId="left" type="monotone" dataKey="orders" stroke="#D4725C" strokeWidth={3} dot={{ r: 4, fill: '#D4725C', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
-                  <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#2E7D32" strokeWidth={3} dot={{ r: 4, fill: '#2E7D32', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                  <Line key="line-orders" yAxisId="left" type="monotone" dataKey="orders" stroke="#D4725C" strokeWidth={3} dot={{ r: 4, fill: '#D4725C', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                  <Line key="line-revenue" yAxisId="right" type="monotone" dataKey="revenue" stroke="#2E7D32" strokeWidth={3} dot={{ r: 4, fill: '#2E7D32', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -170,15 +171,16 @@ export default function Statistics() {
           <div className="w-full h-[300px]">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <BarChart data={popularDishes} barSize={40}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" className="dark:stroke-gray-700" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
-                <Tooltip 
+                <CartesianGrid key="bar-grid" strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" className="dark:stroke-gray-700" />
+                <XAxis key="bar-xaxis" dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} dy={10} />
+                <YAxis key="bar-yaxis" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
+                <Tooltip
+                  key="bar-tooltip"
                    cursor={{fill: '#F3F4F6'}}
                    contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
                 />
-                <Bar dataKey="orders" fill="#D4725C" name="Orders" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="revenue" fill="#2E7D32" name="Revenue (₹)" radius={[4, 4, 0, 0]} />
+                <Bar key="bar-orders" dataKey="orders" fill="#D4725C" name="Orders" radius={[4, 4, 0, 0]} />
+                <Bar key="bar-revenue" dataKey="revenue" fill="#2E7D32" name="Revenue (₹)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -192,7 +194,7 @@ export default function Statistics() {
                   </div>
                   <div>
                     <p className="font-bold text-gray-900 dark:text-white text-lg">{dish.name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{dish.orders} orders delivered</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{dish.orders} orders placed</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -201,30 +203,6 @@ export default function Statistics() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Insights */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <div className="bg-gradient-to-br from-[#D4725C] to-[#B85A4A] rounded-3xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 p-8 text-white relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold mb-2 text-orange-100 text-sm uppercase tracking-wider">Peak Hours</h3>
-            <p className="text-4xl font-black mb-2">6 PM - 9 PM</p>
-            <p className="text-sm text-white/80 font-medium">Most orders received during dinner time</p>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-3xl shadow-lg shadow-green-200 dark:shadow-green-900/30 p-8 text-white relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold mb-2 text-green-100 text-sm uppercase tracking-wider">Best Day</h3>
-            <p className="text-4xl font-black mb-2">Saturday</p>
-            <p className="text-sm text-white/80 font-medium">Highest average daily revenue</p>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl shadow-lg shadow-blue-200 dark:shadow-blue-900/30 p-8 text-white relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold mb-2 text-blue-100 text-sm uppercase tracking-wider">Repeat Customers</h3>
-            <p className="text-4xl font-black mb-2">68%</p>
-            <p className="text-sm text-white/80 font-medium">Customers order more than once</p>
           </div>
         </div>
       </div>

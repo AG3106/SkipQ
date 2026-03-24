@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { router } from "../routes";
 import { useCart } from "../context/CartContext";
 import { motion, AnimatePresence } from "motion/react";
-import { X, ShoppingBag, Trash2, ChevronRight, Truck, Store, Tag, Gift, Plus, Minus } from "lucide-react";
+import { X, ShoppingBag, Trash2, ChevronRight, Tag, Gift, Plus, Minus } from "lucide-react";
 import { Button } from "./ui/button";
 
 export default function CartSidebar() {
@@ -11,8 +11,7 @@ export default function CartSidebar() {
 
   const subTotal = getTotalPrice();
   const discounts = 3.00; // Hardcoded as per design
-  const deliveryFee = 2.50; // Hardcoded as per design
-  const totalToPay = subTotal - discounts + deliveryFee;
+  const totalToPay = subTotal - discounts;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -145,10 +144,6 @@ export default function CartSidebar() {
                     <span>Discounts</span>
                     <span className="font-medium text-green-600">-₹{discounts.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-gray-600 text-sm">
-                    <span>Delivery Fee</span>
-                    <span className="font-medium text-gray-900">₹{deliveryFee.toFixed(2)}</span>
-                  </div>
                 </div>
 
                 <div className="flex items-center justify-between py-4 border-t border-dashed border-gray-200">
@@ -165,18 +160,6 @@ export default function CartSidebar() {
                   <button className="flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 p-3 rounded-xl text-xs font-medium text-gray-600 transition-colors border border-gray-200">
                     <Tag className="size-4 text-[#D4725C]" />
                     <span>Apply Coupon</span>
-                  </button>
-                </div>
-
-                {/* Delivery / Collection Toggle */}
-                <div className="bg-gray-100/50 p-1 rounded-xl flex">
-                  <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-white shadow-sm text-sm font-bold text-gray-900 border border-gray-200">
-                    <Truck className="size-4" />
-                    Delivery
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900">
-                    <Store className="size-4" />
-                    Pickup
                   </button>
                 </div>
 

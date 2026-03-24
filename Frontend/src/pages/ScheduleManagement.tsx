@@ -53,7 +53,7 @@ export default function ScheduleManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-hidden">
+    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-3xl -z-10" />

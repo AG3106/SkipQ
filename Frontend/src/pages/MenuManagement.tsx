@@ -10,10 +10,13 @@ import { foodItems, FoodItem, foodCategories } from "../data/data";
 export default function MenuManagement() {
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<FoodItem[]>(foodItems);
+  const [outOfStockIds, setOutOfStockIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState<FoodItem | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -70,6 +73,8 @@ export default function MenuManagement() {
 
     setShowAddModal(false);
     setEditingItem(null);
+    setPhotoFile(null);
+    setPhotoPreview(null);
     setFormData({
       name: "",
       description: "",
@@ -82,6 +87,8 @@ export default function MenuManagement() {
 
   const handleEdit = (item: FoodItem) => {
     setEditingItem(item);
+    setPhotoFile(null);
+    setPhotoPreview(null);
     setFormData({
       name: item.name,
       description: item.description,
@@ -100,12 +107,19 @@ export default function MenuManagement() {
   };
 
   const handleToggleAvailability = (itemId: string) => {
-    // In a real app, this would update the availability status
-    alert(`Toggled availability for item ${itemId}`);
+    setOutOfStockIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-hidden">
+    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -z-10" />
@@ -188,11 +202,11 @@ export default function MenuManagement() {
             </span>
             <span className="flex items-center gap-2">
                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-               Available: <strong className="text-gray-900 dark:text-white">{filteredItems.length}</strong>
+               Available: <strong className="text-gray-900 dark:text-white">{filteredItems.filter(i => !outOfStockIds.has(i.id)).length}</strong>
             </span>
             <span className="flex items-center gap-2">
                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-               Out of Stock: <strong className="text-gray-900 dark:text-white">0</strong>
+               Out of Stock: <strong className="text-gray-900 dark:text-white">{filteredItems.filter(i => outOfStockIds.has(i.id)).length}</strong>
             </span>
           </div>
         </div>
@@ -200,22 +214,35 @@ export default function MenuManagement() {
         {/* Menu Items Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => (
-            <div key={item.id} className="group bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 hover:shadow-xl transition-all duration-300">
+            <div key={item.id} className={`group bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 hover:shadow-xl transition-all duration-300 ${outOfStockIds.has(item.id) ? "opacity-70" : ""}`}>
               {/* Item Image */}
               <div className="relative h-56 bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
                 <ImageIcon className="size-12 text-gray-300 dark:text-gray-600 group-hover:scale-110 transition-transform duration-500" />
-                {item.discount && (
+                {item.discount && !outOfStockIds.has(item.id) && (
                   <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
                     {item.discount}% OFF
+                  </div>
+                )}
+                {outOfStockIds.has(item.id) && (
+                  <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                    Out of Stock
                   </div>
                 )}
                 <div className="absolute top-4 left-4">
                   <button
                     onClick={() => handleToggleAvailability(item.id)}
-                    className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-2 rounded-full shadow-sm hover:bg-white dark:hover:bg-gray-900 transition-colors"
-                    title="Toggle availability"
+                    className={`backdrop-blur-sm p-2 rounded-full shadow-sm transition-colors ${
+                      outOfStockIds.has(item.id)
+                        ? "bg-red-50/90 dark:bg-red-950/90 hover:bg-red-100 dark:hover:bg-red-900"
+                        : "bg-white/90 dark:bg-gray-900/90 hover:bg-white dark:hover:bg-gray-900"
+                    }`}
+                    title={outOfStockIds.has(item.id) ? "Mark as available" : "Mark as out of stock"}
                   >
-                    <Eye className="size-4 text-green-600 dark:text-green-400" />
+                    {outOfStockIds.has(item.id) ? (
+                      <EyeOff className="size-4 text-red-600 dark:text-red-400" />
+                    ) : (
+                      <Eye className="size-4 text-green-600 dark:text-green-400" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -385,11 +412,36 @@ export default function MenuManagement() {
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
                     Photo (Optional)
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center hover:border-[#D4725C] hover:bg-orange-50/50 dark:hover:bg-orange-950/20 transition-all cursor-pointer group">
-                    <ImageIcon className="size-12 text-gray-400 dark:text-gray-600 mx-auto mb-3 group-hover:text-[#D4725C] transition-colors" />
-                    <p className="text-gray-600 dark:text-gray-400 mb-1 group-hover:text-gray-900 dark:group-hover:text-white font-medium">Click to upload or drag and drop</p>
-                    <p className="text-sm text-gray-400 dark:text-gray-500">PNG, JPG up to 5MB</p>
-                  </div>
+                  <label className="block border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center hover:border-[#D4725C] hover:bg-orange-50/50 dark:hover:bg-orange-950/20 transition-all cursor-pointer group relative overflow-hidden">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        setPhotoFile(file);
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => setPhotoPreview(reader.result as string);
+                          reader.readAsDataURL(file);
+                        } else {
+                          setPhotoPreview(null);
+                        }
+                      }}
+                    />
+                    {photoPreview ? (
+                      <div className="relative">
+                        <img src={photoPreview} alt="Preview" className="max-h-40 mx-auto rounded-lg object-cover" />
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{photoFile?.name} — Click to change</p>
+                      </div>
+                    ) : (
+                      <>
+                        <ImageIcon className="size-12 text-gray-400 dark:text-gray-600 mx-auto mb-3 group-hover:text-[#D4725C] transition-colors" />
+                        <p className="text-gray-600 dark:text-gray-400 mb-1 group-hover:text-gray-900 dark:group-hover:text-white font-medium">Click to upload or drag and drop</p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500">PNG, JPG up to 5MB</p>
+                      </>
+                    )}
+                  </label>
                 </div>
 
                 <div className="flex gap-4 pt-6">
@@ -398,6 +450,8 @@ export default function MenuManagement() {
                     onClick={() => {
                       setShowAddModal(false);
                       setEditingItem(null);
+                      setPhotoFile(null);
+                      setPhotoPreview(null);
                     }}
                     className="flex-1 bg-white dark:bg-gray-950 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-6 rounded-xl font-bold transition-all"
                   >

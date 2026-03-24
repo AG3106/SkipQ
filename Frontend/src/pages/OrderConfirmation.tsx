@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router";
-import { CheckCircle, Home, Package, Clock, MapPin, ChefHat, Bike } from "lucide-react";
+import { CheckCircle, Home, Package, Clock, MapPin, ChefHat } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
@@ -8,7 +8,7 @@ export default function OrderConfirmation() {
   const { orderId } = useParams();
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950">
+    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
          <div className="absolute top-[-10%] right-[20%] w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-3xl" />
@@ -76,23 +76,33 @@ export default function OrderConfirmation() {
 
                 <div className="relative flex items-center gap-4 z-10 opacity-50">
                   <div className="size-12 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0 border-4 border-white dark:border-gray-900">
-                    <Bike className="size-6 text-gray-400 dark:text-gray-600" />
+                    <Package className="size-6 text-gray-400 dark:text-gray-600" />
                   </div>
                   <div className="flex-1">
-                    <div className="font-bold text-gray-400 dark:text-gray-500">Out for Delivery</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-600">Rider is on the way</div>
+                    <div className="font-bold text-gray-400 dark:text-gray-500">Ready for Pickup</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-600">Collect from the counter</div>
+                  </div>
+                </div>
+
+                <div className="relative flex items-center gap-4 z-10 opacity-50">
+                  <div className="size-12 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0 border-4 border-white dark:border-gray-900">
+                    <CheckCircle className="size-6 text-gray-400 dark:text-gray-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-gray-400 dark:text-gray-500">Collected</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-600">Order complete. Enjoy!</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Estimated Delivery Time */}
+            {/* Estimated Pickup Time */}
             <div className="bg-gradient-to-r from-[#D4725C] to-[#B85A4A] rounded-2xl p-6 text-white mb-8 shadow-lg shadow-orange-200 dark:shadow-orange-900/30 relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:scale-110 transition-transform" />
                <div className="relative z-10 flex items-center justify-between">
                   <div className="text-left">
-                     <div className="text-white/80 text-sm font-medium mb-1">Estimated Arrival</div>
-                     <div className="text-3xl font-black">20-30 min</div>
+                     <div className="text-white/80 text-sm font-medium mb-1">Estimated Pickup Time</div>
+                     <div className="text-3xl font-black">15-20 min</div>
                   </div>
                   <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
                      <Clock className="size-8 text-white animate-pulse" />

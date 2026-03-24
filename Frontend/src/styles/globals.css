@@ -1,5 +1,16 @@
 @custom-variant dark (&:is(.dark *));
 
+/* Hide scrollbars on mobile, show on desktop */
+@media (max-width: 767px) {
+  *::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 :root {
   --font-size: 16px;
   --background: #ffffff;
@@ -183,3 +194,4 @@
 html {
   font-size: var(--font-size);
 }
+/* end of file */

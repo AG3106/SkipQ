@@ -1,16 +1,19 @@
-import { RouterProvider } from 'react-router';
-import { router } from './routes';
-import { CartProvider } from './context/CartContext';
-import { ThemeProvider } from './context/ThemeContext';
-import TrackOrderSidebar from './components/TrackOrderSidebar';
+import { RouterProvider } from "react-router";
+import { router } from "./routes";
+import { CartProvider } from "./context/CartContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { WalletProvider } from "./context/WalletContext";
+import { Toaster } from "sonner@2.0.3";
 
 function App() {
   return (
     <ThemeProvider>
-      <CartProvider>
-        <RouterProvider router={router} />
-        <TrackOrderSidebar />
-      </CartProvider>
+      <WalletProvider>
+        <CartProvider>
+          <RouterProvider router={router} />
+          <Toaster position="top-right" richColors />
+        </CartProvider>
+      </WalletProvider>
     </ThemeProvider>
   );
 }

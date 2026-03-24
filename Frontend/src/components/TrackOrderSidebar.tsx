@@ -1,45 +1,53 @@
 import { useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { motion, AnimatePresence } from "motion/react";
-import { Package, Truck, CheckCircle, Clock, MapPin, X, ChefHat, Phone } from "lucide-react";
+import { Package, CheckCircle, Clock, X, ChefHat, Phone } from "lucide-react";
 
 // Mock order data
 const mockOrders = [
   {
     id: "ORD-2026-001",
-    status: "delivered",
+    status: "collected",
     items: ["Paneer Tikka", "Dal Makhani", "Naan"],
     total: 285.50,
-    deliveryTime: "12:45 PM",
+    pickupTime: "12:45 PM",
     orderTime: "12:20 PM",
     canteen: "Hall 3 Canteen",
-    deliveryAddress: "Room 204, Hall 3",
   },
   {
     id: "ORD-2026-002",
-    status: "in-transit",
+    status: "ready",
     items: ["Chicken Biryani", "Raita", "Gulab Jamun"],
     total: 320.00,
-    deliveryTime: "1:15 PM",
+    pickupTime: "1:15 PM",
     orderTime: "12:50 PM",
     canteen: "Hall 1 Canteen",
-    deliveryAddress: "Room 305, Hall 3",
   },
   {
     id: "ORD-2026-003",
     status: "preparing",
     items: ["Veg Thali", "Sweet Lassi"],
     total: 180.00,
-    deliveryTime: "1:30 PM (Est.)",
+    pickupTime: "1:30 PM (Est.)",
     orderTime: "1:05 PM",
     canteen: "Hall 5 Canteen",
-    deliveryAddress: "Room 305, Hall 3",
   },
 ];
 
 export default function TrackOrderSidebar() {
   const { isTrackOrderOpen, setIsTrackOrderOpen } = useCart();
   const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isTrackOrderOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isTrackOrderOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -59,10 +67,10 @@ export default function TrackOrderSidebar() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "delivered":
+      case "collected":
         return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case "in-transit":
-        return <Truck className="w-5 h-5 text-[#D4725C]" />;
+      case "ready":
+        return <Package className="w-5 h-5 text-[#D4725C]" />;
       case "preparing":
         return <ChefHat className="w-5 h-5 text-orange-500" />;
       default:
@@ -72,10 +80,10 @@ export default function TrackOrderSidebar() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "delivered":
-        return "Delivered";
-      case "in-transit":
-        return "On the way";
+      case "collected":
+        return "Collected";
+      case "ready":
+        return "Ready";
       case "preparing":
         return "Preparing";
       default:
@@ -85,9 +93,9 @@ export default function TrackOrderSidebar() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "delivered":
+      case "collected":
         return "bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-400 border-green-200 dark:border-green-800";
-      case "in-transit":
+      case "ready":
         return "bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] dark:text-orange-400 border-[#D4725C]/20 dark:border-[#D4725C]/30";
       case "preparing":
         return "bg-orange-100 dark:bg-orange-950/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800";
@@ -174,19 +182,19 @@ export default function TrackOrderSidebar() {
                     </div>
 
                     {/* Progress Bar for active orders */}
-                    {order.status !== "delivered" && (
+                    {order.status !== "collected" && (
                       <div className="mb-5">
                         <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2 tracking-wider">
-                          <span className={order.status === 'preparing' || order.status === 'in-transit' ? 'text-[#D4725C]' : ''}>Placed</span>
-                          <span className={order.status === 'preparing' || order.status === 'in-transit' ? 'text-[#D4725C]' : ''}>Cooking</span>
-                          <span className={order.status === 'in-transit' ? 'text-[#D4725C]' : ''}>On way</span>
+                          <span className={order.status === 'preparing' || order.status === 'ready' ? 'text-[#D4725C]' : ''}>Placed</span>
+                          <span className={order.status === 'preparing' || order.status === 'ready' ? 'text-[#D4725C]' : ''}>Cooking</span>
+                          <span className={order.status === 'ready' ? 'text-[#D4725C]' : ''}>Ready</span>
                           <span>Done</span>
                         </div>
                         <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-gradient-to-r from-[#D4725C] to-[#B85A4A] shadow-[0_0_10px_rgba(212,114,92,0.5)] transition-all duration-1000 ease-out relative"
                             style={{ 
-                              width: order.status === "preparing" ? "40%" : order.status === "in-transit" ? "75%" : "100%" 
+                              width: order.status === "preparing" ? "40%" : order.status === "ready" ? "75%" : "100%" 
                             }}
                           >
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-sm" />
@@ -212,11 +220,11 @@ export default function TrackOrderSidebar() {
                     <div className="flex items-center justify-between pt-2 border-t border-gray-100/50 dark:border-gray-800/50">
                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                           <Clock className="size-3.5" />
-                          <span>{order.status === 'delivered' ? 'Delivered' : 'Est. Delivery'}: <span className="text-gray-900 dark:text-white font-bold">{order.deliveryTime}</span></span>
+                          <span>{order.status === 'collected' ? 'Collected' : 'Est. Pickup'}: <span className="text-gray-900 dark:text-white font-bold">{order.pickupTime}</span></span>
                        </div>
-                       {order.status !== 'delivered' && (
+                       {order.status !== 'collected' && (
                          <button className="text-xs font-bold text-[#D4725C] hover:underline flex items-center gap-1">
-                           <Phone className="size-3" /> Call Rider
+                           <Phone className="size-3" /> Call Canteen
                          </button>
                        )}
                     </div>

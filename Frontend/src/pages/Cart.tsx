@@ -9,9 +9,8 @@ import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, getTotalPrice } = useCart();
 
-  const deliveryFee = cart.length > 0 ? (getTotalPrice() >= 100 ? 0 : 20) : 0;
   const tax = getTotalPrice() * 0.05; // 5% tax
-  const totalAmount = getTotalPrice() + deliveryFee + tax;
+  const totalAmount = getTotalPrice() + tax;
 
   const getImageForCategory = (category: string) => {
     switch (category) {
@@ -50,7 +49,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
          <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -164,11 +163,6 @@ export default function Cart() {
                 </div>
                 
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Delivery Fee</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">₹{deliveryFee.toFixed(2)}</span>
-                </div>
-                
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Tax (5%)</span>
                   <span className="font-semibold text-gray-900 dark:text-white">₹{tax.toFixed(2)}</span>
                 </div>
@@ -180,12 +174,6 @@ export default function Cart() {
                   </div>
                 </div>
               </div>
-
-              {getTotalPrice() < 100 && (
-                <div className="bg-orange-50/50 dark:bg-orange-900/30 border border-orange-100 dark:border-orange-800 rounded-xl p-4 mb-6 text-sm text-gray-700 dark:text-gray-300">
-                  Add <span className="font-bold text-[#D4725C]">₹{(100 - getTotalPrice()).toFixed(0)}</span> more to get free delivery!
-                </div>
-              )}
 
               <Link to="/checkout">
                 <Button className="w-full bg-gradient-to-r from-[#D4725C] to-[#B85A4A] hover:shadow-lg hover:shadow-orange-200 dark:hover:shadow-orange-900/50 text-white py-6 rounded-xl text-lg font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98]">
