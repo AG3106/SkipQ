@@ -287,3 +287,137 @@ class CanteenAPITest(TestCase):
         }, format="multipart")
         self.assertEqual(resp.status_code, 201)
         self.assertTrue(Canteen.objects.filter(name="New Reg Canteen").exists())
+
+
+# ============================================================
+# Monthly revenue tests
+# ============================================================
+
+class MonthlyRevenueServiceTest(TestCase):
+    """Tests for analytics_service.get_monthly_revenue."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from apps.orders.models import Order, OrderItem
+
+        cls.mgr_user = User.objects.create_user("rev@iitk.ac.in", "pw", role="MANAGER")
+        cls.mgr = CanteenManagerProfile.objects.create(user=cls.mgr_user)
+        cls.cust_user = User.objects.create_user("crev@iitk.ac.in", "pw", role="CUSTOMER")
+        cls.cust = CustomerProfile.objects.create(user=cls.cust_user, name="RevCust")
+        cls.canteen = Canteen.objects.create(
+            name="Revenue Canteen", location="Hall R",
+            opening_time="08:00", closing_time="22:00",
+            manager=cls.mgr, status=Canteen.Status.ACTIVE,
+        )
+        cls.dish_a = Dish.objects.create(
+            canteen=cls.canteen, name="DishA", price=Decimal("100.00"), is_veg=True,
+        )
+        cls.dish_b = Dish.objects.create(
+            canteen=cls.canteen, name="DishB", price=Decimal("50.00"), is_veg=True,
+        )
+
+        # Completed order in March 2026: DishA × 3 @ ₹100, DishB × 2 @ ₹50
+        order1 = Order.objects.create(
+            customer=cls.cust, canteen=cls.canteen, status=Order.Status.COMPLETED,
+        )
+        # Override book_time to March 2026
+        Order.objects.filter(pk=order1.pk).update(book_time="2026-03-10T12:00:00Z")
+        OrderItem.objects.create(order=order1, dish=cls.dish_a, quantity=3, price_at_order=Decimal("100.00"))
+        OrderItem.objects.create(order=order1, dish=cls.dish_b, quantity=2, price_at_order=Decimal("50.00"))
+
+        # Another completed order in March 2026: DishA × 1 @ ₹100
+        order2 = Order.objects.create(
+            customer=cls.cust, canteen=cls.canteen, status=Order.Status.COMPLETED,
+        )
+        Order.objects.filter(pk=order2.pk).update(book_time="2026-03-15T12:00:00Z")
+        OrderItem.objects.create(order=order2, dish=cls.dish_a, quantity=1, price_at_order=Decimal("100.00"))
+
+        # PENDING order in March (should be excluded)
+        order3 = Order.objects.create(
+            customer=cls.cust, canteen=cls.canteen, status=Order.Status.PENDING,
+        )
+        Order.objects.filter(pk=order3.pk).update(book_time="2026-03-20T12:00:00Z")
+        OrderItem.objects.create(order=order3, dish=cls.dish_a, quantity=5, price_at_order=Decimal("100.00"))
+
+        # Completed order in February (different month, should be excluded)
+        order4 = Order.objects.create(
+            customer=cls.cust, canteen=cls.canteen, status=Order.Status.COMPLETED,
+        )
+        Order.objects.filter(pk=order4.pk).update(book_time="2026-02-10T12:00:00Z")
+        OrderItem.objects.create(order=order4, dish=cls.dish_b, quantity=10, price_at_order=Decimal("50.00"))
+
+    def test_monthly_revenue_total(self):
+        from apps.canteens.services.analytics_service import get_monthly_revenue
+        result = get_monthly_revenue(self.canteen, 2026, 3)
+        # DishA: (3 + 1) × 100 = 400, DishB: 2 × 50 = 100 → total = 500
+        self.assertEqual(result["total_revenue"], "500.00")
+
+    def test_monthly_revenue_dish_breakdown(self):
+        from apps.canteens.services.analytics_service import get_monthly_revenue
+        result = get_monthly_revenue(self.canteen, 2026, 3)
+        dishes = {d["dish_name"]: d for d in result["dishes"]}
+        self.assertIn("DishA", dishes)
+        self.assertIn("DishB", dishes)
+        self.assertEqual(dishes["DishA"]["revenue"], "400.00")
+        self.assertEqual(dishes["DishA"]["quantity_sold"], 4)
+        self.assertEqual(dishes["DishB"]["revenue"], "100.00")
+        self.assertEqual(dishes["DishB"]["quantity_sold"], 2)
+
+    def test_monthly_revenue_excludes_other_months(self):
+        from apps.canteens.services.analytics_service import get_monthly_revenue
+        result = get_monthly_revenue(self.canteen, 2026, 2)
+        # Only the Feb order: DishB × 10 @ 50 = 500
+        self.assertEqual(result["total_revenue"], "500.00")
+        self.assertEqual(len(result["dishes"]), 1)
+
+    def test_monthly_revenue_empty_month(self):
+        from apps.canteens.services.analytics_service import get_monthly_revenue
+        result = get_monthly_revenue(self.canteen, 2026, 1)
+        self.assertEqual(result["total_revenue"], "0.00")
+        self.assertEqual(len(result["dishes"]), 0)
+
+
+class MonthlyRevenueAPITest(TestCase):
+    """Tests for the /api/canteens/manager/monthly-revenue/ endpoint."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from apps.orders.models import Order, OrderItem
+
+        cls.mgr_user = User.objects.create_user("apirev@iitk.ac.in", "pw", role="MANAGER")
+        cls.mgr = CanteenManagerProfile.objects.create(user=cls.mgr_user)
+        cls.cust_user = User.objects.create_user("apicc@iitk.ac.in", "pw", role="CUSTOMER")
+        cls.cust = CustomerProfile.objects.create(user=cls.cust_user, name="APICust")
+        cls.canteen = Canteen.objects.create(
+            name="API Rev Canteen", location="Hall AR",
+            opening_time="08:00", closing_time="22:00",
+            manager=cls.mgr, status=Canteen.Status.ACTIVE,
+        )
+        dish = Dish.objects.create(
+            canteen=cls.canteen, name="APIDish", price=Decimal("80.00"), is_veg=True,
+        )
+        order = Order.objects.create(
+            customer=cls.cust, canteen=cls.canteen, status=Order.Status.COMPLETED,
+        )
+        Order.objects.filter(pk=order.pk).update(book_time="2026-03-12T12:00:00Z")
+        OrderItem.objects.create(order=order, dish=dish, quantity=2, price_at_order=Decimal("80.00"))
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_monthly_revenue_success(self):
+        self.client.force_authenticate(user=self.mgr_user)
+        resp = self.client.get("/api/canteens/manager/monthly-revenue/?year=2026&month=3")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["total_revenue"], "160.00")
+        self.assertEqual(len(resp.data["dishes"]), 1)
+
+    def test_monthly_revenue_forbidden_for_customer(self):
+        self.client.force_authenticate(user=self.cust_user)
+        resp = self.client.get("/api/canteens/manager/monthly-revenue/")
+        self.assertEqual(resp.status_code, 403)
+
+    def test_monthly_revenue_invalid_month(self):
+        self.client.force_authenticate(user=self.mgr_user)
+        resp = self.client.get("/api/canteens/manager/monthly-revenue/?month=13")
+        self.assertEqual(resp.status_code, 400)

@@ -647,3 +647,52 @@ def manager_dish_analytics(request):
         "top_5_by_frequency": top_by_frequency,
         "top_5_by_revenue": top_by_revenue,
     })
+
+
+# ---------------------------------------------------------------------------
+# Manager monthly revenue — dish-level breakdown for a specific month
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def manager_monthly_revenue(request):
+    """
+    GET /api/canteens/manager/monthly-revenue/?year=2026&month=3
+
+    Returns per-dish revenue breakdown for the manager's canteen
+    in a given month. Revenue = Σ (price_at_order × quantity) for
+    completed orders.
+
+    Query params:
+      - year  (int, defaults to current year)
+      - month (int 1–12, defaults to current month)
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can view monthly revenue"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        canteen = request.user.manager_profile.canteen
+    except Exception:
+        return Response({"error": "No canteen assigned"}, status=status.HTTP_404_NOT_FOUND)
+
+    from django.utils import timezone as tz
+    now = tz.localtime()
+
+    year = request.query_params.get("year", now.year)
+    month = request.query_params.get("month", now.month)
+    try:
+        year = int(year)
+        month = int(month)
+        if not (1 <= month <= 12):
+            raise ValueError
+    except (ValueError, TypeError):
+        return Response({"error": "Invalid year or month parameter"}, status=status.HTTP_400_BAD_REQUEST)
+
+    from apps.canteens.services import analytics_service
+    revenue_data = analytics_service.get_monthly_revenue(canteen, year, month)
+
+    return Response({
+        "canteen_id": canteen.pk,
+        "canteen_name": canteen.name,
+        **revenue_data,
+    })

@@ -8,8 +8,9 @@ frequency and revenue analytics.
 
 import logging
 from datetime import timedelta
+from decimal import Decimal
 
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, DecimalField
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 
@@ -122,3 +123,82 @@ def get_top_dishes_by_revenue(canteen, limit=5):
         }
         for e in qs
     ]
+
+
+# ---------------------------------------------------------------------------
+# Monthly revenue — dish-level breakdown for a specific month
+# ---------------------------------------------------------------------------
+
+def get_monthly_revenue(canteen, year, month):
+    """
+    Returns the monthly revenue for a canteen, computed as:
+      Σ (price_at_order × quantity) for all OrderItems
+      in completed orders within the given year/month.
+
+    Args:
+        canteen: Canteen instance.
+        year: int (e.g. 2026).
+        month: int (1–12).
+
+    Returns:
+        dict: {
+            "year": 2026,
+            "month": 3,
+            "dishes": [
+                {"dish_id": 1, "dish_name": "Dosa", "quantity_sold": 15, "revenue": "900.00"},
+                ...
+            ],
+            "total_revenue": "4500.00"
+        }
+    """
+    qs = OrderItem.objects.filter(
+        order__canteen=canteen,
+        order__status=Order.Status.COMPLETED,
+        order__book_time__year=year,
+        order__book_time__month=month,
+    )
+
+    dish_breakdown = (
+        qs
+        .values("dish__id", "dish__name")
+        .annotate(
+            quantity_sold=Sum("quantity"),
+            revenue=Sum(
+                F("price_at_order") * F("quantity"),
+                output_field=DecimalField(max_digits=10, decimal_places=2),
+            ),
+        )
+        .order_by("-revenue")
+    )
+
+    TWO_PLACES = Decimal("0.01")
+
+    dishes = [
+        {
+            "dish_id": e["dish__id"],
+            "dish_name": e["dish__name"],
+            "quantity_sold": e["quantity_sold"],
+            "revenue": str(Decimal(str(e["revenue"])).quantize(TWO_PLACES)),
+        }
+        for e in dish_breakdown
+    ]
+
+    total = qs.aggregate(
+        total=Sum(
+            F("price_at_order") * F("quantity"),
+            output_field=DecimalField(max_digits=10, decimal_places=2),
+        ),
+    )["total"] or 0
+    total = Decimal(str(total)).quantize(TWO_PLACES)
+
+    logger.info(
+        "Monthly revenue for canteen '%s' (%d-%02d): %s",
+        canteen.name, year, month, total,
+    )
+
+    return {
+        "year": year,
+        "month": month,
+        "dishes": dishes,
+        "total_revenue": str(total),
+    }

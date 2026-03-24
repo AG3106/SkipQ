@@ -46,4 +46,7 @@ urlpatterns = [
 
     # Manager dish analytics — frequency & revenue for last 30 days
     path("manager/dish-analytics/", views.manager_dish_analytics, name="manager-dish-analytics"),
+
+    # Manager monthly revenue — per-dish revenue breakdown for a specific month
+    path("manager/monthly-revenue/", views.manager_monthly_revenue, name="manager-monthly-revenue"),
 ]
