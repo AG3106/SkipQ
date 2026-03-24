@@ -466,22 +466,34 @@ class OrderServiceTest(TestCase):
         order_service.accept_order(order)
         order_service.mark_order_ready(order)
         order_service.mark_order_completed(order)
-        order = order_service.rate_order(order, self.cust, 5, "Great!")
+        order = order_service.rate_order(
+            order, self.cust,
+            [{"dish_id": self.dish.pk, "rating": 5}],
+        )
         self.assertTrue(order.is_rated)
 
     def test_rate_non_completed_fails(self):
         order = self._place()
         with self.assertRaises(ValueError):
-            order_service.rate_order(order, self.cust, 5)
+            order_service.rate_order(
+                order, self.cust,
+                [{"dish_id": self.dish.pk, "rating": 5}],
+            )
 
     def test_double_rate_fails(self):
         order = self._place()
         order_service.accept_order(order)
         order_service.mark_order_ready(order)
         order_service.mark_order_completed(order)
-        order_service.rate_order(order, self.cust, 4)
+        order_service.rate_order(
+            order, self.cust,
+            [{"dish_id": self.dish.pk, "rating": 4}],
+        )
         with self.assertRaises(ValueError):
-            order_service.rate_order(order, self.cust, 4)
+            order_service.rate_order(
+                order, self.cust,
+                [{"dish_id": self.dish.pk, "rating": 4}],
+            )
 
 
 # ============================================================
@@ -631,7 +643,9 @@ class OrderAPITest(TestCase):
         self.client.post(f"/api/orders/{oid}/ready/")
         self.client.post(f"/api/orders/{oid}/complete/")
         self.client.force_authenticate(user=self.cust_user)
-        resp2 = self.client.post(f"/api/orders/{oid}/rate/", {"rating": 5}, format="json")
+        resp2 = self.client.post(f"/api/orders/{oid}/rate/", {
+            "ratings": [{"dish_id": self.dish.pk, "rating": 5}],
+        }, format="json")
         self.assertEqual(resp2.status_code, 200)
 
     def test_manager_order_history(self):
@@ -639,3 +653,223 @@ class OrderAPITest(TestCase):
         self.client.force_authenticate(user=self.mgr_user)
         resp = self.client.get("/api/orders/manager-history/")
         self.assertEqual(resp.status_code, 200)
+
+
+# ============================================================
+# Previous Order endpoint tests
+# ============================================================
+
+class PreviousOrderViewTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.cust_user = User.objects.create_user("prevord@iitk.ac.in", "pw", role="CUSTOMER")
+        cls.cust = CustomerProfile.objects.create(
+            user=cls.cust_user, name="PrevOrd",
+            wallet_balance=Decimal("5000"),
+            wallet_pin_hash=hash_wallet_pin("1234"),
+        )
+        cls.mgr_user = User.objects.create_user("prevmgr@iitk.ac.in", "pw", role="MANAGER")
+        cls.mgr = CanteenManagerProfile.objects.create(user=cls.mgr_user)
+        cls.canteen = Canteen.objects.create(
+            name="PrevOrd Canteen", location="H4",
+            opening_time="00:00", closing_time="23:59",
+            manager=cls.mgr, status=Canteen.Status.OPEN,
+        )
+        cls.dish1 = Dish.objects.create(
+            canteen=cls.canteen, name="Masala Dosa", price=Decimal("70"),
+            is_available=True, is_veg=True,
+        )
+        cls.dish2 = Dish.objects.create(
+            canteen=cls.canteen, name="Idli Sambar", price=Decimal("50"),
+            is_available=True, is_veg=True,
+        )
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_403_for_unauthenticated(self):
+        resp = self.client.get("/api/orders/previous-order/")
+        self.assertIn(resp.status_code, [401, 403])
+
+    def test_403_for_manager(self):
+        self.client.force_authenticate(user=self.mgr_user)
+        resp = self.client.get("/api/orders/previous-order/")
+        self.assertEqual(resp.status_code, 403)
+
+    def test_404_when_no_orders(self):
+        self.client.force_authenticate(user=self.cust_user)
+        resp = self.client.get("/api/orders/previous-order/")
+        self.assertEqual(resp.status_code, 404)
+
+    def test_returns_last_completed_order(self):
+        # Place an order and complete it
+        self.client.force_authenticate(user=self.cust_user)
+        resp = self.client.post("/api/orders/place/", {
+            "canteen_id": self.canteen.pk,
+            "items": [
+                {"dish_id": self.dish1.pk, "quantity": 2},
+                {"dish_id": self.dish2.pk, "quantity": 1},
+            ],
+            "wallet_pin": "1234",
+        }, format="json")
+        self.assertEqual(resp.status_code, 201)
+        oid = resp.data["order"]["id"]
+
+        # Complete the order lifecycle
+        self.client.force_authenticate(user=self.mgr_user)
+        self.client.post(f"/api/orders/{oid}/accept/")
+        self.client.post(f"/api/orders/{oid}/ready/")
+        self.client.post(f"/api/orders/{oid}/complete/")
+
+        # Now fetch previous order
+        self.client.force_authenticate(user=self.cust_user)
+        resp = self.client.get("/api/orders/previous-order/")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.data
+        self.assertEqual(data["id"], oid)
+        self.assertEqual(data["status"], "COMPLETED")
+        self.assertFalse(data["is_rated"])
+        self.assertEqual(len(data["items"]), 2)
+        self.assertIn("canteen_name", data)
+        self.assertIn("total", data)
+        # Check dish details in items
+        dish_names = {item["dish_name"] for item in data["items"]}
+        self.assertIn("Masala Dosa", dish_names)
+        self.assertIn("Idli Sambar", dish_names)
+
+
+# ============================================================
+# Detailed Order History endpoint tests
+# ============================================================
+
+class OrderHistoryDetailedViewTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.cust_user = User.objects.create_user("histdet@iitk.ac.in", "pw", role="CUSTOMER")
+        cls.cust = CustomerProfile.objects.create(
+            user=cls.cust_user, name="HistDet",
+            wallet_balance=Decimal("10000"),
+            wallet_pin_hash=hash_wallet_pin("1234"),
+        )
+        cls.mgr_user = User.objects.create_user("histmgr@iitk.ac.in", "pw", role="MANAGER")
+        cls.mgr = CanteenManagerProfile.objects.create(user=cls.mgr_user)
+        cls.canteen = Canteen.objects.create(
+            name="HistDet Canteen", location="H5",
+            opening_time="00:00", closing_time="23:59",
+            manager=cls.mgr, status=Canteen.Status.OPEN,
+        )
+        cls.dish = Dish.objects.create(
+            canteen=cls.canteen, name="Paratha", price=Decimal("60"),
+            is_available=True, is_veg=True,
+        )
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_403_for_unauthenticated(self):
+        resp = self.client.get("/api/orders/history/detailed/")
+        self.assertIn(resp.status_code, [401, 403])
+
+    def test_403_for_manager(self):
+        self.client.force_authenticate(user=self.mgr_user)
+        resp = self.client.get("/api/orders/history/detailed/")
+        self.assertEqual(resp.status_code, 403)
+
+    def test_empty_history(self):
+        self.client.force_authenticate(user=self.cust_user)
+        resp = self.client.get("/api/orders/history/detailed/")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data), 0)
+
+    def test_returns_completed_orders_with_details(self):
+        self.client.force_authenticate(user=self.cust_user)
+
+        # Place and complete two orders
+        for _ in range(2):
+            resp = self.client.post("/api/orders/place/", {
+                "canteen_id": self.canteen.pk,
+                "items": [{"dish_id": self.dish.pk, "quantity": 1}],
+                "wallet_pin": "1234",
+            }, format="json")
+            oid = resp.data["order"]["id"]
+            self.client.force_authenticate(user=self.mgr_user)
+            self.client.post(f"/api/orders/{oid}/accept/")
+            self.client.post(f"/api/orders/{oid}/ready/")
+            self.client.post(f"/api/orders/{oid}/complete/")
+            self.client.force_authenticate(user=self.cust_user)
+
+        resp = self.client.get("/api/orders/history/detailed/")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data), 2)
+
+        # Check each order has required fields
+        for order_data in resp.data:
+            self.assertIn("id", order_data)
+            self.assertIn("canteen_name", order_data)
+            self.assertIn("canteen_id", order_data)
+            self.assertIn("status", order_data)
+            self.assertIn("book_time", order_data)
+            self.assertIn("is_rated", order_data)
+            self.assertIn("total", order_data)
+            self.assertIn("items", order_data)
+            self.assertIn("payment", order_data)
+            self.assertTrue(len(order_data["items"]) > 0)
+            self.assertEqual(order_data["items"][0]["dish_name"], "Paratha")
+
+    def test_is_rated_flag(self):
+        self.client.force_authenticate(user=self.cust_user)
+
+        # Place and complete an order
+        resp = self.client.post("/api/orders/place/", {
+            "canteen_id": self.canteen.pk,
+            "items": [{"dish_id": self.dish.pk, "quantity": 1}],
+            "wallet_pin": "1234",
+        }, format="json")
+        oid = resp.data["order"]["id"]
+        self.client.force_authenticate(user=self.mgr_user)
+        self.client.post(f"/api/orders/{oid}/accept/")
+        self.client.post(f"/api/orders/{oid}/ready/")
+        self.client.post(f"/api/orders/{oid}/complete/")
+
+        # Before rating
+        self.client.force_authenticate(user=self.cust_user)
+        resp = self.client.get("/api/orders/history/detailed/")
+        unrated = [o for o in resp.data if o["id"] == oid]
+        self.assertEqual(len(unrated), 1)
+        self.assertFalse(unrated[0]["is_rated"])
+
+        # Rate the order
+        self.client.post(f"/api/orders/{oid}/rate/", {
+            "ratings": [{"dish_id": self.dish.pk, "rating": 5}],
+        }, format="json")
+
+        # After rating
+        resp = self.client.get("/api/orders/history/detailed/")
+        rated = [o for o in resp.data if o["id"] == oid]
+        self.assertEqual(len(rated), 1)
+        self.assertTrue(rated[0]["is_rated"])
+
+    def test_orders_sorted_most_recent_first(self):
+        self.client.force_authenticate(user=self.cust_user)
+
+        order_ids = []
+        for _ in range(2):
+            resp = self.client.post("/api/orders/place/", {
+                "canteen_id": self.canteen.pk,
+                "items": [{"dish_id": self.dish.pk, "quantity": 1}],
+                "wallet_pin": "1234",
+            }, format="json")
+            oid = resp.data["order"]["id"]
+            order_ids.append(oid)
+            self.client.force_authenticate(user=self.mgr_user)
+            self.client.post(f"/api/orders/{oid}/accept/")
+            self.client.post(f"/api/orders/{oid}/ready/")
+            self.client.post(f"/api/orders/{oid}/complete/")
+            self.client.force_authenticate(user=self.cust_user)
+
+        resp = self.client.get("/api/orders/history/detailed/")
+        returned_ids = [o["id"] for o in resp.data]
+        # Most recent first (order_ids[-1] was created last)
+        self.assertEqual(returned_ids[0], order_ids[-1])

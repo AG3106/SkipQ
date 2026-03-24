@@ -13,6 +13,12 @@ urlpatterns = [
     # Customer order history — viewOrderHistory() from class diagram
     path("history/", views.order_history, name="order-history"),
 
+    # Previous order — dishes from the user's most recent order
+    path("previous-order/", views.previous_order, name="previous-order"),
+
+    # Detailed order history — comprehensive order history with dish details
+    path("history/detailed/", views.order_history_detailed, name="order-history-detailed"),
+
     # Manager views — Order/phase3 sequence diagram
     path("pending/", views.pending_orders, name="pending-orders"),
     path("active/", views.active_orders, name="active-orders"),

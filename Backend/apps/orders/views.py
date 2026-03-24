@@ -17,6 +17,7 @@ from apps.canteens.models import Canteen
 from apps.orders.models import Order
 from apps.orders.serializers import (
     OrderSerializer,
+    OrderHistorySerializer,
     PlaceOrderSerializer,
     OrderActionSerializer,
     RateOrderSerializer,
@@ -401,6 +402,46 @@ def rate_order(request, order_id):
         )
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# Previous order & detailed order history
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def previous_order(request):
+    """
+    GET /api/orders/previous-order/
+
+    Returns the user's most recent completed/terminal order with
+    enriched dish details. Used by frontend for "Previous Orders" display.
+    """
+    if request.user.role != User.Role.CUSTOMER:
+        return Response({"error": "Only customers have order history"}, status=status.HTTP_403_FORBIDDEN)
+
+    order = order_service.get_last_order(request.user.customer_profile)
+    if order is None:
+        return Response({"error": "No previous orders found"}, status=status.HTTP_404_NOT_FOUND)
+
+    return Response(OrderHistorySerializer(order).data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def order_history_detailed(request):
+    """
+    GET /api/orders/history/detailed/
+
+    Returns comprehensive order history for the customer with enriched
+    dish details, is_rated status, total price, and payment info.
+    Used by frontend for the "Order History" page.
+    """
+    if request.user.role != User.Role.CUSTOMER:
+        return Response({"error": "Only customers have order history"}, status=status.HTTP_403_FORBIDDEN)
+
+    orders = order_service.get_detailed_order_history(request.user.customer_profile)
+    return Response(OrderHistorySerializer(orders, many=True).data)
 
 
 # ---------------------------------------------------------------------------

@@ -279,6 +279,48 @@ def get_order_history(customer_profile):
     )
 
 
+def get_last_order(customer_profile):
+    """
+    Returns the most recent terminal-state order for a customer,
+    with prefetched items and dishes for efficient serialization.
+    Returns None if no terminal orders exist.
+    """
+    return Order.objects.filter(
+        customer=customer_profile,
+        status__in=[
+            Order.Status.COMPLETED,
+            Order.Status.REFUNDED,
+            Order.Status.CANCELLED,
+            Order.Status.REJECTED,
+        ],
+    ).select_related(
+        "canteen", "payment",
+    ).prefetch_related(
+        "items__dish",
+    ).first()
+
+
+def get_detailed_order_history(customer_profile):
+    """
+    Returns all terminal-state orders for a customer with prefetched
+    items, dishes, and payment for efficient serialization on the
+    order history page.
+    """
+    return Order.objects.filter(
+        customer=customer_profile,
+        status__in=[
+            Order.Status.COMPLETED,
+            Order.Status.REFUNDED,
+            Order.Status.CANCELLED,
+            Order.Status.REJECTED,
+        ],
+    ).select_related(
+        "canteen", "payment",
+    ).prefetch_related(
+        "items__dish",
+    )
+
+
 def get_manager_order_history(canteen):
     """
     Returns full order history for a canteen (all statuses),

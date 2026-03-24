@@ -52,6 +52,37 @@ class OrderSerializer(serializers.ModelSerializer):
         return obj.get_dynamic_wait_time()
 
 
+class OrderHistoryItemSerializer(serializers.ModelSerializer):
+    """Line item with dish details for order history."""
+    dish_name = serializers.CharField(source="dish.name", read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ["id", "dish", "dish_name", "quantity", "price_at_order"]
+        read_only_fields = fields
+
+
+class OrderHistorySerializer(serializers.ModelSerializer):
+    """Comprehensive order representation for order history pages."""
+    items = OrderHistoryItemSerializer(many=True, read_only=True)
+    payment = PaymentSerializer(read_only=True)
+    total = serializers.SerializerMethodField()
+    canteen_name = serializers.CharField(source="canteen.name", read_only=True)
+    canteen_id = serializers.IntegerField(source="canteen.pk", read_only=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            "id", "canteen_id", "canteen_name", "status",
+            "book_time", "receive_time", "is_rated",
+            "items", "payment", "total",
+        ]
+        read_only_fields = fields
+
+    def get_total(self, obj):
+        return str(obj.calculate_total())
+
+
 class PlaceOrderSerializer(serializers.Serializer):
     """
     Request: placeOrder(userID, items, pinHash)
