@@ -60,6 +60,8 @@ def place_order(request):
             items=data["items"],
             wallet_pin=data["wallet_pin"],
             notes=data.get("notes", ""),
+            customer_name=data.get("customer_name", ""),
+            roll_no=data.get("roll_no", ""),
         )
         return Response(
             {"message": "Order placed successfully", "order": OrderSerializer(order).data},

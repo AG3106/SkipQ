@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router';
 import { Mail, KeyRound, Lock, ArrowLeft, CheckCircle2, ShieldCheck, LogIn } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { motion, AnimatePresence } from 'motion/react';
+import * as authApi from '../api/auth';
+import { ApiError } from '../api/client';
 
 type Step = 'email' | 'otp' | 'reset' | 'success';
 
@@ -11,7 +13,7 @@ export function ForgotPassword() {
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,16 +45,24 @@ export function ForgotPassword() {
     }
   }, [newPassword, confirmPassword]);
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    // Generate a mock 6-digit OTP
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    setGeneratedOtp(code);
-    setResendTimer(30);
-    toast.success(`OTP sent to ${email} (Mock OTP: ${code})`);
-    setStep('otp');
+    setIsLoading(true);
+    try {
+      await authApi.forgotPassword(email);
+      setResendTimer(30);
+      toast.success(`OTP sent to ${email}`);
+      setStep('otp');
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError('Failed to send OTP. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -66,9 +76,12 @@ export function ForgotPassword() {
       otpRefs.current[index + 1]?.focus();
     }
 
-    // Auto-verify when all 6 digits entered
+    // Auto-advance when all 6 digits entered
     if (newOtp.every(d => d !== '') && newOtp.join('').length === 6) {
-      setTimeout(() => verifyOtp(newOtp.join('')), 300);
+      setTimeout(() => {
+        toast.success('OTP entered — now set your new password');
+        setStep('reset');
+      }, 300);
     }
   };
 
@@ -85,32 +98,42 @@ export function ForgotPassword() {
       const newOtp = pasted.split('');
       setOtp(newOtp);
       otpRefs.current[5]?.focus();
-      setTimeout(() => verifyOtp(pasted), 300);
+      setTimeout(() => {
+        toast.success('OTP entered — now set your new password');
+        setStep('reset');
+      }, 300);
     }
   };
 
-  const verifyOtp = (enteredOtp: string) => {
-    toast.success('OTP verified successfully!');
-    setStep('reset');
-  };
+  // OTP verification happens on the backend via reset-password endpoint
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (resendTimer > 0) return;
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    setGeneratedOtp(code);
-    setOtp(['', '', '', '', '', '']);
-    setResendTimer(30);
-    setError('');
-    toast.success(`New OTP sent! (Mock OTP: ${code})`);
-    otpRefs.current[0]?.focus();
+    setIsLoading(true);
+    try {
+      await authApi.forgotPassword(email);
+      setOtp(['', '', '', '', '', '']);
+      setResendTimer(30);
+      setError('');
+      toast.success('New OTP sent!');
+      otpRefs.current[0]?.focus();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        toast.error(err.message);
+      } else {
+        toast.error('Failed to resend OTP');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters.');
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -118,16 +141,27 @@ export function ForgotPassword() {
       return;
     }
 
-    // Update password in localStorage
-    const existingUser = localStorage.getItem('skipq-user');
-    if (existingUser) {
-      const user = JSON.parse(existingUser);
-      user.password = newPassword;
-      localStorage.setItem('skipq-user', JSON.stringify(user));
+    setIsLoading(true);
+    try {
+      await authApi.resetPassword(email, otp.join(''), newPassword);
+      toast.success('Password changed successfully!');
+      setStep('success');
+    } catch (err) {
+      if (err instanceof ApiError) {
+        // If OTP was invalid, send user back to OTP step
+        if (err.message.toLowerCase().includes('otp')) {
+          setOtp(['', '', '', '', '', '']);
+          setStep('otp');
+          toast.error(err.message);
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('Password reset failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    toast.success('Password changed successfully!');
-    setStep('success');
   };
 
   const stepVariants = {
@@ -176,23 +210,21 @@ export function ForgotPassword() {
             {['email', 'otp', 'reset'].map((s, i) => (
               <div key={s} className="flex items-center gap-2">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
-                    s === step
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${s === step
                       ? 'bg-[#D4725C] text-white scale-110'
                       : ['email', 'otp', 'reset'].indexOf(step) > i
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-                  }`}
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                    }`}
                 >
                   {['email', 'otp', 'reset'].indexOf(step) > i ? '✓' : i + 1}
                 </div>
                 {i < 2 && (
                   <div
-                    className={`w-8 h-0.5 ${
-                      ['email', 'otp', 'reset'].indexOf(step) > i
+                    className={`w-8 h-0.5 ${['email', 'otp', 'reset'].indexOf(step) > i
                         ? 'bg-green-500'
                         : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
+                      }`}
                   />
                 )}
               </div>
@@ -245,10 +277,17 @@ export function ForgotPassword() {
 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-gradient-to-r from-[#D4725C] to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#D4725C]/30 transition-all"
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-gradient-to-r from-[#D4725C] to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#D4725C]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Mail className="w-5 h-5" />
-                  <span>Send OTP</span>
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                  ) : (
+                    <>
+                      <Mail className="w-5 h-5" />
+                      <span>Send OTP</span>
+                    </>
+                  )}
                 </button>
 
                 <div className="text-center">
@@ -278,10 +317,9 @@ export function ForgotPassword() {
                   </span>
                 </div>
 
-                {/* Mock OTP Display - for demo purposes */}
-                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-center">
-                  <p className="text-xs text-amber-700 dark:text-amber-400 mb-1">Demo Mode - Your OTP is:</p>
-                  <p className="text-2xl font-bold tracking-widest text-amber-800 dark:text-amber-300">{generatedOtp}</p>
+                {/* OTP instructions */}
+                <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 text-center">
+                  <p className="text-sm text-blue-700 dark:text-blue-400">Check your email for the 6-digit verification code</p>
                 </div>
 
                 <motion.div
@@ -300,13 +338,12 @@ export function ForgotPassword() {
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className={`w-12 h-14 rounded-xl text-center text-2xl font-bold bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 ${
-                        error
+                      className={`w-12 h-14 rounded-xl text-center text-2xl font-bold bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 ${error
                           ? 'border-red-400 dark:border-red-500'
                           : digit
-                          ? 'border-[#D4725C] dark:border-[#D4725C]'
-                          : 'border-gray-200 dark:border-gray-600'
-                      }`}
+                            ? 'border-[#D4725C] dark:border-[#D4725C]'
+                            : 'border-gray-200 dark:border-gray-600'
+                        }`}
                       autoFocus={i === 0}
                     />
                   ))}
@@ -377,15 +414,15 @@ export function ForgotPassword() {
                       type="password"
                       value={newPassword}
                       onChange={(e) => { setNewPassword(e.target.value); setError(''); }}
-                      placeholder="Minimum 6 characters"
+                      placeholder="Minimum 8 characters"
                       className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50"
                       required
                       autoFocus
                     />
                   </div>
-                  {newPassword.length > 0 && newPassword.length < 6 && (
+                  {newPassword.length > 0 && newPassword.length < 8 && (
                     <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                      Password must be at least 6 characters
+                      Password must be at least 8 characters
                     </p>
                   )}
                 </div>
@@ -402,13 +439,12 @@ export function ForgotPassword() {
                       value={confirmPassword}
                       onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
                       placeholder="Re-enter your new password"
-                      className={`w-full pl-12 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 transition-colors ${
-                        passwordMatch === null
+                      className={`w-full pl-12 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 transition-colors ${passwordMatch === null
                           ? 'border-gray-200 dark:border-gray-600'
                           : passwordMatch
-                          ? 'border-green-400 dark:border-green-500'
-                          : 'border-red-400 dark:border-red-500'
-                      }`}
+                            ? 'border-green-400 dark:border-green-500'
+                            : 'border-red-400 dark:border-red-500'
+                        }`}
                       required
                     />
                     {passwordMatch !== null && (
@@ -426,21 +462,20 @@ export function ForgotPassword() {
                     className="mt-2 h-1 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700"
                   >
                     <motion.div
-                      className={`h-full rounded-full ${
-                        passwordMatch === null
+                      className={`h-full rounded-full ${passwordMatch === null
                           ? 'bg-gray-300 dark:bg-gray-600'
                           : passwordMatch
-                          ? 'bg-green-500'
-                          : 'bg-red-400'
-                      }`}
+                            ? 'bg-green-500'
+                            : 'bg-red-400'
+                        }`}
                       initial={{ width: '0%' }}
                       animate={{
                         width:
                           confirmPassword.length === 0
                             ? '0%'
                             : passwordMatch
-                            ? '100%'
-                            : `${Math.min((confirmPassword.length / newPassword.length) * 100, 90)}%`,
+                              ? '100%'
+                              : `${Math.min((confirmPassword.length / newPassword.length) * 100, 90)}%`,
                       }}
                       transition={{ duration: 0.3 }}
                     />
@@ -464,7 +499,7 @@ export function ForgotPassword() {
 
                 <button
                   type="submit"
-                  disabled={!passwordMatch || newPassword.length < 6}
+                  disabled={!passwordMatch || newPassword.length < 8 || isLoading}
                   className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-gradient-to-r from-[#D4725C] to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#D4725C]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Lock className="w-5 h-5" />

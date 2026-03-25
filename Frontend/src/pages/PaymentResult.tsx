@@ -41,18 +41,16 @@ export default function PaymentResult() {
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div
-          className={`absolute top-[10%] right-[-5%] w-[500px] h-[500px] rounded-full blur-3xl ${
-            isSuccess
+          className={`absolute top-[10%] right-[-5%] w-[500px] h-[500px] rounded-full blur-3xl ${isSuccess
               ? "bg-green-500/5 dark:bg-green-500/10"
               : "bg-red-500/5 dark:bg-red-500/10"
-          }`}
+            }`}
         />
         <div
-          className={`absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full blur-3xl ${
-            isSuccess
+          className={`absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full blur-3xl ${isSuccess
               ? "bg-emerald-500/5 dark:bg-emerald-500/10"
               : "bg-rose-500/5 dark:bg-rose-500/10"
-          }`}
+            }`}
         />
       </div>
 
@@ -64,37 +62,32 @@ export default function PaymentResult() {
           <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 dark:border-gray-800 overflow-hidden">
             {/* Top colored banner */}
             <div
-              className={`relative py-10 px-6 flex flex-col items-center ${
-                isSuccess
+              className={`relative py-10 px-6 flex flex-col items-center ${isSuccess
                   ? "bg-gradient-to-b from-green-50 to-transparent dark:from-green-950/30 dark:to-transparent"
                   : "bg-gradient-to-b from-red-50 to-transparent dark:from-red-950/30 dark:to-transparent"
-              }`}
+                }`}
             >
               {/* Decorative circles */}
               <div
-                className={`absolute top-4 left-4 w-16 h-16 rounded-full opacity-10 ${
-                  isSuccess ? "bg-green-500" : "bg-red-500"
-                }`}
+                className={`absolute top-4 left-4 w-16 h-16 rounded-full opacity-10 ${isSuccess ? "bg-green-500" : "bg-red-500"
+                  }`}
               />
               <div
-                className={`absolute bottom-8 right-6 w-10 h-10 rounded-full opacity-10 ${
-                  isSuccess ? "bg-green-500" : "bg-red-500"
-                }`}
+                className={`absolute bottom-8 right-6 w-10 h-10 rounded-full opacity-10 ${isSuccess ? "bg-green-500" : "bg-red-500"
+                  }`}
               />
 
               {/* Icon */}
               <div
-                className={`relative w-24 h-24 rounded-full flex items-center justify-center mb-5 shadow-lg ${
-                  isSuccess
+                className={`relative w-24 h-24 rounded-full flex items-center justify-center mb-5 shadow-lg ${isSuccess
                     ? "bg-green-100 dark:bg-green-900/50 shadow-green-200/50 dark:shadow-green-900/30"
                     : "bg-red-100 dark:bg-red-900/50 shadow-red-200/50 dark:shadow-red-900/30"
-                }`}
+                  }`}
               >
                 {/* Animated ring */}
                 <div
-                  className={`absolute inset-0 rounded-full border-4 animate-ping opacity-20 ${
-                    isSuccess ? "border-green-400" : "border-red-400"
-                  }`}
+                  className={`absolute inset-0 rounded-full border-4 animate-ping opacity-20 ${isSuccess ? "border-green-400" : "border-red-400"
+                    }`}
                   style={{ animationDuration: "2s", animationIterationCount: "3" }}
                 />
                 {isSuccess ? (
@@ -106,11 +99,10 @@ export default function PaymentResult() {
 
               {/* Status text */}
               <h1
-                className={`text-2xl font-extrabold mb-1 ${
-                  isSuccess
+                className={`text-2xl font-extrabold mb-1 ${isSuccess
                     ? "text-green-700 dark:text-green-400"
                     : "text-red-700 dark:text-red-400"
-                }`}
+                  }`}
               >
                 {isSuccess ? "Order Placed Successfully!" : "Payment Failed"}
               </h1>
@@ -125,11 +117,10 @@ export default function PaymentResult() {
             <div className="px-6 pb-8 pt-2 space-y-5">
               {/* Transaction details card */}
               <div
-                className={`rounded-2xl p-5 border ${
-                  isSuccess
+                className={`rounded-2xl p-5 border ${isSuccess
                     ? "bg-green-50/50 dark:bg-green-950/20 border-green-100 dark:border-green-900/50"
                     : "bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-900/50"
-                }`}
+                  }`}
               >
                 {isSuccess ? (
                   <div className="space-y-3">
@@ -214,11 +205,10 @@ export default function PaymentResult() {
               <div className="space-y-3 pt-2">
                 <Button
                   onClick={() => setShowAddMoney(true)}
-                  className={`w-full py-6 rounded-xl text-lg font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 ${
-                    isSuccess
+                  className={`w-full py-6 rounded-xl text-lg font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 ${isSuccess
                       ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-green-200 dark:hover:shadow-green-900/30 text-white"
                       : "bg-gradient-to-r from-red-500 to-rose-600 hover:shadow-red-200 dark:hover:shadow-red-900/30 text-white"
-                  }`}
+                    }`}
                 >
                   <Plus className="size-5" />
                   Add Money to Wallet
@@ -305,11 +295,10 @@ export default function PaymentResult() {
                 <button
                   key={amt}
                   onClick={() => setAddAmount(String(amt))}
-                  className={`py-2.5 rounded-xl text-sm font-bold transition-all border ${
-                    addAmount === String(amt)
+                  className={`py-2.5 rounded-xl text-sm font-bold transition-all border ${addAmount === String(amt)
                       ? "bg-[#D4725C] text-white border-transparent shadow-md"
                       : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
+                    }`}
                 >
                   ₹{amt}
                 </button>

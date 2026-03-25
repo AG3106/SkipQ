@@ -19,10 +19,9 @@ import {
   Star,
   Lightbulb,
 } from "lucide-react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { useTheme } from "../context/ThemeContext";
 import { useWallet } from "../context/WalletContext";
+import { useAuth } from "../context/AuthContext";
 
 interface ProfileField {
   key: string;
@@ -38,28 +37,36 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
   const { balance } = useWallet();
+  const { user, profile: authProfile, logout } = useAuth();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [saveAnimation, setSaveAnimation] = useState<string | null>(null);
 
-  const [profile, setProfile] = useState({
-    name: "Arjun Mehta",
-    email: "arjun.mehta@university.edu",
-    phone: "+91 98765 43210",
-    hostel: "Hall 3",
-    room: "B-214",
-    rollNumber: "22CS10045",
+  // Derive initial values from AuthContext, fallback to localStorage cache
+  const [profile, setProfile] = useState(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("skipq_profile") : null;
+    const cached = saved ? JSON.parse(saved) : {};
+    return {
+      name: (authProfile as any)?.name || cached.name || "",
+      email: user?.email || cached.email || "",
+      phone: (authProfile as any)?.phone || cached.phone || "",
+      hostel: cached.hostel || "",
+      room: cached.room || "",
+      rollNumber: cached.rollNumber || "",
+    };
   });
 
-  // Load from localStorage
+  // Sync profile when auth data loads
   useEffect(() => {
-    const saved = localStorage.getItem("skipq_profile");
-    if (saved) {
-      try {
-        setProfile(JSON.parse(saved));
-      } catch {}
+    if (user?.email || authProfile) {
+      setProfile(prev => ({
+        ...prev,
+        name: (authProfile as any)?.name || prev.name,
+        email: user?.email || prev.email,
+        phone: (authProfile as any)?.phone || prev.phone,
+      }));
     }
-  }, []);
+  }, [user, authProfile]);
 
   const saveProfile = (key: string, value: string) => {
     const updated = { ...profile, [key]: value };
@@ -91,7 +98,10 @@ export default function UserProfile() {
     { key: "rollNumber", label: "Roll Number", value: profile.rollNumber, icon: <Shield className="size-5" />, placeholder: "e.g. 22CS10045" },
   ];
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch { }
     localStorage.removeItem("userType");
     localStorage.removeItem("skipq_profile");
     navigate("/");
@@ -104,8 +114,6 @@ export default function UserProfile() {
         <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#B85A4A]/5 dark:bg-[#B85A4A]/10 rounded-full blur-3xl" />
       </div>
-
-      <Header />
 
       <div className="relative z-10 container mx-auto px-4 py-8 pb-32 max-w-2xl">
         {/* Back */}
@@ -297,7 +305,6 @@ export default function UserProfile() {
         </button>
       </div>
 
-      <Footer />
     </div>
   );
 }

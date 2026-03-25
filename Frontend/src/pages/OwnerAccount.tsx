@@ -1,24 +1,38 @@
-import { Link } from "react-router";
-import { ArrowLeft, User, Mail, Phone, MapPin, Building2, Edit, LogOut, Shield, Bell, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router";
+import { ArrowLeft, User, Mail, Phone, MapPin, Building2, Edit, LogOut, Shield, Bell, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { useAuth } from "../context/AuthContext";
+import type { ManagerProfile } from "../types";
+import { api } from "../api/client";
 
 export default function OwnerAccount() {
-  // Mock owner data
-  const ownerData = {
-    name: "Rajesh Kumar",
-    email: "rajesh.kumar@skipq.com",
-    phone: "+91 98765 43210",
-    canteen: "Hall 3 Canteen",
-    location: "Hall 3, IIT Campus",
-    joinedDate: "January 15, 2025",
-    canteenId: "SKIPQ-H3-001",
+  const { user, profile, logout } = useAuth();
+  const navigate = useNavigate();
+  const [canteenInfo, setCanteenInfo] = useState<{ name: string; location: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get<{ canteen: { name: string; location: string } }>("/api/canteens/manager/dashboard/")
+      .then((data) => setCanteenInfo({ name: data.canteen.name, location: data.canteen.location }))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const managerProfile = profile as ManagerProfile | null;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/", { replace: true });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("userType");
-    localStorage.removeItem("canteenId");
-    window.location.href = "/";
-  };
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex items-center justify-center">
+        <Loader2 className="size-10 animate-spin text-[#D4725C]" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
@@ -65,82 +79,91 @@ export default function OwnerAccount() {
                     </div>
                   </div>
                   <div className="mb-2">
-                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-1">{ownerData.name}</h2>
+                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-1">{user.email.split("@")[0]}</h2>
                     <div className="flex items-center gap-2">
                        <span className="bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] dark:text-orange-400 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
-                         Canteen Owner
+                         Canteen Manager
                        </span>
-                       <span className="text-sm text-gray-500 dark:text-gray-400">Member since {ownerData.joinedDate}</span>
+                       <span className="text-sm text-gray-500 dark:text-gray-400">
+                         Member since {new Date(user.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
+                       </span>
                     </div>
                   </div>
                </div>
-               <Button className="bg-[#D4725C] hover:bg-[#B85A4A] text-white rounded-xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 font-bold px-6 mb-2">
-                <Edit className="size-4 mr-2" />
-                Edit Profile
-              </Button>
             </div>
 
             {/* Details Grid */}
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest border-b border-gray-100 dark:border-gray-800 pb-2">Contact Information</h3>
-                
+
                 <div className="flex items-center gap-4 group">
                   <div className="w-12 h-12 bg-orange-50 dark:bg-orange-950/30 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#D4725C] transition-colors">
                     <Mail className="size-5 text-[#D4725C] group-hover:text-white transition-colors" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-0.5">Email Address</p>
-                    <p className="text-gray-900 dark:text-white font-bold">{ownerData.email}</p>
+                    <p className="text-gray-900 dark:text-white font-bold">{user.email}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 group">
-                  <div className="w-12 h-12 bg-orange-50 dark:bg-orange-950/30 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#D4725C] transition-colors">
-                    <Phone className="size-5 text-[#D4725C] group-hover:text-white transition-colors" />
+                {managerProfile?.contactDetails && (
+                  <div className="flex items-center gap-4 group">
+                    <div className="w-12 h-12 bg-orange-50 dark:bg-orange-950/30 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#D4725C] transition-colors">
+                      <Phone className="size-5 text-[#D4725C] group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-0.5">Contact Details</p>
+                      <p className="text-gray-900 dark:text-white font-bold">{managerProfile.contactDetails}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-0.5">Phone Number</p>
-                    <p className="text-gray-900 dark:text-white font-bold">{ownerData.phone}</p>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="space-y-6">
                 <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest border-b border-gray-100 dark:border-gray-800 pb-2">Establishment Details</h3>
 
-                <div className="flex items-center gap-4 group">
-                  <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-500 transition-colors">
-                    <Building2 className="size-5 text-blue-500 dark:text-blue-400 group-hover:text-white transition-colors" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-0.5">Canteen Name</p>
-                    <p className="text-gray-900 dark:text-white font-bold">{ownerData.canteen}</p>
-                  </div>
-                </div>
+                {canteenInfo && (
+                  <>
+                    <div className="flex items-center gap-4 group">
+                      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-500 transition-colors">
+                        <Building2 className="size-5 text-blue-500 dark:text-blue-400 group-hover:text-white transition-colors" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-0.5">Canteen Name</p>
+                        <p className="text-gray-900 dark:text-white font-bold">{canteenInfo.name}</p>
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-4 group">
-                  <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-500 transition-colors">
-                    <MapPin className="size-5 text-blue-500 dark:text-blue-400 group-hover:text-white transition-colors" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-0.5">Location</p>
-                    <p className="text-gray-900 dark:text-white font-bold">{ownerData.location}</p>
-                  </div>
-                </div>
+                    <div className="flex items-center gap-4 group">
+                      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-500 transition-colors">
+                        <MapPin className="size-5 text-blue-500 dark:text-blue-400 group-hover:text-white transition-colors" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-0.5">Location</p>
+                        <p className="text-gray-900 dark:text-white font-bold">{canteenInfo.location}</p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Canteen ID Badge */}
-            <div className="mt-8 bg-gray-50/80 dark:bg-gray-950/80 rounded-xl p-4 border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-between">
-              <div>
-                 <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">Unique Canteen ID</p>
-                 <p className="text-lg font-mono font-black text-gray-900 dark:text-white tracking-wider">{ownerData.canteenId}</p>
+            {/* Manager ID Badge */}
+            {managerProfile?.managerId && (
+              <div className="mt-8 bg-gray-50/80 dark:bg-gray-950/80 rounded-xl p-4 border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-between">
+                <div>
+                   <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">Manager ID</p>
+                   <p className="text-lg font-mono font-black text-gray-900 dark:text-white tracking-wider">{managerProfile.managerId}</p>
+                </div>
+                <button
+                  onClick={() => navigator.clipboard.writeText(managerProfile.managerId)}
+                  className="text-xs font-bold text-[#D4725C] hover:underline"
+                >
+                  Copy ID
+                </button>
               </div>
-              <button className="text-xs font-bold text-[#D4725C] hover:underline">
-                Copy ID
-              </button>
-            </div>
+            )}
           </div>
         </div>
 
@@ -177,7 +200,7 @@ export default function OwnerAccount() {
             <h3 className="text-xl font-bold text-red-900 dark:text-red-400 mb-1">Sign Out</h3>
             <p className="text-red-700/80 dark:text-red-400/80 text-sm">Securely log out of your account on this device</p>
           </div>
-          <Button 
+          <Button
             onClick={handleLogout}
             className="bg-white dark:bg-gray-950 border-2 border-red-100 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 hover:border-red-200 dark:hover:border-red-700 px-8 py-6 rounded-xl font-bold transition-all shadow-sm w-full md:w-auto"
           >

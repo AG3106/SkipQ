@@ -1,72 +1,87 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+/**
+ * WalletContext — manages wallet state backed by the API.
+ *
+ * Fetches balance from backend on mount and after mutations.
+ * Exposes addMoney (calls API) and a balance value.
+ */
+
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import * as walletApi from "../api/wallet";
+import { useAuth } from "./AuthContext";
 
 interface WalletContextType {
   balance: number;
-  addMoney: (amount: number) => void;
+  hasPinSet: boolean;
+  isLoading: boolean;
+  addMoney: (amount: number) => Promise<void>;
+  setPin: (pin: string) => Promise<void>;
+  refreshBalance: () => Promise<void>;
+  // Legacy compat for Header.tsx during migration
   deductMoney: (amount: number) => boolean;
-  transactions: Transaction[];
-}
-
-interface Transaction {
-  id: string;
-  type: "credit" | "debit";
-  amount: number;
-  description: string;
-  date: Date;
-  balanceAfter: number;
+  transactions: any[];
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [balance, setBalance] = useState(1240);
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: "txn_init",
-      type: "credit",
-      amount: 1240,
-      description: "Welcome bonus",
-      date: new Date(2026, 2, 10),
-      balanceAfter: 1240,
-    },
-  ]);
+  const { isAuthenticated } = useAuth();
+  const [balance, setBalance] = useState(0);
+  const [hasPinSet, setHasPinSet] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const addMoney = (amount: number) => {
-    const newBalance = balance + amount;
-    setBalance(newBalance);
-    setTransactions((prev) => [
-      {
-        id: `txn_${Date.now()}`,
-        type: "credit",
-        amount,
-        description: "Added to wallet",
-        date: new Date(),
-        balanceAfter: newBalance,
-      },
-      ...prev,
-    ]);
+  const refreshBalance = useCallback(async () => {
+    if (!isAuthenticated) {
+      setBalance(0);
+      setHasPinSet(false);
+      setIsLoading(false);
+      return;
+    }
+    try {
+      const data = await walletApi.getWalletBalance();
+      setBalance(parseFloat(data.balance) || 0);
+      // Backend wallet endpoint doesn't include hasPinSet; assume set if balance exists
+      setHasPinSet(true);
+    } catch {
+      // Silently fail — wallet info is non-critical
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    refreshBalance();
+  }, [refreshBalance]);
+
+  const addMoney = async (amount: number) => {
+    const data = await walletApi.addFunds(amount);
+    setBalance(parseFloat(data.balance) || 0);
   };
 
+  const setPin = async (pin: string) => {
+    await walletApi.setWalletPin(pin);
+    setHasPinSet(true);
+  };
+
+  // Legacy compat — old pages may call deductMoney (client-side only fallback)
   const deductMoney = (amount: number): boolean => {
     if (amount > balance) return false;
-    const newBalance = balance - amount;
-    setBalance(newBalance);
-    setTransactions((prev) => [
-      {
-        id: `txn_${Date.now()}`,
-        type: "debit",
-        amount,
-        description: "Order payment",
-        date: new Date(),
-        balanceAfter: newBalance,
-      },
-      ...prev,
-    ]);
+    setBalance((prev) => prev - amount);
     return true;
   };
 
   return (
-    <WalletContext.Provider value={{ balance, addMoney, deductMoney, transactions }}>
+    <WalletContext.Provider
+      value={{
+        balance,
+        hasPinSet,
+        isLoading,
+        addMoney,
+        setPin,
+        refreshBalance,
+        deductMoney,
+        transactions: [],
+      }}
+    >
       {children}
     </WalletContext.Provider>
   );

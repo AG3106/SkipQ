@@ -122,6 +122,26 @@ def my_reservations(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
+def manager_all_reservations(request):
+    """
+    GET /api/cakes/manager-all/
+
+    Returns all cake reservations for the manager's canteen (all statuses).
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        canteen = request.user.manager_profile.canteen
+    except Exception:
+        return Response({"error": "No canteen assigned"}, status=status.HTTP_404_NOT_FOUND)
+
+    reservations = CakeReservation.objects.filter(canteen=canteen).order_by("-created_at")
+    return Response(CakeReservationSerializer(reservations, many=True).data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def pending_reservations(request):
     """
     GET /api/cakes/pending/

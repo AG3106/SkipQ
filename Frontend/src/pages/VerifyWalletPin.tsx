@@ -1,32 +1,36 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import {
   Lock, Eye, EyeOff, ShieldCheck, AlertCircle,
-  Delete, ArrowLeft, Wallet, IndianRupee, XCircle,
+  Delete, ArrowLeft, Wallet, XCircle,
   RotateCcw, Fingerprint,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useCart } from "../context/CartContext";
 import { useWallet } from "../context/WalletContext";
-import { recordCouponUsage } from "../data/coupons";
+import { placeOrder } from "../api/orders";
+import { ApiError } from "../api/client";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
 const MAX_ATTEMPTS = 5;
 
 export default function VerifyWalletPin() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { isDark } = useTheme();
-  const { clearCart } = useCart();
-  const { balance, deductMoney } = useWallet();
+  const { items, canteenId, clearCart } = useCart();
+  const { balance, refreshBalance } = useWallet();
 
-  // Read order params
-  const orderId = searchParams.get("orderId") || "";
-  const totalAmount = parseFloat(searchParams.get("total") || "0");
-  const prevBalance = parseFloat(searchParams.get("prevBalance") || "0");
-  const couponId = searchParams.get("couponId") || "";
+  // Read order details from navigation state (passed by Checkout)
+  const locationState = (location.state || {}) as {
+    customerName?: string;
+    rollNo?: string;
+  };
+  const customerName = locationState.customerName || "";
+  const rollNo = locationState.rollNo || "";
 
-  const storedPin = localStorage.getItem("skipq_wallet_pin");
+  const totalAmount = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   const [pin, setPin] = useState<string[]>(["", "", "", ""]);
   const [showPin, setShowPin] = useState(false);
@@ -38,6 +42,13 @@ export default function VerifyWalletPin() {
   const [processing, setProcessing] = useState(false);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Redirect if no cart items or missing checkout data
+  useEffect(() => {
+    if (items.length === 0 || !customerName) {
+      navigate("/checkout", { replace: true });
+    }
+  }, [items.length, customerName, navigate]);
 
   // Focus first input on mount
   useEffect(() => {
@@ -63,13 +74,6 @@ export default function VerifyWalletPin() {
     }, 1000);
     return () => clearInterval(interval);
   }, [locked, lockTimer]);
-
-  // Redirect if no PIN set
-  useEffect(() => {
-    if (!storedPin) {
-      navigate("/wallet/set-pin", { replace: true });
-    }
-  }, [storedPin, navigate]);
 
   const handleDigitChange = useCallback(
     (index: number, value: string) => {
@@ -147,54 +151,65 @@ export default function VerifyWalletPin() {
     setTimeout(() => setShake(false), 500);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!isFilled || locked || processing) return;
 
     const enteredPin = pin.join("");
-
-    if (enteredPin !== storedPin) {
-      const newAttempts = attempts + 1;
-      setAttempts(newAttempts);
-
-      if (newAttempts >= MAX_ATTEMPTS) {
-        setLocked(true);
-        setLockTimer(30);
-        setError(`Too many attempts. Try again in 30s`);
-      } else {
-        const remaining = MAX_ATTEMPTS - newAttempts;
-        setError(
-          remaining <= 2
-            ? `Incorrect PIN. ${remaining} attempt${remaining === 1 ? "" : "s"} remaining`
-            : "Incorrect PIN. Please try again."
-        );
-      }
-      triggerShake();
-      setPin(["", "", "", ""]);
-      setTimeout(() => inputRefs.current[0]?.focus(), 100);
-      return;
-    }
-
-    // PIN correct — process payment
     setProcessing(true);
     setError("");
 
-    // Small delay for visual feedback
-    setTimeout(() => {
-      if (totalAmount > balance) {
-        navigate(
-          `/payment-result?status=failed&orderId=${orderId}&total=${totalAmount.toFixed(2)}&prevBalance=${prevBalance.toFixed(2)}`,
-          { replace: true }
-        );
+    try {
+      const order = await placeOrder({
+        canteenId: canteenId!,
+        items: items.map((item) => ({
+          dishId: item.dishId,
+          quantity: item.quantity,
+        })),
+        walletPin: enteredPin,
+        customerName,
+        rollNo,
+      });
+
+      clearCart();
+      await refreshBalance();
+      toast.success("Order placed successfully!");
+      navigate(`/order-confirmation/${order.id}`, { replace: true });
+    } catch (err) {
+      setProcessing(false);
+      const message =
+        err instanceof ApiError ? err.message : "Failed to place order";
+
+      // Check if it's a PIN error
+      const isPinError =
+        message.toLowerCase().includes("pin") ||
+        message.toLowerCase().includes("incorrect");
+
+      if (isPinError) {
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+
+        if (newAttempts >= MAX_ATTEMPTS) {
+          setLocked(true);
+          setLockTimer(30);
+          setError("Too many attempts. Try again in 30s");
+        } else {
+          const remaining = MAX_ATTEMPTS - newAttempts;
+          setError(
+            remaining <= 2
+              ? `Incorrect PIN. ${remaining} attempt${remaining === 1 ? "" : "s"} remaining`
+              : "Incorrect PIN. Please try again."
+          );
+        }
+        triggerShake();
+        setPin(["", "", "", ""]);
+        setTimeout(() => inputRefs.current[0]?.focus(), 100);
       } else {
-        if (couponId) recordCouponUsage(couponId);
-        deductMoney(totalAmount);
-        clearCart();
-        navigate(
-          `/payment-result?status=success&orderId=${orderId}&total=${totalAmount.toFixed(2)}&prevBalance=${prevBalance.toFixed(2)}`,
-          { replace: true }
-        );
+        setError(message);
+        toast.error(message);
+        setPin(["", "", "", ""]);
+        setTimeout(() => inputRefs.current[0]?.focus(), 100);
       }
-    }, 800);
+    }
   };
 
   const handleRetry = () => {
@@ -204,10 +219,9 @@ export default function VerifyWalletPin() {
   };
 
   const hasError = error !== "";
-  const isLowAttempts = attempts >= MAX_ATTEMPTS - 2 && !locked;
   const filledCount = pin.filter((d) => d !== "").length;
 
-  if (!storedPin) return null;
+  if (items.length === 0 || !customerName) return null;
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex flex-col overflow-x-hidden">
@@ -292,7 +306,7 @@ export default function VerifyWalletPin() {
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Payment Amount</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Order {orderId}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{items.length} item{items.length > 1 ? "s" : ""}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -363,7 +377,7 @@ export default function VerifyWalletPin() {
               {locked
                 ? "Account Locked"
                 : processing
-                ? "Verifying..."
+                ? "Placing Order..."
                 : hasError
                 ? "Incorrect PIN"
                 : "Enter Wallet PIN"
@@ -589,7 +603,7 @@ export default function VerifyWalletPin() {
           </motion.button>
 
           {/* Forgot PIN link */}
-          {!processing && (
+          {/* {!processing && (
             <div className="mt-5 text-center">
               <button
                 onClick={() => navigate("/wallet/set-pin")}
@@ -598,7 +612,7 @@ export default function VerifyWalletPin() {
                 Forgot PIN? Reset it
               </button>
             </div>
-          )}
+          )} */}
 
           {/* Security note */}
           <div className={`mt-6 flex items-start gap-2.5 backdrop-blur-md rounded-xl p-3.5 border transition-colors duration-500 ${
@@ -620,7 +634,7 @@ export default function VerifyWalletPin() {
                 ? `Your wallet is temporarily locked for security. You can retry after ${lockTimer} seconds.`
                 : hasError
                 ? `Incorrect PIN entered. You have ${MAX_ATTEMPTS - attempts} attempt${MAX_ATTEMPTS - attempts === 1 ? "" : "s"} left before temporary lock.`
-                : "Your PIN is encrypted and never stored in plain text. This ensures your wallet stays secure."
+                : "Your PIN is verified securely on the server. It is never stored on your device."
               }
             </p>
           </div>

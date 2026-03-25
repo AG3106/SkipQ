@@ -1,8 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { ApiError } from '../api/client';
+import {
+  fetchCanteenRequests,
+  approveCanteen,
+  rejectCanteen,
+  fetchManagerRegistrations,
+  approveManager,
+  rejectManager,
+  buildFileUrl,
+  type CanteenRequest,
+  type PendingManagerRegistration,
+} from '../api/admin';
 import {
   Shield,
   Store,
@@ -17,89 +30,164 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
+  Loader2,
+  RefreshCw,
+  Users,
+  Mail,
 } from 'lucide-react';
-
-const initialCanteenRequests = [
-  {
-    id: 1,
-    name: 'Hall 5 Canteen',
-    location: 'Hall 5 Ground Floor',
-    managerName: 'Rajesh Kumar',
-    managerEmail: 'rajesh.k@iitk.ac.in',
-    openingTime: '14:00',
-    closingTime: '02:00',
-    submittedAt: '2026-03-18',
-    status: 'UNDER_REVIEW' as const,
-    documents: { aadhar_card: '/files/documents/1/aadhar_card.pdf', hall_approval_form: '/files/documents/1/hall_approval_form.pdf' },
-  },
-  {
-    id: 2,
-    name: 'Hall 12 Night Mess',
-    location: 'Hall 12 Basement',
-    managerName: 'Priya Sharma',
-    managerEmail: 'priya.s@iitk.ac.in',
-    openingTime: '20:00',
-    closingTime: '03:00',
-    submittedAt: '2026-03-19',
-    status: 'UNDER_REVIEW' as const,
-    documents: { aadhar_card: '/files/documents/2/aadhar_card.pdf', hall_approval_form: '/files/documents/2/hall_approval_form.pdf' },
-  },
-  {
-    id: 3,
-    name: 'MT Canteen',
-    location: 'MT Section Near Library',
-    managerName: 'Amit Verma',
-    managerEmail: 'amit.v@iitk.ac.in',
-    openingTime: '10:00',
-    closingTime: '22:00',
-    submittedAt: '2026-03-20',
-    status: 'UNDER_REVIEW' as const,
-    documents: { aadhar_card: '/files/documents/3/aadhar_card.pdf', hall_approval_form: '/files/documents/3/hall_approval_form.pdf' },
-  },
-];
-
-type CanteenStatus = 'UNDER_REVIEW' | 'ACTIVE' | 'REJECTED';
-type CanteenRequest = typeof initialCanteenRequests[number] & { status: CanteenStatus; rejectReason?: string };
 
 export default function AdminPanel() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
-  const [canteenRequests, setCanteenRequests] = useState<CanteenRequest[]>(initialCanteenRequests);
+  const { logout } = useAuth();
+
+  // Canteen requests state
+  const [canteenRequests, setCanteenRequests] = useState<CanteenRequest[]>([]);
+  const [loadingCanteens, setLoadingCanteens] = useState(true);
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
 
-  const pendingCount = canteenRequests.filter((c) => c.status === 'UNDER_REVIEW').length;
+  // Manager registrations state
+  const [managerRegistrations, setManagerRegistrations] = useState<PendingManagerRegistration[]>([]);
+  const [loadingManagers, setLoadingManagers] = useState(true);
+  const [managerRejectingId, setManagerRejectingId] = useState<number | null>(null);
+  const [managerRejectReason, setManagerRejectReason] = useState('');
+  const [managerActionLoadingId, setManagerActionLoadingId] = useState<number | null>(null);
 
-  const handleApprove = (id: number) => {
-    setCanteenRequests((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, status: 'ACTIVE' as const } : c))
-    );
-    const canteen = canteenRequests.find((c) => c.id === id);
-    toast.success(`"${canteen?.name}" approved and activated`);
+  // Active tab
+  const [activeTab, setActiveTab] = useState<'canteens' | 'managers'>('canteens');
+
+  // -----------------------------------------------------------------------
+  // Data fetching
+  // -----------------------------------------------------------------------
+
+  const loadCanteenRequests = useCallback(async () => {
+    setLoadingCanteens(true);
+    try {
+      const data = await fetchCanteenRequests();
+      setCanteenRequests(data);
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to load canteen requests';
+      toast.error(message);
+    } finally {
+      setLoadingCanteens(false);
+    }
+  }, []);
+
+  const loadManagerRegistrations = useCallback(async () => {
+    setLoadingManagers(true);
+    try {
+      const data = await fetchManagerRegistrations();
+      setManagerRegistrations(data);
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to load manager registrations';
+      toast.error(message);
+    } finally {
+      setLoadingManagers(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadCanteenRequests();
+    loadManagerRegistrations();
+  }, [loadCanteenRequests, loadManagerRegistrations]);
+
+  // -----------------------------------------------------------------------
+  // Canteen actions
+  // -----------------------------------------------------------------------
+
+  const pendingCount = canteenRequests.length;
+  const pendingManagerCount = managerRegistrations.length;
+
+  const handleApprove = async (id: number) => {
+    setActionLoadingId(id);
+    try {
+      const res = await approveCanteen(id);
+      toast.success(res.message);
+      setCanteenRequests((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to approve canteen';
+      toast.error(message);
+    } finally {
+      setActionLoadingId(null);
+    }
   };
 
-  const handleReject = (id: number) => {
+  const handleReject = async (id: number) => {
     if (rejectingId === id) {
-      setCanteenRequests((prev) =>
-        prev.map((c) =>
-          c.id === id ? { ...c, status: 'REJECTED' as const, rejectReason: rejectReason || undefined } : c
-        )
-      );
-      const canteen = canteenRequests.find((c) => c.id === id);
-      toast.error(`"${canteen?.name}" rejected`);
-      setRejectingId(null);
-      setRejectReason('');
+      setActionLoadingId(id);
+      try {
+        const res = await rejectCanteen(id, rejectReason);
+        toast.error(res.message);
+        setCanteenRequests((prev) => prev.filter((c) => c.id !== id));
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : 'Failed to reject canteen';
+        toast.error(message);
+      } finally {
+        setActionLoadingId(null);
+        setRejectingId(null);
+        setRejectReason('');
+      }
     } else {
       setRejectingId(id);
       setRejectReason('');
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('userType');
-    toast.success('Logged out successfully');
-    navigate('/login');
+  // -----------------------------------------------------------------------
+  // Manager actions
+  // -----------------------------------------------------------------------
+
+  const handleApproveManager = async (id: number) => {
+    setManagerActionLoadingId(id);
+    try {
+      const res = await approveManager(id);
+      toast.success(res.message);
+      setManagerRegistrations((prev) => prev.filter((m) => m.id !== id));
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to approve manager';
+      toast.error(message);
+    } finally {
+      setManagerActionLoadingId(null);
+    }
+  };
+
+  const handleRejectManager = async (id: number) => {
+    if (managerRejectingId === id) {
+      setManagerActionLoadingId(id);
+      try {
+        const res = await rejectManager(id, managerRejectReason);
+        toast.success(res.message);
+        setManagerRegistrations((prev) => prev.filter((m) => m.id !== id));
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : 'Failed to reject manager';
+        toast.error(message);
+      } finally {
+        setManagerActionLoadingId(null);
+        setManagerRejectingId(null);
+        setManagerRejectReason('');
+      }
+    } else {
+      setManagerRejectingId(id);
+      setManagerRejectReason('');
+    }
+  };
+
+  // -----------------------------------------------------------------------
+  // Logout
+  // -----------------------------------------------------------------------
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch {
+      localStorage.removeItem('userType');
+      navigate('/login');
+    }
   };
 
   return (
@@ -113,7 +201,7 @@ export default function AdminPanel() {
             </div>
             <div>
               <h1 className="text-gray-900 dark:text-white">SkipQ Admin</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Canteen Registration Management</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Management Dashboard</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -135,69 +223,93 @@ export default function AdminPanel() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        {/* Section Title */}
-        <div className="flex items-center gap-2 mb-6">
-          <Store className="w-5 h-5 text-[#D4725C]" />
-          <h2 className="text-gray-900 dark:text-white">Canteen Approval Queue</h2>
-          {pendingCount > 0 && (
-            <span className="ml-1 w-6 h-6 flex items-center justify-center rounded-full bg-[#D4725C] text-white text-xs">
-              {pendingCount}
-            </span>
-          )}
+        {/* Tabs */}
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={() => setActiveTab('canteens')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === 'canteens'
+                ? 'bg-[#D4725C] text-white shadow-sm'
+                : 'bg-white/60 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            <Store className="w-4 h-4" />
+            Canteen Requests
+            {pendingCount > 0 && (
+              <span className={`w-5 h-5 flex items-center justify-center rounded-full text-xs ${
+                activeTab === 'canteens' ? 'bg-white/20 text-white' : 'bg-[#D4725C] text-white'
+              }`}>
+                {pendingCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('managers')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === 'managers'
+                ? 'bg-[#D4725C] text-white shadow-sm'
+                : 'bg-white/60 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Manager Registrations
+            {pendingManagerCount > 0 && (
+              <span className={`w-5 h-5 flex items-center justify-center rounded-full text-xs ${
+                activeTab === 'managers' ? 'bg-white/20 text-white' : 'bg-[#D4725C] text-white'
+              }`}>
+                {pendingManagerCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => activeTab === 'canteens' ? loadCanteenRequests() : loadManagerRegistrations()}
+            className="ml-auto p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 ${(activeTab === 'canteens' ? loadingCanteens : loadingManagers) ? 'animate-spin' : ''}`} />
+          </button>
         </div>
 
-        {/* Canteen List */}
-        <div className="space-y-4">
-          {canteenRequests.length === 0 ? (
-            <div className="text-center py-20 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
-              <Store className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-              <p className="text-gray-500 dark:text-gray-400">No pending canteen requests</p>
-            </div>
-          ) : (
-            canteenRequests.map((canteen) => (
-              <motion.div
-                key={canteen.id}
-                layout
-                className={`bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl border transition-all overflow-hidden ${
-                  canteen.status === 'ACTIVE'
-                    ? 'border-green-200 dark:border-green-800/50'
-                    : canteen.status === 'REJECTED'
-                    ? 'border-red-200 dark:border-red-800/50 opacity-60'
-                    : 'border-gray-200/50 dark:border-gray-700/50'
-                }`}
-              >
-                <div className="p-4 sm:p-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="text-gray-900 dark:text-white truncate">{canteen.name}</h3>
-                        {canteen.status === 'ACTIVE' && (
-                          <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                            <CheckCircle2 className="w-3 h-3" /> Approved
+        {/* Canteen Requests Tab */}
+        {activeTab === 'canteens' && (
+          <div className="space-y-4">
+            {loadingCanteens ? (
+              <div className="flex items-center justify-center py-20 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+                <Loader2 className="w-8 h-8 text-[#D4725C] animate-spin" />
+              </div>
+            ) : canteenRequests.length === 0 ? (
+              <div className="text-center py-20 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+                <Store className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">No pending canteen requests</p>
+              </div>
+            ) : (
+              canteenRequests.map((canteen) => (
+                <motion.div
+                  key={canteen.id}
+                  layout
+                  className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50 transition-all overflow-hidden"
+                >
+                  <div className="p-4 sm:p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <h3 className="text-gray-900 dark:text-white truncate">{canteen.name}</h3>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" /> {canteen.location}
                           </span>
-                        )}
-                        {canteen.status === 'REJECTED' && (
-                          <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
-                            <XCircle className="w-3 h-3" /> Rejected
+                          <span className="flex items-center gap-1">
+                            <User className="w-3.5 h-3.5" /> {canteen.managerEmail}
                           </span>
-                        )}
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" /> {canteen.openingTime} – {canteen.closingTime}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5" /> {canteen.location}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <User className="w-3.5 h-3.5" /> {canteen.managerName}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" /> {canteen.openingTime} – {canteen.closingTime}
-                        </span>
-                      </div>
-                    </div>
 
-                    {/* Actions */}
-                    {canteen.status === 'UNDER_REVIEW' && (
+                      {/* Actions */}
                       <div className="flex items-center gap-2 shrink-0">
                         <button
                           onClick={() => setExpandedId(expandedId === canteen.id ? null : canteen.id)}
@@ -208,117 +320,234 @@ export default function AdminPanel() {
                         </button>
                         <button
                           onClick={() => handleApprove(canteen.id)}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm transition-colors shadow-sm"
+                          disabled={actionLoadingId === canteen.id}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm transition-colors shadow-sm"
                         >
-                          <CheckCircle2 className="w-4 h-4" />
+                          {actionLoadingId === canteen.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
                           Approve
                         </button>
                         <button
                           onClick={() => handleReject(canteen.id)}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm transition-colors shadow-sm"
+                          disabled={actionLoadingId === canteen.id}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-sm transition-colors shadow-sm"
                         >
                           <XCircle className="w-4 h-4" />
                           Reject
                         </button>
                       </div>
-                    )}
+                    </div>
+
+                    {/* Reject reason input */}
+                    <AnimatePresence>
+                      {rejectingId === canteen.id && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-3 flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="Reason for rejection (optional)"
+                              value={rejectReason}
+                              onChange={(e) => setRejectReason(e.target.value)}
+                              className="flex-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white text-sm border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                              autoFocus
+                              onKeyDown={(e) => e.key === 'Enter' && handleReject(canteen.id)}
+                            />
+                            <button
+                              onClick={() => handleReject(canteen.id)}
+                              disabled={actionLoadingId === canteen.id}
+                              className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 disabled:opacity-50 transition-colors"
+                            >
+                              {actionLoadingId === canteen.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                'Confirm'
+                              )}
+                            </button>
+                            <button
+                              onClick={() => { setRejectingId(null); setRejectReason(''); }}
+                              className="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
-                  {/* Reject reason input */}
+                  {/* Expanded Details */}
                   <AnimatePresence>
-                    {rejectingId === canteen.id && canteen.status === 'UNDER_REVIEW' && (
+                    {expandedId === canteen.id && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                       >
-                        <div className="mt-3 flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="Reason for rejection (optional)"
-                            value={rejectReason}
-                            onChange={(e) => setRejectReason(e.target.value)}
-                            className="flex-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white text-sm border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-                            autoFocus
-                            onKeyDown={(e) => e.key === 'Enter' && handleReject(canteen.id)}
-                          />
-                          <button
-                            onClick={() => handleReject(canteen.id)}
-                            className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition-colors"
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            onClick={() => { setRejectingId(null); setRejectReason(''); }}
-                            className="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                          >
-                            Cancel
-                          </button>
+                        <div className="px-4 sm:px-5 pb-4 pt-0 border-t border-gray-100 dark:border-gray-700/50">
+                          <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="text-sm">
+                              <span className="text-gray-400 dark:text-gray-500">Manager Email</span>
+                              <p className="text-gray-700 dark:text-gray-300">{canteen.managerEmail}</p>
+                            </div>
+                            <div className="text-sm">
+                              <span className="text-gray-400 dark:text-gray-500">Registered</span>
+                              <p className="text-gray-700 dark:text-gray-300">
+                                {new Date(canteen.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            {canteen.documents && (
+                              <div className="sm:col-span-2 text-sm">
+                                <span className="text-gray-400 dark:text-gray-500 block mb-1.5">Documents</span>
+                                <div className="flex flex-wrap gap-2">
+                                  {canteen.documents.aadharCard && (
+                                    <a
+                                      href={buildFileUrl(canteen.documents.aadharCard) ?? '#'}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                    >
+                                      <FileText className="w-3.5 h-3.5" /> Aadhar Card
+                                    </a>
+                                  )}
+                                  {canteen.documents.hallApprovalForm && (
+                                    <a
+                                      href={buildFileUrl(canteen.documents.hallApprovalForm) ?? '#'}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                    >
+                                      <FileText className="w-3.5 h-3.5" /> Hall Approval Form
+                                    </a>
+                                  )}
+                                  {!canteen.documents.aadharCard && !canteen.documents.hallApprovalForm && (
+                                    <p className="text-gray-400 dark:text-gray-500 text-xs italic">No documents uploaded</p>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        )}
 
-                {/* Expanded Details */}
-                <AnimatePresence>
-                  {expandedId === canteen.id && canteen.status === 'UNDER_REVIEW' && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-4 sm:px-5 pb-4 pt-0 border-t border-gray-100 dark:border-gray-700/50">
-                        <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="text-sm">
-                            <span className="text-gray-400 dark:text-gray-500">Manager Email</span>
-                            <p className="text-gray-700 dark:text-gray-300">{canteen.managerEmail}</p>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-gray-400 dark:text-gray-500">Submitted</span>
-                            <p className="text-gray-700 dark:text-gray-300">{canteen.submittedAt}</p>
-                          </div>
-                          <div className="sm:col-span-2 text-sm">
-                            <span className="text-gray-400 dark:text-gray-500 block mb-1.5">Documents</span>
-                            <div className="flex flex-wrap gap-2">
-                              <a
-                                href={canteen.documents.aadhar_card}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                              >
-                                <FileText className="w-3.5 h-3.5" /> Aadhar Card
-                              </a>
-                              <a
-                                href={canteen.documents.hall_approval_form}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                              >
-                                <FileText className="w-3.5 h-3.5" /> Hall Approval Form
-                              </a>
-                            </div>
-                          </div>
+        {/* Manager Registrations Tab */}
+        {activeTab === 'managers' && (
+          <div className="space-y-4">
+            {loadingManagers ? (
+              <div className="flex items-center justify-center py-20 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+                <Loader2 className="w-8 h-8 text-[#D4725C] animate-spin" />
+              </div>
+            ) : managerRegistrations.length === 0 ? (
+              <div className="text-center py-20 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+                <Users className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">No pending manager registrations</p>
+              </div>
+            ) : (
+              managerRegistrations.map((reg) => (
+                <motion.div
+                  key={reg.id}
+                  layout
+                  className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50 transition-all overflow-hidden"
+                >
+                  <div className="p-4 sm:p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-gray-900 dark:text-white truncate mb-1">{reg.name}</h3>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-3.5 h-3.5" /> {reg.email}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" /> {new Date(reg.createdAt).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
-                {/* Rejected reason display */}
-                {canteen.status === 'REJECTED' && canteen.rejectReason && (
-                  <div className="px-4 sm:px-5 pb-4 pt-0">
-                    <p className="text-xs text-red-500 dark:text-red-400 italic">
-                      Reason: {canteen.rejectReason}
-                    </p>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => handleApproveManager(reg.id)}
+                          disabled={managerActionLoadingId === reg.id}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm transition-colors shadow-sm"
+                        >
+                          {managerActionLoadingId === reg.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleRejectManager(reg.id)}
+                          disabled={managerActionLoadingId === reg.id}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-sm transition-colors shadow-sm"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Reject reason input for managers */}
+                    <AnimatePresence>
+                      {managerRejectingId === reg.id && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-3 flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="Reason for rejection (optional)"
+                              value={managerRejectReason}
+                              onChange={(e) => setManagerRejectReason(e.target.value)}
+                              className="flex-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white text-sm border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                              autoFocus
+                              onKeyDown={(e) => e.key === 'Enter' && handleRejectManager(reg.id)}
+                            />
+                            <button
+                              onClick={() => handleRejectManager(reg.id)}
+                              disabled={managerActionLoadingId === reg.id}
+                              className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 disabled:opacity-50 transition-colors"
+                            >
+                              {managerActionLoadingId === reg.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                'Confirm'
+                              )}
+                            </button>
+                            <button
+                              onClick={() => { setManagerRejectingId(null); setManagerRejectReason(''); }}
+                              className="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                )}
-              </motion.div>
-            ))
-          )}
-        </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        )}
       </main>
     </div>
   );

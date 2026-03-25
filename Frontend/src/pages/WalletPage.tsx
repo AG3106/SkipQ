@@ -11,18 +11,28 @@ export default function WalletPage() {
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [addAmount, setAddAmount] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [addError, setAddError] = useState("");
   const quickAmounts = [100, 200, 500, 1000];
 
   const hasPin = typeof window !== "undefined" && !!localStorage.getItem("skipq_wallet_pin");
 
-  const handleAddMoney = () => {
+  const handleAddMoney = async () => {
     const amount = Number(addAmount);
     if (amount > 0) {
-      addMoney(amount);
-      setShowAddMoney(false);
-      setAddAmount("");
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      setIsAdding(true);
+      setAddError("");
+      try {
+        await addMoney(amount);
+        setShowAddMoney(false);
+        setAddAmount("");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      } catch (err: any) {
+        setAddError(err?.message || "Failed to add money. Please try again.");
+      } finally {
+        setIsAdding(false);
+      }
     }
   };
 
@@ -134,11 +144,10 @@ export default function WalletPage() {
                 <button
                   key={amt}
                   onClick={() => setAddAmount(String(amt))}
-                  className={`py-2.5 rounded-xl text-sm font-bold transition-all border ${
-                    addAmount === String(amt)
-                      ? "bg-[#D4725C] text-white border-transparent shadow-md"
-                      : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
+                  className={`py-2.5 rounded-xl text-sm font-bold transition-all border ${addAmount === String(amt)
+                    ? "bg-[#D4725C] text-white border-transparent shadow-md"
+                    : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    }`}
                 >
                   ₹{amt}
                 </button>
@@ -148,11 +157,14 @@ export default function WalletPage() {
             <div className="space-y-2.5">
               <Button
                 onClick={handleAddMoney}
-                disabled={!addAmount || Number(addAmount) <= 0}
+                disabled={!addAmount || Number(addAmount) <= 0 || isAdding}
                 className="w-full py-5 rounded-xl font-bold bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white shadow-lg hover:shadow-orange-200 dark:hover:shadow-orange-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Add ₹{addAmount || "0"} to Wallet
+                {isAdding ? "Adding..." : `Add ₹${addAmount || "0"} to Wallet`}
               </Button>
+              {addError && (
+                <p className="text-sm text-red-600 dark:text-red-400 text-center">{addError}</p>
+              )}
               <button
                 onClick={() => setShowAddMoney(false)}
                 className="w-full py-3 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"

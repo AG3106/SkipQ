@@ -24,6 +24,7 @@ import CanteenRegistration from "./pages/CanteenRegistration";
 import OwnerRegistration from "./pages/OwnerRegistration";
 import TrackOrders from "./pages/TrackOrders";
 import CakeReservation from "./pages/CakeReservation";
+import CakeManagement from "./pages/CakeManagement";
 
 export const router = createBrowserRouter([
   {
@@ -129,5 +130,9 @@ export const router = createBrowserRouter([
   {
     path: "/cake-reservation",
     Component: CakeReservation,
+  },
+  {
+    path: "/owner/cakes",
+    Component: CakeManagement,
   },
 ]);

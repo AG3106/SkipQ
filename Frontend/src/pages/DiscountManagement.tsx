@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Plus, Edit, Trash2, Tag, Percent, Calendar, Check, X } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { getManagerDashboard } from "../api/canteens";
 
 interface Discount {
   id: string;
@@ -46,6 +47,12 @@ const mockDiscounts: Discount[] = [
 ];
 
 export default function DiscountManagement() {
+  const [canteenName, setCanteenName] = useState("");
+
+  useEffect(() => {
+    getManagerDashboard().then((data) => setCanteenName(data.canteen.name)).catch(() => {});
+  }, []);
+
   const [discounts, setDiscounts] = useState<Discount[]>(mockDiscounts);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingDiscount, setEditingDiscount] = useState<Discount | null>(null);
@@ -158,7 +165,7 @@ export default function DiscountManagement() {
               </Link>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Discounts & Coupons</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Hall 1 Canteen</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{canteenName || "Loading..."}</p>
               </div>
             </div>
 

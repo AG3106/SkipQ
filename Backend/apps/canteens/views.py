@@ -377,13 +377,14 @@ def canteen_popular_dishes(request, canteen_id):
 # Holidays — Canteen schedule management
 # ---------------------------------------------------------------------------
 
-@api_view(["GET", "POST"])
+@api_view(["GET", "POST", "DELETE"])
 @permission_classes([IsAuthenticated])
 def manage_holidays(request, canteen_id):
     """
-    GET/POST /api/canteens/<canteen_id>/holidays/
+    GET/POST/DELETE /api/canteens/<canteen_id>/holidays/
 
     getHolidays(): List — from Canteen class diagram.
+    DELETE expects { "date": "YYYY-MM-DD" } in the request body.
     """
     try:
         canteen = Canteen.objects.get(pk=canteen_id)
@@ -394,9 +395,20 @@ def manage_holidays(request, canteen_id):
         holidays = canteen_service.get_holidays(canteen)
         return Response(CanteenHolidaySerializer(holidays, many=True).data)
 
-    # POST — add holiday
     if request.user.role != User.Role.MANAGER:
-        return Response({"error": "Only managers can add holidays"}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"error": "Only managers can manage holidays"}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == "DELETE":
+        date = request.data.get("date")
+        if not date:
+            return Response({"error": "date is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            canteen_service.remove_holiday(canteen, date)
+            return Response({"message": "Holiday removed"}, status=status.HTTP_200_OK)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    # POST — add holiday
     serializer = CanteenHolidaySerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     try:

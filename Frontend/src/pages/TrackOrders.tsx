@@ -1,51 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router";
-import { Package, CheckCircle, Clock, ArrowLeft, Star, XCircle } from "lucide-react";
+import { Package, CheckCircle, Clock, ArrowLeft, Star, XCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { toast } from "sonner@2.0.3";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-
-export interface CancellationRequest {
-  orderId: string;
-  reason: string;
-  status: "pending" | "accepted" | "rejected";
-  requestedAt: string;
-  customerName: string;
-  items: string[];
-  total: number;
-  canteen: string;
-}
-
-const mockOrders = [
-  {
-    id: "ORD-2026-001",
-    status: "collected",
-    items: ["Paneer Tikka", "Dal Makhani", "Naan"],
-    total: 285.50,
-    pickupTime: "12:45 PM",
-    orderTime: "12:20 PM",
-    canteen: "Hall 3 Canteen",
-  },
-  {
-    id: "ORD-2026-002",
-    status: "ready",
-    items: ["Chicken Biryani", "Raita", "Gulab Jamun"],
-    total: 320.00,
-    pickupTime: "1:15 PM",
-    orderTime: "12:50 PM",
-    canteen: "Hall 1 Canteen",
-  },
-  {
-    id: "ORD-2026-003",
-    status: "preparing",
-    items: ["Veg Thali", "Sweet Lassi"],
-    total: 180.00,
-    pickupTime: "1:30 PM (Est.)",
-    orderTime: "1:05 PM",
-    canteen: "Hall 5 Canteen",
-  },
-];
+import { toast } from "sonner";
+import { getDetailedOrderHistory, requestCancelOrder, rateOrder } from "../api/orders";
+import type { Order } from "../types";
 
 const CANCELLATION_REASONS = [
   "Changed my mind",
@@ -57,12 +16,17 @@ const CANCELLATION_REASONS = [
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case "collected":
+    case "COMPLETED":
       return <CheckCircle className="w-5 h-5 text-green-600" />;
-    case "ready":
+    case "READY":
       return <Package className="w-5 h-5 text-[#D4725C]" />;
-    case "preparing":
-      return <ArrowLeft className="w-5 h-5 text-orange-500" />;
+    case "ACCEPTED":
+      return <Clock className="w-5 h-5 text-orange-500" />;
+    case "CANCEL_REQUESTED":
+      return <Clock className="w-5 h-5 text-amber-500" />;
+    case "CANCELLED":
+    case "REJECTED":
+      return <XCircle className="w-5 h-5 text-red-500" />;
     default:
       return <Package className="w-5 h-5 text-gray-400" />;
   }
@@ -70,127 +34,113 @@ const getStatusIcon = (status: string) => {
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case "collected":
-      return "Collected";
-    case "ready":
-      return "Ready";
-    case "preparing":
-      return "Preparing";
-    default:
-      return "Processing";
+    case "COMPLETED": return "Completed";
+    case "READY": return "Ready";
+    case "ACCEPTED": return "Preparing";
+    case "PENDING": return "Pending";
+    case "CANCEL_REQUESTED": return "Cancel Requested";
+    case "CANCELLED": return "Cancelled";
+    case "REJECTED": return "Rejected";
+    case "REFUNDED": return "Refunded";
+    default: return status;
   }
 };
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "collected":
+    case "COMPLETED":
       return "bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-400 border-green-200 dark:border-green-800";
-    case "ready":
+    case "READY":
       return "bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] dark:text-orange-400 border-[#D4725C]/20 dark:border-[#D4725C]/30";
-    case "preparing":
+    case "ACCEPTED":
       return "bg-orange-100 dark:bg-orange-950/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800";
+    case "CANCEL_REQUESTED":
+      return "bg-amber-100 dark:bg-amber-950/30 text-amber-800 dark:text-amber-400 border-amber-200 dark:border-amber-800";
+    case "CANCELLED":
+    case "REJECTED":
+    case "REFUNDED":
+      return "bg-red-100 dark:bg-red-950/30 text-red-800 dark:text-red-400 border-red-200 dark:border-red-800";
     default:
       return "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700";
   }
 };
 
-function getCancellationRequests(): CancellationRequest[] {
-  try {
-    return JSON.parse(localStorage.getItem("cancellationRequests") || "[]");
-  } catch {
-    return [];
+function getProgressWidth(status: string) {
+  switch (status) {
+    case "PENDING": return "20%";
+    case "ACCEPTED": return "40%";
+    case "READY": return "75%";
+    case "COMPLETED": return "100%";
+    default: return "0%";
   }
 }
 
-function getRatedOrders(): string[] {
-  try {
-    return JSON.parse(localStorage.getItem("ratedOrders") || "[]");
-  } catch {
-    return [];
-  }
-}
+const isActiveOrder = (status: string) =>
+  ["PENDING", "ACCEPTED", "READY", "CANCEL_REQUESTED"].includes(status);
 
 export default function TrackOrders() {
-  const [cancelModal, setCancelModal] = useState<string | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cancelModal, setCancelModal] = useState<number | null>(null);
   const [selectedReason, setSelectedReason] = useState("");
   const [customReason, setCustomReason] = useState("");
-  const [cancellationRequests, setCancellationRequests] = useState<CancellationRequest[]>(getCancellationRequests);
+  const [submittingCancel, setSubmittingCancel] = useState(false);
 
   // Rating state
-  const [ratingModal, setRatingModal] = useState<string | null>(null);
-  const [itemRatings, setItemRatings] = useState<Record<string, number>>({});
-  const [itemHovers, setItemHovers] = useState<Record<string, number>>({});
-  const [canteenRating, setCanteenRating] = useState(0);
-  const [canteenHover, setCanteenHover] = useState(0);
-  const [ratedOrders, setRatedOrders] = useState<string[]>(getRatedOrders);
+  const [ratingModal, setRatingModal] = useState<number | null>(null);
+  const [itemRatings, setItemRatings] = useState<Record<number, number>>({});
+  const [itemHovers, setItemHovers] = useState<Record<number, number>>({});
+  const [submittingRating, setSubmittingRating] = useState(false);
 
-  const openRatingModal = (orderId: string) => {
-    const order = mockOrders.find((o) => o.id === orderId);
-    const initialRatings: Record<string, number> = {};
-    order?.items.forEach((item) => { initialRatings[item] = 0; });
-    setItemRatings(initialRatings);
+  const fetchOrders = useCallback(async () => {
+    try {
+      const data = await getDetailedOrderHistory();
+      setOrders(data);
+    } catch {
+      toast.error("Failed to load orders");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const openRatingModal = (order: Order) => {
+    const initial: Record<number, number> = {};
+    order.items.forEach((item) => { initial[item.dish] = 0; });
+    setItemRatings(initial);
     setItemHovers({});
-    setCanteenRating(0);
-    setCanteenHover(0);
-    setRatingModal(orderId);
+    setRatingModal(order.id);
   };
 
-  // Auto-show rating modal once for first unrated collected order on page load
-  const [autoShown, setAutoShown] = useState(false);
-  useEffect(() => {
-    if (autoShown) return;
-    const unrated = mockOrders.find(
-      (o) => o.status === "collected" && !ratedOrders.includes(o.id)
-    );
-    if (unrated && !cancelModal && !ratingModal) {
-      const timer = setTimeout(() => {
-        openRatingModal(unrated.id);
-        setAutoShown(true);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, [ratedOrders, cancelModal, autoShown, ratingModal]);
-
-  const getRatingLabel = (r: number) =>
-    r === 1 ? "Poor" : r === 2 ? "Fair" : r === 3 ? "Good" : r === 4 ? "Very Good" : "Excellent!";
-
-  const handleSubmitRating = () => {
+  const handleSubmitRating = async () => {
     if (!ratingModal) return;
-    const allItemsRated = Object.values(itemRatings).every((r) => r > 0);
-    if (!allItemsRated || canteenRating === 0) {
-      toast.error("Please rate all items and the canteen");
+    const allRated = Object.values(itemRatings).every((r) => r > 0);
+    if (!allRated) {
+      toast.error("Please rate all items");
       return;
     }
 
-    const order = mockOrders.find((o) => o.id === ratingModal);
-    const existingRatings = JSON.parse(localStorage.getItem("orderRatings") || "[]");
-    existingRatings.push({
-      orderId: ratingModal,
-      itemRatings: { ...itemRatings },
-      canteenRating,
-      canteen: order?.canteen || "",
-      items: order?.items || [],
-      ratedAt: new Date().toISOString(),
-    });
-    localStorage.setItem("orderRatings", JSON.stringify(existingRatings));
-
-    const updated = [...ratedOrders, ratingModal];
-    setRatedOrders(updated);
-    localStorage.setItem("ratedOrders", JSON.stringify(updated));
-
-    toast.success("Thanks for your rating!");
-    setRatingModal(null);
+    setSubmittingRating(true);
+    try {
+      const ratings = Object.entries(itemRatings).map(([dishId, rating]) => ({
+        dishId: Number(dishId),
+        rating,
+      }));
+      await rateOrder(ratingModal, ratings);
+      toast.success("Thanks for your rating!");
+      setRatingModal(null);
+      fetchOrders(); // Refresh to update isRated
+    } catch {
+      toast.error("Failed to submit rating");
+    } finally {
+      setSubmittingRating(false);
+    }
   };
 
-  const handleSkipRating = () => {
-    if (!ratingModal) return;
-    setRatingModal(null);
-  };
-
-  const getRequestForOrder = (orderId: string) =>
-    cancellationRequests.find((r) => r.orderId === orderId);
-
-  const handleSubmitCancellation = () => {
+  const handleSubmitCancellation = async () => {
     if (!cancelModal) return;
     const reason = selectedReason === "Other" ? customReason.trim() : selectedReason;
     if (!reason) {
@@ -198,29 +148,23 @@ export default function TrackOrders() {
       return;
     }
 
-    const order = mockOrders.find((o) => o.id === cancelModal);
-    if (!order) return;
-
-    const newRequest: CancellationRequest = {
-      orderId: order.id,
-      reason,
-      status: "pending",
-      requestedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      customerName: localStorage.getItem("userName") || "Student",
-      items: order.items,
-      total: order.total,
-      canteen: order.canteen,
-    };
-
-    const updated = [...cancellationRequests, newRequest];
-    setCancellationRequests(updated);
-    localStorage.setItem("cancellationRequests", JSON.stringify(updated));
-
-    toast.success("Cancellation request sent to canteen");
-    setCancelModal(null);
-    setSelectedReason("");
-    setCustomReason("");
+    setSubmittingCancel(true);
+    try {
+      await requestCancelOrder(cancelModal);
+      toast.success("Cancellation request sent");
+      setCancelModal(null);
+      setSelectedReason("");
+      setCustomReason("");
+      fetchOrders();
+    } catch {
+      toast.error("Failed to request cancellation");
+    } finally {
+      setSubmittingCancel(false);
+    }
   };
+
+  const getRatingLabel = (r: number) =>
+    r === 1 ? "Poor" : r === 2 ? "Fair" : r === 3 ? "Good" : r === 4 ? "Very Good" : "Excellent!";
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
@@ -230,8 +174,6 @@ export default function TrackOrders() {
         <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
       </div>
 
-      <Header />
-
       <div className="relative z-10 container mx-auto px-4 py-8 pb-32 max-w-3xl">
         {/* Back */}
         <Link
@@ -239,7 +181,7 @@ export default function TrackOrders() {
           className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#D4725C] mb-8 transition-colors font-medium"
         >
           <ArrowLeft className="size-5" />
-          Back to Menu
+          Back to Canteens
         </Link>
 
         {/* Page Header */}
@@ -250,194 +192,245 @@ export default function TrackOrders() {
           <div>
             <h1 className="text-3xl font-black text-gray-900 dark:text-white">Order History</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              {mockOrders.length} order{mockOrders.length !== 1 ? "s" : ""}
+              {orders.length} order{orders.length !== 1 ? "s" : ""}
             </p>
           </div>
         </div>
 
-        {/* Orders List */}
-        <div className="space-y-6">
-          {mockOrders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center space-y-4 opacity-60">
-              <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-full">
-                <Package className="size-10 text-gray-400 dark:text-gray-500" />
-              </div>
-              <p className="text-lg font-medium text-gray-900 dark:text-white">No orders yet</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px]">
-                Your past orders will show up here.
-              </p>
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <Loader2 className="size-8 animate-spin text-[#D4725C]" />
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center space-y-4 opacity-60">
+            <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-full">
+              <Package className="size-10 text-gray-400 dark:text-gray-500" />
             </div>
-          ) : (
-            mockOrders.map((order, index) => {
-              const cancellation = getRequestForOrder(order.id);
-              return (
-                <motion.div
-                  key={order.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 hover:shadow-xl hover:shadow-orange-100/30 dark:hover:shadow-orange-900/10 transition-all duration-300"
-                >
-                  {/* Order Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${getStatusColor(order.status)}`}
-                        >
-                          {getStatusIcon(order.status)}
-                          {getStatusText(order.status)}
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-gray-900 dark:text-white tracking-wide">
-                        {order.id}
-                      </h3>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{order.canteen}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Order Amount</p>
-                      <p className="text-2xl font-black text-[#D4725C]">₹{order.total.toFixed(0)}</p>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar for active orders */}
-                  {order.status !== "collected" && (
-                    <div className="mb-5">
-                      <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2 tracking-wider">
-                        <span className={order.status === "preparing" || order.status === "ready" ? "text-[#D4725C]" : ""}>Placed</span>
-                        <span className={order.status === "preparing" || order.status === "ready" ? "text-[#D4725C]" : ""}>Cooking</span>
-                        <span className={order.status === "ready" ? "text-[#D4725C]" : ""}>Ready</span>
-                        <span>Done</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#D4725C] to-[#B85A4A] shadow-[0_0_10px_rgba(212,114,92,0.5)] transition-all duration-1000 ease-out relative"
-                          style={{
-                            width: order.status === "preparing" ? "40%" : order.status === "ready" ? "75%" : "100%",
-                          }}
-                        >
-                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Items */}
-                  <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
-                    <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
-                      Items Ordered
-                    </p>
-                    <ul className="space-y-2">
-                      {order.items.map((item, idx) => (
-                        <li key={idx} className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2.5 font-medium">
-                          <span className="w-1.5 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Cancellation Status Banner */}
-                  {cancellation && (
-                    <div
-                      className={`rounded-2xl p-4 mb-4 border ${
-                        cancellation.status === "pending"
-                          ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40"
-                          : cancellation.status === "accepted"
-                          ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800/40"
-                          : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        {cancellation.status === "pending" && (
-                          <>
-                            <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center shrink-0">
-                              <Clock className="size-4 text-amber-600 dark:text-amber-400" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-amber-800 dark:text-amber-300">Cancellation Requested</p>
-                              <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Waiting for canteen to respond</p>
-                            </div>
-                          </>
-                        )}
-                        {cancellation.status === "accepted" && (
-                          <>
-                            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center shrink-0">
-                              <CheckCircle className="size-4 text-green-600 dark:text-green-400" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-green-800 dark:text-green-300">Order Cancelled</p>
-                              <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">Refund will be credited to your wallet</p>
-                            </div>
-                          </>
-                        )}
-                        {cancellation.status === "rejected" && (
-                          <>
-                            <div className="w-8 h-8 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
-                              <XCircle className="size-4 text-red-600 dark:text-red-400" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-red-800 dark:text-red-300">Cancellation Rejected</p>
-                              <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">Your order is being processed as usual</p>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 ml-10.5">
-                        Reason: <span className="font-medium text-gray-700 dark:text-gray-300">{cancellation.reason}</span>
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Rate Order Button */}
-                  <div className="mb-4">
-                    {ratedOrders.includes(order.id) ? (
-                      <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/40 rounded-xl px-4 py-3">
-                        <CheckCircle className="size-4 text-green-600 dark:text-green-400" />
-                        <span className="text-sm font-bold text-green-700 dark:text-green-400">Rated</span>
-                        <span className="text-xs text-green-600/70 dark:text-green-400/60 ml-1">Thank you for your feedback!</span>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => openRatingModal(order.id)}
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-200 dark:border-amber-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700 transition-all group/rate"
-                      >
-                        <Star className="size-4 text-amber-500 group-hover/rate:fill-amber-500 transition-colors" />
-                        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">Rate this Order</span>
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Footer Info */}
-                  <div className="flex items-center pt-3 border-t border-gray-100/50 dark:border-gray-800/50">
-                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                      <Clock className="size-4" />
-                      <span>
-                        {order.status === "collected" ? "Collected" : "Est. Pickup"}:{" "}
-                        <span className="text-gray-900 dark:text-white font-bold">{order.pickupTime}</span>
+            <p className="text-lg font-medium text-gray-900 dark:text-white">No orders yet</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px]">
+              Your past orders will show up here.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {orders.map((order, index) => (
+              <motion.div
+                key={order.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 hover:shadow-xl hover:shadow-orange-100/30 dark:hover:shadow-orange-900/10 transition-all duration-300"
+              >
+                {/* Order Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${getStatusColor(order.status)}`}>
+                        {getStatusIcon(order.status)}
+                        {getStatusText(order.status)}
                       </span>
                     </div>
+                    <h3 className="font-bold text-gray-900 dark:text-white tracking-wide">
+                      Order #{order.id}
+                    </h3>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{order.canteenName}</p>
                   </div>
-                </motion.div>
-              );
-            })
-          )}
-        </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Order Amount</p>
+                    <p className="text-2xl font-black text-[#D4725C]">₹{parseFloat(order.totalPrice).toFixed(0)}</p>
+                  </div>
+                </div>
 
-        <Footer />
+                {/* Progress Bar for active orders */}
+                {isActiveOrder(order.status) && (
+                  <div className="mb-5">
+                    <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2 tracking-wider">
+                      <span className={["PENDING", "ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Placed</span>
+                      <span className={["ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Cooking</span>
+                      <span className={order.status === "READY" ? "text-[#D4725C]" : ""}>Ready</span>
+                      <span>Done</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-[#D4725C] to-[#B85A4A] shadow-[0_0_10px_rgba(212,114,92,0.5)] transition-all duration-1000 ease-out relative"
+                        style={{ width: getProgressWidth(order.status) }}
+                      >
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Items */}
+                <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
+                    Items Ordered
+                  </p>
+                  <ul className="space-y-2">
+                    {order.items.map((item) => (
+                      <li key={item.id} className="text-sm text-gray-700 dark:text-gray-300 flex items-center justify-between font-medium">
+                        <span className="flex items-center gap-2.5">
+                          <span className="w-1.5 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                          {item.dishName} &times; {item.quantity}
+                        </span>
+                        <span>₹{(parseFloat(item.priceAtOrder) * item.quantity).toFixed(0)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Cancel Request Status */}
+                {order.status === "CANCEL_REQUESTED" && (
+                  <div className="rounded-2xl p-4 mb-4 border bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center shrink-0">
+                        <Clock className="size-4 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-amber-800 dark:text-amber-300">Cancellation Requested</p>
+                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Waiting for canteen to respond</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {order.status === "REJECTED" && order.rejectReason && (
+                  <div className="rounded-2xl p-4 mb-4 border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
+                        <XCircle className="size-4 text-red-600 dark:text-red-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-red-800 dark:text-red-300">Order Rejected</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">Reason: {order.rejectReason}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Rate / Cancel buttons */}
+                <div className="flex gap-3 mb-4">
+                  {order.status === "COMPLETED" && !order.isRated && (
+                    <button
+                      onClick={() => openRatingModal(order)}
+                      className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-200 dark:border-amber-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700 transition-all group/rate"
+                    >
+                      <Star className="size-4 text-amber-500 group-hover/rate:fill-amber-500 transition-colors" />
+                      <span className="text-sm font-bold text-amber-700 dark:text-amber-400">Rate this Order</span>
+                    </button>
+                  )}
+                  {order.status === "COMPLETED" && order.isRated && (
+                    <div className="flex-1 flex items-center gap-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/40 rounded-xl px-4 py-3">
+                      <CheckCircle className="size-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm font-bold text-green-700 dark:text-green-400">Rated</span>
+                    </div>
+                  )}
+                  {order.status === "PENDING" && (
+                    <button
+                      onClick={() => setCancelModal(order.id)}
+                      className="flex-1 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-red-300 dark:hover:border-red-700 transition-all"
+                    >
+                      <XCircle className="size-4 text-red-500" />
+                      <span className="text-sm font-bold text-red-700 dark:text-red-400">Request Cancel</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Footer Info */}
+                <div className="flex items-center pt-3 border-t border-gray-100/50 dark:border-gray-800/50">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <Clock className="size-4" />
+                    <span>
+                      Ordered: <span className="text-gray-900 dark:text-white font-bold">
+                        {new Date(order.bookTime).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
       </div>
+
+      {/* Cancel Modal */}
+      <AnimatePresence>
+        {cancelModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setCancelModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-gray-900 rounded-3xl max-w-sm w-full shadow-2xl border border-gray-100 dark:border-gray-800 p-6"
+            >
+              <h3 className="font-black text-lg text-gray-900 dark:text-white mb-4">Cancel Order #{cancelModal}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Please select a reason for cancellation:</p>
+
+              <div className="space-y-2 mb-4">
+                {CANCELLATION_REASONS.map((reason) => (
+                  <button
+                    key={reason}
+                    onClick={() => setSelectedReason(reason)}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all border ${selectedReason === reason
+                        ? "border-[#D4725C] bg-[#D4725C]/10 text-[#D4725C]"
+                        : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                      }`}
+                  >
+                    {reason}
+                  </button>
+                ))}
+              </div>
+
+              {selectedReason === "Other" && (
+                <textarea
+                  value={customReason}
+                  onChange={(e) => setCustomReason(e.target.value)}
+                  placeholder="Enter your reason..."
+                  className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 mb-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50"
+                  rows={3}
+                />
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setCancelModal(null); setSelectedReason(""); setCustomReason(""); }}
+                  className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-bold text-sm"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleSubmitCancellation}
+                  disabled={submittingCancel || (!selectedReason || (selectedReason === "Other" && !customReason.trim()))}
+                  className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold text-sm disabled:opacity-40"
+                >
+                  {submittingCancel ? "Sending..." : "Cancel Order"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Rating Modal */}
       <AnimatePresence>
         {ratingModal && (() => {
-          const order = mockOrders.find((o) => o.id === ratingModal);
+          const order = orders.find((o) => o.id === ratingModal);
+          if (!order) return null;
           return (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-              onClick={handleSkipRating}
+              onClick={() => setRatingModal(null)}
             >
               <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -454,39 +447,37 @@ export default function TrackOrders() {
                   </div>
                   <h3 className="font-black text-lg text-gray-900 dark:text-white">Rate Your Order</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {order?.id} • {order?.canteen}
+                    Order #{order.id} &bull; {order.canteenName}
                   </p>
                 </div>
 
                 <div className="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
-                  {/* Per-item Food Ratings */}
                   <div>
                     <p className="text-sm font-bold text-gray-900 dark:text-white mb-4 text-center">Rate each item</p>
                     <div className="space-y-4">
-                      {order?.items.map((item) => (
-                        <div key={item} className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-3.5 border border-gray-100/50 dark:border-gray-800">
-                          <p className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">{item}</p>
+                      {order.items.map((item) => (
+                        <div key={item.id} className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-3.5 border border-gray-100/50 dark:border-gray-800">
+                          <p className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">{item.dishName}</p>
                           <div className="flex items-center gap-1.5">
                             {[1, 2, 3, 4, 5].map((star) => (
                               <button
                                 key={star}
-                                onClick={() => setItemRatings((prev) => ({ ...prev, [item]: star }))}
-                                onMouseEnter={() => setItemHovers((prev) => ({ ...prev, [item]: star }))}
-                                onMouseLeave={() => setItemHovers((prev) => ({ ...prev, [item]: 0 }))}
+                                onClick={() => setItemRatings((prev) => ({ ...prev, [item.dish]: star }))}
+                                onMouseEnter={() => setItemHovers((prev) => ({ ...prev, [item.dish]: star }))}
+                                onMouseLeave={() => setItemHovers((prev) => ({ ...prev, [item.dish]: 0 }))}
                                 className="transition-transform hover:scale-110 active:scale-95"
                               >
                                 <Star
-                                  className={`size-7 transition-colors ${
-                                    star <= (itemHovers[item] || itemRatings[item] || 0)
+                                  className={`size-7 transition-colors ${star <= (itemHovers[item.dish] || itemRatings[item.dish] || 0)
                                       ? "text-amber-400 fill-amber-400"
                                       : "text-gray-200 dark:text-gray-700"
-                                  }`}
+                                    }`}
                                 />
                               </button>
                             ))}
-                            {(itemRatings[item] || 0) > 0 && (
+                            {(itemRatings[item.dish] || 0) > 0 && (
                               <span className="text-xs font-bold text-amber-600 dark:text-amber-400 ml-2">
-                                {getRatingLabel(itemRatings[item])}
+                                {getRatingLabel(itemRatings[item.dish])}
                               </span>
                             )}
                           </div>
@@ -495,58 +486,20 @@ export default function TrackOrders() {
                     </div>
                   </div>
 
-                  <div className="border-t border-dashed border-gray-200 dark:border-gray-700" />
-
-                  {/* Canteen Rating */}
-                  <div className="text-center">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">How was the canteen?</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-                      {order?.canteen}
-                    </p>
-                    <div className="flex items-center justify-center gap-2">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          onClick={() => setCanteenRating(star)}
-                          onMouseEnter={() => setCanteenHover(star)}
-                          onMouseLeave={() => setCanteenHover(0)}
-                          className="transition-transform hover:scale-125 active:scale-95"
-                        >
-                          <Star
-                            className={`size-9 transition-colors ${
-                              star <= (canteenHover || canteenRating)
-                                ? "text-green-500 fill-green-500"
-                                : "text-gray-200 dark:text-gray-700"
-                            }`}
-                          />
-                        </button>
-                      ))}
-                    </div>
-                    {canteenRating > 0 && (
-                      <motion.p
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-xs font-bold text-green-600 dark:text-green-400 mt-2"
-                      >
-                        {getRatingLabel(canteenRating)}
-                      </motion.p>
-                    )}
-                  </div>
-
                   {/* Actions */}
                   <div className="flex gap-3 pt-1">
                     <button
-                      onClick={handleSkipRating}
+                      onClick={() => setRatingModal(null)}
                       className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                     >
                       Skip
                     </button>
                     <button
                       onClick={handleSubmitRating}
-                      disabled={Object.values(itemRatings).some((r) => r === 0) || canteenRating === 0}
+                      disabled={submittingRating || Object.values(itemRatings).some((r) => r === 0)}
                       className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white font-bold text-sm shadow-lg shadow-[#D4725C]/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
                     >
-                      Submit Rating
+                      {submittingRating ? "Submitting..." : "Submit Rating"}
                     </button>
                   </div>
                 </div>

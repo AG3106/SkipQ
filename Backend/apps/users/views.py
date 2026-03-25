@@ -64,6 +64,8 @@ def verify_otp(request):
       FE → verifyOTP(email, enteredOTP)
       → If valid, creates user account and profile.
     """
+    from django.contrib.auth import login as auth_login
+
     serializer = VerifyOTPSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
@@ -83,6 +85,8 @@ def verify_otp(request):
                 {"message": "Registration pending admin approval. You will receive an email once reviewed."},
                 status=status.HTTP_200_OK,
             )
+        # Establish session so the user is immediately authenticated
+        auth_login(request, user)
         return Response(
             {"message": "Registration successful", "user": UserSerializer(user).data},
             status=status.HTTP_201_CREATED,
@@ -203,14 +207,18 @@ def profile_view(request):
             serializer = CustomerProfileSerializer(profile, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        return Response(CustomerProfileSerializer(profile).data)
+        data = CustomerProfileSerializer(profile).data
+        data["has_wallet_pin"] = bool(profile.wallet_pin_hash)
+        return Response(data)
     elif user.role == User.Role.MANAGER:
         profile = user.manager_profile
         if request.method == "PATCH":
             serializer = CanteenManagerProfileSerializer(profile, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        return Response(CanteenManagerProfileSerializer(profile).data)
+        data = CanteenManagerProfileSerializer(profile).data
+        data["has_wallet_pin"] = bool(profile.wallet_pin_hash)
+        return Response(data)
     else:
         return Response(UserSerializer(user).data)
 

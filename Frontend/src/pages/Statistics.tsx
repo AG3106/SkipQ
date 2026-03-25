@@ -1,39 +1,94 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { ArrowLeft, TrendingUp, DollarSign, ShoppingBag, Star, Calendar, ChevronDown } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from "recharts";
+import { ArrowLeft, TrendingUp, DollarSign, ShoppingBag, Calendar, ChevronDown, Loader2 } from "lucide-react";
+import {
+  getManagerDashboard,
+  getManagerAnalytics,
+  getManagerDishAnalytics,
+  getManagerMonthlyRevenue,
+  type MonthlyBreakdown,
+  type DishRevenue,
+} from "../api/canteens";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
+import { toast } from "sonner";
 
-const monthlyOrders = [
-  { month: "Jan", orders: 120, revenue: 15600 },
-  { month: "Feb", orders: 135, revenue: 17550 },
-  { month: "Mar", orders: 150, revenue: 19500 },
-  { month: "Apr", orders: 145, revenue: 18850 },
-  { month: "May", orders: 165, revenue: 21450 },
-  { month: "Jun", orders: 180, revenue: 23400 },
-];
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const popularDishes = [
-  { name: "Masala Dosa", orders: 245, revenue: 14700 },
-  { name: "Veg Biryani", orders: 198, revenue: 29700 },
-  { name: "Paneer Burger", orders: 176, revenue: 15840 },
-  { name: "Chocolate Cake", orders: 156, revenue: 12480 },
-  { name: "Thali", orders: 143, revenue: 17160 },
-];
-
-const categoryData = [
-  { name: "Breakfast", value: 30, color: "#FF8C42" },
-  { name: "Meals", value: 35, color: "#2E7D32" },
-  { name: "Snacks", value: 20, color: "#1976D2" },
-  { name: "Desserts", value: 15, color: "#9C27B0" },
-];
-
-const stats = [
-  { label: "Total Orders", value: "1,245", change: "+12.5%", icon: ShoppingBag, color: "text-blue-600", bgColor: "bg-blue-100" },
-  { label: "Total Revenue", value: "₹1,62,450", change: "+18.2%", icon: DollarSign, color: "text-green-600", bgColor: "bg-green-100" },
-  { label: "Avg. Order Value", value: "₹130", change: "+5.1%", icon: TrendingUp, color: "text-orange-600", bgColor: "bg-orange-100" },
-  { label: "Customer Rating", value: "4.6", change: "+0.2", icon: Star, color: "text-yellow-600", bgColor: "bg-yellow-100" },
-];
+function formatRevenue(val: string | number) {
+  const n = typeof val === "string" ? parseFloat(val) : val;
+  if (n >= 100000) return `₹${(n / 1000).toFixed(0)}K`;
+  if (n >= 1000) return `₹${n.toLocaleString("en-IN")}`;
+  return `₹${n}`;
+}
 
 export default function Statistics() {
+  const [canteenName, setCanteenName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  // Data from APIs
+  const [monthlyData, setMonthlyData] = useState<MonthlyBreakdown[]>([]);
+  const [topDishes, setTopDishes] = useState<DishRevenue[]>([]);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState("0");
+  const [completedOrders, setCompletedOrders] = useState(0);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const [dashboard, analytics, dishAnalytics] = await Promise.all([
+          getManagerDashboard(),
+          getManagerAnalytics(selectedYear),
+          getManagerDishAnalytics(),
+        ]);
+
+        setCanteenName(dashboard.canteen.name);
+        setMonthlyData(analytics.monthlyBreakdown);
+        setTopDishes(dishAnalytics.top5ByRevenue);
+
+        // Compute totals from monthly breakdown
+        let orders = 0;
+        let revenue = 0;
+        for (const m of analytics.monthlyBreakdown) {
+          orders += m.orderCount;
+          revenue += parseFloat(m.revenue);
+        }
+        setTotalOrders(orders);
+        setTotalRevenue(revenue.toFixed(2));
+        setCompletedOrders(dashboard.earnings?.completedOrders ?? orders);
+      } catch {
+        toast.error("Failed to load statistics");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [selectedYear]);
+
+  // Transform monthly data for charts
+  const chartData = monthlyData.map((m) => {
+    const monthIndex = parseInt(m.month.split("-")[1], 10) - 1;
+    return {
+      month: MONTH_LABELS[monthIndex],
+      orders: m.orderCount,
+      revenue: parseFloat(m.revenue),
+    };
+  });
+
+  const avgOrderValue = totalOrders > 0 ? (parseFloat(totalRevenue) / totalOrders).toFixed(0) : "0";
+
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 3 }, (_, i) => currentYear - i);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-[#D4725C]" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
       {/* Background Ambience */}
@@ -51,18 +106,21 @@ export default function Statistics() {
                 <ArrowLeft className="size-6 text-gray-600 dark:text-gray-400" />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly Statistics</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Hall 1 Canteen - January 2024</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Statistics</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{canteenName}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 shadow-sm hover:border-[#D4725C] transition-colors cursor-pointer group">
               <Calendar className="size-5 text-gray-500 dark:text-gray-400 group-hover:text-[#D4725C]" />
-              <select className="bg-transparent focus:outline-none text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer appearance-none pr-4 relative z-10">
-                <option>Last 6 Months</option>
-                <option>Last 3 Months</option>
-                <option>Last Month</option>
-                <option>This Month</option>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="bg-transparent focus:outline-none text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer appearance-none pr-4 relative z-10"
+              >
+                {yearOptions.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
               </select>
               <ChevronDown className="size-4 text-gray-400 dark:text-gray-500 -ml-4" />
             </div>
@@ -72,138 +130,122 @@ export default function Statistics() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`${stat.bgColor} dark:bg-opacity-20 p-3.5 rounded-2xl`}>
-                  <stat.icon className={`size-6 ${stat.color}`} />
-                </div>
-                <span className="bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
-                  {stat.change}
-                  <TrendingUp className="size-3" />
-                </span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-blue-100 dark:bg-opacity-20 p-3.5 rounded-2xl">
+                <ShoppingBag className="size-6 text-blue-600" />
               </div>
-              <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">{stat.label}</p>
-              <p className="text-3xl font-black text-gray-900 dark:text-white">{stat.value}</p>
             </div>
-          ))}
+            <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Completed Orders</p>
+            <p className="text-3xl font-black text-gray-900 dark:text-white">{completedOrders.toLocaleString("en-IN")}</p>
+          </div>
+
+          <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-green-100 dark:bg-opacity-20 p-3.5 rounded-2xl">
+                <DollarSign className="size-6 text-green-600" />
+              </div>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Revenue</p>
+            <p className="text-3xl font-black text-gray-900 dark:text-white">{formatRevenue(totalRevenue)}</p>
+          </div>
+
+          <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-orange-100 dark:bg-opacity-20 p-3.5 rounded-2xl">
+                <TrendingUp className="size-6 text-orange-600" />
+              </div>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Avg. Order Value</p>
+            <p className="text-3xl font-black text-gray-900 dark:text-white">₹{parseInt(avgOrderValue).toLocaleString("en-IN")}</p>
+          </div>
         </div>
 
-        {/* Charts Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Orders & Revenue Chart */}
-          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 min-w-0">
+        {/* Orders & Revenue Chart */}
+        {chartData.length > 0 ? (
+          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 min-w-0 mb-8">
             <div className="flex items-center justify-between mb-8">
-               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Orders & Revenue Trend</h2>
-               <div className="flex gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                     <div className="w-3 h-3 rounded-full bg-[#D4725C]" />
-                     <span className="text-gray-600 dark:text-gray-400">Orders</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <div className="w-3 h-3 rounded-full bg-[#2E7D32]" />
-                     <span className="text-gray-600 dark:text-gray-400">Revenue</span>
-                  </div>
-               </div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Orders & Revenue Trend</h2>
+              <div className="flex gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#D4725C]" />
+                  <span className="text-gray-600 dark:text-gray-400">Orders</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#2E7D32]" />
+                  <span className="text-gray-600 dark:text-gray-400">Revenue</span>
+                </div>
+              </div>
             </div>
             <div className="w-full h-[300px]">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                <LineChart data={monthlyOrders}>
-                  <CartesianGrid key="grid" strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" className="dark:stroke-gray-700" />
-                  <XAxis key="xaxis" dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} dy={10} />
-                  <YAxis key="yaxis-left" yAxisId="left" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
-                  <YAxis key="yaxis-right" yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} dy={10} />
+                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
+                  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
                   <Tooltip
-                    key="tooltip"
-                    contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
-                    itemStyle={{ fontSize: '12px', fontWeight: 600 }}
+                    contentStyle={{ backgroundColor: "#fff", borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+                    itemStyle={{ fontSize: "12px", fontWeight: 600 }}
                   />
-                  <Line key="line-orders" yAxisId="left" type="monotone" dataKey="orders" stroke="#D4725C" strokeWidth={3} dot={{ r: 4, fill: '#D4725C', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
-                  <Line key="line-revenue" yAxisId="right" type="monotone" dataKey="revenue" stroke="#2E7D32" strokeWidth={3} dot={{ r: 4, fill: '#2E7D32', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                  <Line yAxisId="left" type="monotone" dataKey="orders" stroke="#D4725C" strokeWidth={3} dot={{ r: 4, fill: "#D4725C", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6 }} />
+                  <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#2E7D32" strokeWidth={3} dot={{ r: 4, fill: "#2E7D32", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
+        ) : (
+          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 mb-8 text-center">
+            <p className="text-gray-500 dark:text-gray-400 font-medium">No order data available for {selectedYear}.</p>
+          </div>
+        )}
 
-          {/* Category Distribution */}
-          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 min-w-0">
-            <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Category Distribution</h2>
-            <div className="flex flex-col md:flex-row items-center">
-              <div className="w-full md:w-1/2 h-[300px]">
+        {/* Top Performing Dishes */}
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 min-w-0">
+          <h2 className="text-xl font-bold mb-8 text-gray-900 dark:text-white">Top Performing Dishes (Last 30 Days)</h2>
+
+          {topDishes.length > 0 ? (
+            <>
+              <div className="w-full h-[300px]">
                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color === '#FF8C42' ? '#D4725C' : entry.color} strokeWidth={0} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
-                  </PieChart>
+                  <BarChart data={topDishes.map((d) => ({ name: d.dishName, orders: d.totalOrdered, revenue: parseFloat(d.revenue) }))} barSize={40}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
+                    <Tooltip
+                      cursor={{ fill: "#F3F4F6" }}
+                      contentStyle={{ backgroundColor: "#fff", borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+                    />
+                    <Bar dataKey="orders" fill="#D4725C" name="Orders" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="revenue" fill="#2E7D32" name="Revenue (₹)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="w-full md:w-1/2 grid grid-cols-1 gap-4 pl-0 md:pl-8 mt-6 md:mt-0">
-                {categoryData.map((cat, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center gap-3">
-                      <div className="size-4 rounded-full" style={{ backgroundColor: cat.color === '#FF8C42' ? '#D4725C' : cat.color }}></div>
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{cat.name}</span>
+
+              <div className="mt-8 space-y-3">
+                {topDishes.map((dish, index) => (
+                  <div key={dish.dishId} className="flex items-center justify-between p-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl hover:shadow-md transition-all">
+                    <div className="flex items-center gap-6">
+                      <div className="size-10 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center font-bold text-white dark:text-gray-900 shadow-lg shadow-gray-200 dark:shadow-black/20">
+                        #{index + 1}
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 dark:text-white text-lg">{dish.dishName}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{dish.totalOrdered} orders placed</p>
+                      </div>
                     </div>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white">{cat.value}%</span>
+                    <div className="text-right">
+                      <p className="text-xl font-black text-[#2E7D32] dark:text-green-400">{formatRevenue(dish.revenue)}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">Revenue</p>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Popular Dishes */}
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 min-w-0">
-          <h2 className="text-xl font-bold mb-8 text-gray-900 dark:text-white">Top Performing Dishes</h2>
-          <div className="w-full h-[300px]">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={popularDishes} barSize={40}>
-                <CartesianGrid key="bar-grid" strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" className="dark:stroke-gray-700" />
-                <XAxis key="bar-xaxis" dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} dy={10} />
-                <YAxis key="bar-yaxis" axisLine={false} tickLine={false} tick={{fill: '#6B7280', fontSize: 12}} />
-                <Tooltip
-                  key="bar-tooltip"
-                   cursor={{fill: '#F3F4F6'}}
-                   contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
-                />
-                <Bar key="bar-orders" dataKey="orders" fill="#D4725C" name="Orders" radius={[4, 4, 0, 0]} />
-                <Bar key="bar-revenue" dataKey="revenue" fill="#2E7D32" name="Revenue (₹)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="mt-8 space-y-3">
-            {popularDishes.map((dish, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl hover:shadow-md transition-all">
-                <div className="flex items-center gap-6">
-                  <div className="size-10 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center font-bold text-white dark:text-gray-900 shadow-lg shadow-gray-200 dark:shadow-black/20">
-                    #{index + 1}
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-900 dark:text-white text-lg">{dish.name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{dish.orders} orders placed</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-xl font-black text-[#2E7D32] dark:text-green-400">₹{dish.revenue}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">Revenue</p>
-                </div>
-              </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400 font-medium text-center py-8">No dish data available yet. Complete some orders to see analytics.</p>
+          )}
         </div>
       </div>
     </div>

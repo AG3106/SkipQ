@@ -1,77 +1,29 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import {
   ArrowLeft, Cake, Clock, MapPin, AlertCircle, Check, Wallet,
-  Calendar, ChevronDown, Eye, EyeOff, Star, RefreshCw, XCircle,
-  CheckCircle, Package,
+  Calendar, ChevronDown, Eye, EyeOff, XCircle,
+  CheckCircle, Package, RefreshCw, Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { toast } from "sonner@2.0.3";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import { toast } from "sonner";
+import { listCanteens } from "../api/canteens";
+import { checkCakeAvailability, submitReservation, getMyReservations } from "../api/cakes";
+import { useWallet } from "../context/WalletContext";
+import type { Canteen, CakeReservation as CakeReservationType } from "../types";
 
 // ─── Data ───────────────────────────────────────────────────────────────────────
-
-const CANTEENS = [
-  { id: 1, name: "Hall 1", location: "Near Hall 1 Main Gate" },
-  { id: 2, name: "Hall 3", location: "Hall 3, Ground Floor" },
-  { id: 3, name: "Hall 5", location: "Hall 5, 1st Floor" },
-  { id: 4, name: "Hall 7", location: "Central Canteen Complex" },
-];
 
 const FLAVORS = ["Chocolate", "Vanilla", "Red Velvet", "Strawberry"];
 const SIZES = ["0.5 kg", "1 kg", "2 kg"];
 const SIZE_PRICES: Record<string, number> = { "0.5 kg": 350, "1 kg": 600, "2 kg": 1100 };
 
 const FLAVOR_IMAGES: Record<string, string> = {
-  Chocolate: "https://images.unsplash.com/photo-1771575521906-a1184137f1b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaG9jb2xhdGUlMjBjYWtlJTIwY2VsZWJyYXRpb24lMjBiYWtlcnl8ZW58MXx8fHwxNzc0Mjg5ODUzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-  Vanilla: "https://images.unsplash.com/photo-1662751381695-396624641958?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2YW5pbGxhJTIwYmlydGhkYXklMjBjYWtlJTIwZWxlZ2FudHxlbnwxfHx8fDE3NzQyODk4NTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-  "Red Velvet": "https://images.unsplash.com/photo-1586788680434-30d324b2d46f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWQlMjB2ZWx2ZXQlMjBjYWtlJTIwZGVzc2VydHxlbnwxfHx8fDE3NzQyOTEzMDN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-  Strawberry: "https://images.unsplash.com/photo-1745334976407-50dfd62eeec5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHJhd2JlcnJ5JTIwY2FrZSUyMGJlYXV0aWZ1bCUyMHBhc3RyeXxlbnwxfHx8fDE3NzQyOTEzMDN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+  Chocolate: "https://images.unsplash.com/photo-1771575521906-a1184137f1b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+  Vanilla: "https://images.unsplash.com/photo-1662751381695-396624641958?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+  "Red Velvet": "https://images.unsplash.com/photo-1586788680434-30d324b2d46f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+  Strawberry: "https://images.unsplash.com/photo-1745334976407-50dfd62eeec5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
 };
-
-interface CakeReservationType {
-  id: number;
-  canteen_name: string;
-  flavor: string;
-  size: string;
-  design: string;
-  message: string;
-  pickup_date: string;
-  pickup_time: string;
-  advance_amount: string;
-  status: "PENDING_APPROVAL" | "CONFIRMED" | "REJECTED" | "REFUNDED" | "COMPLETED";
-  rejection_reason: string;
-  created_at: string;
-}
-
-// Mock saved reservations
-const MOCK_RESERVATIONS: CakeReservationType[] = [
-  {
-    id: 1, canteen_name: "Hall 3", flavor: "Chocolate", size: "1 kg",
-    design: "Floral", message: "Happy Birthday Arjun!", pickup_date: "2026-03-28",
-    pickup_time: "14:00", advance_amount: "600.00", status: "CONFIRMED",
-    rejection_reason: "", created_at: "2026-03-22T09:30:00Z",
-  },
-  {
-    id: 2, canteen_name: "Hall 5", flavor: "Red Velvet", size: "0.5 kg",
-    design: "", message: "Congrats!", pickup_date: "2026-03-25",
-    pickup_time: "11:00", advance_amount: "350.00", status: "PENDING_APPROVAL",
-    rejection_reason: "", created_at: "2026-03-23T14:00:00Z",
-  },
-  {
-    id: 3, canteen_name: "Hall 1", flavor: "Vanilla", size: "2 kg",
-    design: "Unicorn", message: "", pickup_date: "2026-03-20",
-    pickup_time: "16:00", advance_amount: "1100.00", status: "REJECTED",
-    rejection_reason: "Capacity full this week", created_at: "2026-03-18T08:00:00Z",
-  },
-  {
-    id: 4, canteen_name: "Hall 7", flavor: "Strawberry", size: "1 kg",
-    design: "", message: "For the team!", pickup_date: "2026-03-15",
-    pickup_time: "13:00", advance_amount: "600.00", status: "COMPLETED",
-    rejection_reason: "", created_at: "2026-03-12T10:00:00Z",
-  },
-];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -121,6 +73,14 @@ export default function CakeReservation() {
   // Tab: "reserve" | "my-reservations"
   const [activeTab, setActiveTab] = useState<"reserve" | "my-reservations">("reserve");
 
+  // Canteens from API
+  const [canteens, setCanteens] = useState<Canteen[]>([]);
+  const [canteensLoading, setCanteensLoading] = useState(true);
+
+  // Reservations from API
+  const [reservations, setReservations] = useState<CakeReservationType[]>([]);
+  const [reservationsLoading, setReservationsLoading] = useState(false);
+
   // Step 1 – Check availability
   const [selectedCanteen, setSelectedCanteen] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState("");
@@ -140,37 +100,59 @@ export default function CakeReservation() {
   // After submit
   const [submitted, setSubmitted] = useState(false);
 
-  // Mock reservations state
-  const [reservations] = useState<CakeReservationType[]>(MOCK_RESERVATIONS);
+  const { balance } = useWallet();
 
-  const canteen = useMemo(() => CANTEENS.find((c) => c.id === selectedCanteen), [selectedCanteen]);
+  const canteen = useMemo(() => canteens.find((c) => c.id === selectedCanteen), [canteens, selectedCanteen]);
   const advanceAmount = size ? SIZE_PRICES[size] || 0 : 0;
-  const walletBalance = 2500; // mock
+
+  // Load canteens on mount
+  useEffect(() => {
+    listCanteens()
+      .then((data) => setCanteens(data))
+      .catch(() => toast.error("Failed to load canteens"))
+      .finally(() => setCanteensLoading(false));
+  }, []);
+
+  // Load reservations when switching to tab
+  const loadReservations = async () => {
+    setReservationsLoading(true);
+    try {
+      const data = await getMyReservations();
+      setReservations(data);
+    } catch {
+      toast.error("Failed to load reservations");
+    } finally {
+      setReservationsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "my-reservations") {
+      loadReservations();
+    }
+  }, [activeTab]);
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleCheckAvailability = () => {
+  const handleCheckAvailability = async () => {
     if (!selectedCanteen || !selectedDate) {
       toast.error("Please select a canteen and date");
       return;
     }
     setCheckingAvailability(true);
     setAvailabilityResult(null);
-
-    // Simulate API call
-    setTimeout(() => {
-      // Mock: make some dates unavailable
-      const dayOfWeek = new Date(selectedDate + "T00:00:00").getDay();
-      if (dayOfWeek === 0) {
-        setAvailabilityResult({ available: false, message: "Canteen is on holiday (Sunday)" });
-      } else {
-        setAvailabilityResult({ available: true, message: "Slots available! You can proceed." });
-      }
+    try {
+      const result = await checkCakeAvailability(selectedCanteen, selectedDate);
+      setAvailabilityResult(result);
+    } catch {
+      toast.error("Failed to check availability");
+    } finally {
       setCheckingAvailability(false);
-    }, 1200);
+    }
   };
 
-  const handleSubmitReservation = () => {
+  const handleSubmitReservation = async () => {
+    if (!selectedCanteen) return;
     if (!flavor) { toast.error("Please select a flavor"); return; }
     if (!size) { toast.error("Please select a size"); return; }
     if (!pickupTime) { toast.error("Please select a pickup time"); return; }
@@ -178,28 +160,35 @@ export default function CakeReservation() {
     // Enforce minimum 2-hour advance booking
     const pickupDateTime = new Date(`${selectedDate}T${pickupTime}:00`);
     const now = new Date();
-    const diffMs = pickupDateTime.getTime() - now.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
+    const diffHours = (pickupDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
     if (diffHours < 2) {
       toast.error("Pickup must be at least 2 hours from now");
       return;
     }
 
     if (walletPin.length !== 4) { toast.error("Enter a valid 4-digit wallet PIN"); return; }
-    if (advanceAmount > walletBalance) { toast.error("Insufficient wallet balance"); return; }
-
-    const storedPin = localStorage.getItem("walletPin");
-    if (storedPin && walletPin !== storedPin) {
-      toast.error("Incorrect wallet PIN");
-      return;
-    }
+    if (advanceAmount > balance) { toast.error("Insufficient wallet balance"); return; }
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      await submitReservation({
+        canteenId: selectedCanteen,
+        flavor,
+        size,
+        design: design || undefined,
+        message: cakeMessage || undefined,
+        pickupDate: selectedDate,
+        pickupTime,
+        advanceAmount: advanceAmount.toFixed(2),
+        walletPin,
+      });
       setSubmitted(true);
       toast.success("Reservation submitted!");
-    }, 1500);
+    } catch {
+      toast.error("Failed to submit reservation. Check your PIN and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const resetForm = () => {
@@ -226,8 +215,6 @@ export default function CakeReservation() {
         <div className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-pink-100/30 dark:bg-pink-950/15 rounded-full blur-3xl" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
       </div>
-
-      <Header />
 
       <div className="relative z-10 container mx-auto px-4 py-8 pb-32 max-w-2xl">
         {/* Back */}
@@ -292,7 +279,7 @@ export default function CakeReservation() {
                     Pickup: {formatDate(selectedDate)} at {pickupTime}
                   </p>
                   <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
-                    Canteen: {canteen?.name} • Advance: ₹{advanceAmount}
+                    Canteen: {canteen?.name} &bull; Advance: ₹{advanceAmount}
                   </p>
                   <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-xl p-3 mb-6">
                     <p className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-2 justify-center">
@@ -335,10 +322,11 @@ export default function CakeReservation() {
                           setSelectedCanteen(Number(e.target.value) || null);
                           setAvailabilityResult(null);
                         }}
+                        disabled={canteensLoading}
                         className="w-full appearance-none px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent pr-10"
                       >
-                        <option value="">Choose a canteen…</option>
-                        {CANTEENS.map((c) => (
+                        <option value="">{canteensLoading ? "Loading canteens…" : "Choose a canteen…"}</option>
+                        {canteens.map((c) => (
                           <option key={c.id} value={c.id}>{c.name} — {c.location}</option>
                         ))}
                       </select>
@@ -432,11 +420,7 @@ export default function CakeReservation() {
                                   : "border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700"
                               }`}
                             >
-                              <img
-                                src={FLAVOR_IMAGES[f]}
-                                alt={f}
-                                className="w-full h-24 object-cover"
-                              />
+                              <img src={FLAVOR_IMAGES[f]} alt={f} className="w-full h-24 object-cover" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                               <div className="absolute bottom-0 left-0 right-0 p-2.5 flex items-center justify-between">
                                 <span className="text-white text-sm font-bold">{f}</span>
@@ -564,7 +548,7 @@ export default function CakeReservation() {
                             <Wallet className="size-4" />
                             <span className="font-medium">Wallet Balance</span>
                           </div>
-                          <span className="font-black text-green-700 dark:text-green-400">₹{walletBalance.toLocaleString()}</span>
+                          <span className="font-black text-green-700 dark:text-green-400">₹{balance.toLocaleString()}</span>
                         </div>
 
                         {/* Wallet PIN */}
@@ -624,7 +608,11 @@ export default function CakeReservation() {
               exit={{ opacity: 0, y: -12 }}
               className="space-y-4"
             >
-              {reservations.length === 0 ? (
+              {reservationsLoading ? (
+                <div className="flex items-center justify-center py-24">
+                  <Loader2 className="size-8 animate-spin text-[#D4725C]" />
+                </div>
+              ) : reservations.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center space-y-4 opacity-60">
                   <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-full">
                     <Cake className="size-10 text-gray-400 dark:text-gray-500" />
@@ -636,7 +624,7 @@ export default function CakeReservation() {
                 </div>
               ) : (
                 reservations.map((r, i) => {
-                  const cfg = STATUS_CONFIG[r.status];
+                  const cfg = STATUS_CONFIG[r.status] || STATUS_CONFIG.PENDING_APPROVAL;
                   return (
                     <motion.div
                       key={r.id}
@@ -655,12 +643,12 @@ export default function CakeReservation() {
                             {r.flavor} Cake — {r.size}
                           </h3>
                           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 flex items-center gap-1">
-                            <MapPin className="size-3" /> {r.canteen_name}
+                            <MapPin className="size-3" /> {r.canteenName}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="text-xs text-gray-400 dark:text-gray-500">Advance</p>
-                          <p className="text-xl font-black text-[#D4725C]">₹{parseFloat(r.advance_amount).toFixed(0)}</p>
+                          <p className="text-xl font-black text-[#D4725C]">₹{parseFloat(r.advanceAmount).toFixed(0)}</p>
                         </div>
                       </div>
 
@@ -668,7 +656,7 @@ export default function CakeReservation() {
                       <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Calendar className="size-3" /> Pickup</span>
-                          <span className="font-bold text-gray-900 dark:text-white">{formatDate(r.pickup_date)} at {r.pickup_time}</span>
+                          <span className="font-bold text-gray-900 dark:text-white">{formatDate(r.pickupDate)} at {r.pickupTime}</span>
                         </div>
                         {r.design && (
                           <div className="flex justify-between">
@@ -685,11 +673,11 @@ export default function CakeReservation() {
                       </div>
 
                       {/* Rejection reason */}
-                      {r.status === "REJECTED" && r.rejection_reason && (
+                      {r.status === "REJECTED" && r.rejectionReason && (
                         <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 rounded-xl p-3 mb-3">
                           <p className="text-xs text-red-700 dark:text-red-400 flex items-start gap-2">
                             <XCircle className="size-3.5 shrink-0 mt-0.5" />
-                            <span><span className="font-bold">Reason:</span> {r.rejection_reason}. Amount has been refunded to your wallet.</span>
+                            <span><span className="font-bold">Reason:</span> {r.rejectionReason}. Amount has been refunded to your wallet.</span>
                           </p>
                         </div>
                       )}
@@ -699,14 +687,14 @@ export default function CakeReservation() {
                         <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/40 rounded-xl p-3">
                           <p className="text-xs text-green-700 dark:text-green-400 flex items-center gap-2">
                             <CheckCircle className="size-3.5" />
-                            Collect on {formatDate(r.pickup_date)} at {r.pickup_time} from {r.canteen_name}
+                            Collect on {formatDate(r.pickupDate)} at {r.pickupTime} from {r.canteenName}
                           </p>
                         </div>
                       )}
 
                       {/* Created at */}
                       <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-3">
-                        Ordered {new Date(r.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                        Ordered {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
                     </motion.div>
                   );
@@ -717,7 +705,6 @@ export default function CakeReservation() {
         </AnimatePresence>
       </div>
 
-      <Footer />
     </div>
   );
 }

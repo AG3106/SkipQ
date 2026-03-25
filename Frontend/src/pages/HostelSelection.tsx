@@ -1,111 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { MapPin, Clock, Star, ChevronRight, Search, Flame } from "lucide-react";
+import { MapPin, Clock, Star, ChevronRight, Search, Flame, Loader2 } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { hostels } from "../data/data";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { AddToCartButton } from "../components/AddToCartButton";
+import { listCanteens, getPopularDishes } from "../api/canteens";
+import { getPreviousOrder } from "../api/orders";
+import { buildFileUrl } from "../api/client";
+import { useAuth } from "../context/AuthContext";
+import type { Canteen, PopularDish, Order } from "../types";
 
 type DietaryFilter = "all" | "veg" | "non-veg";
 
-const POPULAR_DISHES = [
-  {
-    name: "Masala Dosa",
-    canteen: "Hall 3 Canteen",
-    price: 60,
-    rating: 4.5,
-    image: "south indian food",
-    tag: "Bestseller",
-    category: "south-indian",
-    diet: "veg" as const
-  },
-  {
-    name: "Chicken Biryani",
-    canteen: "Hall 7 Canteen",
-    price: 150,
-    rating: 4.8,
-    image: "chicken biryani",
-    tag: "Top Rated",
-    category: "biryani",
-    diet: "non-veg" as const
-  },
-  {
-    name: "Paneer Pizza",
-    canteen: "Hall 1 Canteen",
-    price: 180,
-    rating: 4.6,
-    image: "paneer pizza",
-    tag: "Popular",
-    category: "pizza",
-    diet: "veg" as const
-  },
-  {
-    name: "Veg Burger",
-    canteen: "Hall 5 Canteen",
-    price: 70,
-    rating: 4.4,
-    image: "veg burger",
-    tag: "Quick Pickup",
-    category: "burger",
-    diet: "veg" as const
-  },
-  {
-    name: "Chocolate Cake",
-    canteen: "Hall 3 Canteen",
-    price: 80,
-    rating: 4.3,
-    image: "chocolate cake slice",
-    tag: "Bestseller",
-    category: "cake",
-    diet: "veg" as const
-  },
-];
-
-const PREVIOUS_ORDERS = [
-  {
-    name: "Paneer Butter Masala",
-    canteen: "Hall 5 Canteen",
-    price: 140,
-    rating: 4.7,
-    date: "2 days ago",
-    items: "Paneer Butter Masala, 2x Roti, Rice",
-  },
-  {
-    name: "Chicken Biryani",
-    canteen: "Hall 7 Canteen",
-    price: 150,
-    rating: 4.8,
-    date: "5 days ago",
-    items: "Chicken Biryani, Raita, Gulab Jamun",
-  },
-];
+const CANTEEN_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1552933440-440952890413?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600";
+const DISH_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
 
 export default function HostelSelection() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedDiet, setSelectedDiet] = useState<DietaryFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredHostels = hostels.filter((hostel) => {
-    const matchesSearch = hostel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    hostel.location.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+  const [canteens, setCanteens] = useState<Canteen[]>([]);
+  const [popularDishes, setPopularDishes] = useState<PopularDish[]>([]);
+  const [previousOrder, setPreviousOrder] = useState<Order | null>(null);
+  const [loadingCanteens, setLoadingCanteens] = useState(true);
+  const [loadingDishes, setLoadingDishes] = useState(true);
+
+  useEffect(() => {
+    listCanteens()
+      .then(setCanteens)
+      .catch(() => { })
+      .finally(() => setLoadingCanteens(false));
+
+    getPopularDishes()
+      .then(setPopularDishes)
+      .catch(() => { })
+      .finally(() => setLoadingDishes(false));
+
+    if (user) {
+      getPreviousOrder()
+        .then(setPreviousOrder)
+        .catch(() => { });
+    }
+  }, [user]);
+
+  const filteredCanteens = canteens.filter((c) => {
+    const q = searchQuery.toLowerCase();
+    return c.name.toLowerCase().includes(q) || c.location.toLowerCase().includes(q);
   });
 
-  const filteredPopularDishes = POPULAR_DISHES.filter((dish) => {
-    const matchesSearch = dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    dish.canteen.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    dish.image.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Diet Filter Logic
+  const filteredDishes = popularDishes.filter((dish) => {
+    const q = searchQuery.toLowerCase();
+    const matchesSearch =
+      dish.name.toLowerCase().includes(q) ||
+      dish.canteenName.toLowerCase().includes(q);
+
     let matchesDiet = true;
-    if (selectedDiet !== "all") {
-        if (selectedDiet === "veg") {
-             matchesDiet = dish.diet === "veg" || dish.diet === "jain";
-        } else {
-             matchesDiet = dish.diet === selectedDiet;
-        }
-    }
+    if (selectedDiet === "veg") matchesDiet = dish.isVeg;
+    else if (selectedDiet === "non-veg") matchesDiet = !dish.isVeg;
 
     return matchesSearch && matchesDiet;
   });
@@ -113,7 +67,7 @@ export default function HostelSelection() {
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 overflow-x-hidden">
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-orange-50 via-orange-50/50 to-transparent dark:from-orange-950/20 dark:via-orange-950/10 -z-10" />
-      
+
       <Header />
 
       <div className="container mx-auto px-4 pb-20">
@@ -128,31 +82,31 @@ export default function HostelSelection() {
             <br /> We've got you covered.
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Order from 14 canteens across campus. Skip the queue, enjoy the food.
+            Order from canteens across campus. Skip the queue, enjoy the food.
           </p>
 
-          {/* Search Bar - Floating & Elevated */}
+          {/* Search Bar */}
           <div className="relative max-w-2xl mx-auto">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-orange-200 to-orange-100 dark:from-orange-900/40 dark:to-orange-800/40 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
               <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl flex items-center p-2 border border-gray-100 dark:border-gray-700">
-                 <Search className="ml-4 text-gray-400 dark:text-gray-500 w-6 h-6" />
-                 <input
+                <Search className="ml-4 text-gray-400 dark:text-gray-500 w-6 h-6" />
+                <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && searchQuery.trim()) {
-                       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                      navigate(`/ search ? q = ${encodeURIComponent(searchQuery)} `);
                     }
                   }}
                   placeholder="Search for food, canteen, or cuisine..."
                   className="w-full px-4 py-3 bg-transparent text-gray-800 dark:text-white text-lg placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                 />
-                <button 
+                <button
                   onClick={() => {
                     if (searchQuery.trim()) {
-                      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                      navigate(`/ search ? q = ${encodeURIComponent(searchQuery)} `);
                     }
                   }}
                   className="hidden md:block bg-[#D4725C] hover:bg-[#B85A4A] text-white px-8 py-3 rounded-xl font-semibold transition-all transform active:scale-95 shadow-lg shadow-orange-200 dark:shadow-orange-900/30"
@@ -164,45 +118,48 @@ export default function HostelSelection() {
           </div>
         </div>
 
-        {/* Dietary Filters - Pills */}
+        {/* Dietary Filters */}
         <div className="mb-12">
           <div className="flex flex-wrap justify-center gap-3">
-             {[
-               { id: 'all', label: 'All', icon: null, activeColor: 'bg-gray-900 dark:bg-white dark:text-gray-900', border: 'border-transparent' },
-               { id: 'veg', label: 'Pure Veg', icon: <div className="w-2 h-2 bg-green-600 rounded-full mx-auto" />, activeColor: 'bg-green-600', border: 'border-green-600' },
-               { id: 'non-veg', label: 'Non-Veg', icon: <div className="w-2 h-2 bg-red-600 rounded-full mx-auto" />, activeColor: 'bg-red-600', border: 'border-red-600' },
-             ].map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => setSelectedDiet(filter.id as DietaryFilter)}
-                  className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 flex items-center gap-2 border ${
-                    selectedDiet === filter.id
-                      ? `${filter.activeColor} text-white shadow-lg shadow-gray-200 dark:shadow-black/20 scale-105 border-transparent`
-                      : `bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700`
-                  }`}
-                >
-                  {filter.id !== 'all' && (
-                     <div className={`w-4 h-4 border border-current rounded flex items-center justify-center ${selectedDiet === filter.id ? 'text-white' : filter.id === 'veg' ? 'text-green-600' : filter.id === 'non-veg' ? 'text-red-600' : ''}`}>
-                        {filter.icon}
-                     </div>
-                  )}
-                  {filter.label}
-                </button>
-             ))}
+            {[
+              { id: "all", label: "All", activeColor: "bg-gray-900 dark:bg-white dark:text-gray-900" },
+              { id: "veg", label: "Pure Veg", color: "green", activeColor: "bg-green-600" },
+              { id: "non-veg", label: "Non-Veg", color: "red", activeColor: "bg-red-600" },
+            ].map((filter) => (
+              <button
+                key={filter.id}
+                onClick={() => setSelectedDiet(filter.id as DietaryFilter)}
+                className={`px - 6 py - 2.5 rounded - full font - medium transition - all duration - 300 flex items - center gap - 2 border ${selectedDiet === filter.id
+                  ? `${filter.activeColor} text-white shadow-lg shadow-gray-200 dark:shadow-black/20 scale-105 border-transparent`
+                  : `bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700`
+                  } `}
+              >
+                {filter.color && (
+                  <div className={`w - 4 h - 4 border border - current rounded flex items - center justify - center ${selectedDiet === filter.id ? "text-white" : filter.color === "green" ? "text-green-600" : "text-red-600"} `}>
+                    <div className={`w - 2 h - 2 rounded - full ${filter.color === "green" ? "bg-green-600" : "bg-red-600"} `} />
+                  </div>
+                )}
+                {filter.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Hostel Canteens - Horizontal Scroll */}
-        {filteredHostels.length > 0 && (
+        {/* Canteens */}
+        {loadingCanteens ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="size-8 animate-spin text-[#D4725C]" />
+          </div>
+        ) : filteredCanteens.length > 0 ? (
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6 px-2">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Canteens Near You 📍</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Canteens Near You</h2>
             </div>
             <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-2">
-              {filteredHostels.map((hostel) => (
+              {filteredCanteens.map((canteen) => (
                 <Link
-                  key={hostel.id}
-                  to={`/menu/${hostel.id}`}
+                  key={canteen.id}
+                  to={`/menu/${canteen.id}`}
                   className="min-w-[300px] md:min-w-[340px] group relative"
                 >
                   <div className="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 group-hover:border-transparent group-hover:-translate-y-1 h-full">
@@ -210,14 +167,14 @@ export default function HostelSelection() {
                     <div className="relative h-48 overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60" />
                       <ImageWithFallback
-                        src="https://images.unsplash.com/photo-1552933440-440952890413?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwaG9zdGVsJTIwYnVpbGRpbmd8ZW58MXx8fHwxNzY5MDcxMzk2fDA&ixlib=rb-4.1.0&q=80&w=1080"
-                        alt={hostel.name}
+                        src={buildFileUrl(canteen.imageUrl) || CANTEEN_FALLBACK_IMAGE}
+                        alt={canteen.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      
-                      {/* Floating Status Badge */}
+
+                      {/* Status Badge */}
                       <div className="absolute top-4 right-4 z-20">
-                         {hostel.isOpen ? (
+                        {canteen.isCurrentlyOpen ? (
                           <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-green-700 dark:text-green-400 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm">
                             <span className="relative flex h-2 w-2">
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -234,25 +191,24 @@ export default function HostelSelection() {
 
                       {/* Content Overlay */}
                       <div className="absolute bottom-4 left-4 z-20 text-white">
-                         <h3 className="font-bold text-xl mb-1 text-white shadow-black/20 drop-shadow-sm">{hostel.name}</h3>
-                         <div className="flex items-center gap-2 text-white/90 text-sm font-medium">
-                            <MapPin className="w-3.5 h-3.5" />
-                            <span>{hostel.location}</span>
-                         </div>
+                        <h3 className="font-bold text-xl mb-1 text-white drop-shadow-sm">{canteen.name}</h3>
+                        <div className="flex items-center gap-2 text-white/90 text-sm font-medium">
+                          <MapPin className="w-3.5 h-3.5" />
+                          <span>{canteen.location}</span>
+                        </div>
                       </div>
                     </div>
- 
+
                     {/* Canteen Info */}
                     <div className="p-5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 px-2 py-1 rounded-lg">
                           <Star className="w-4 h-4 fill-current text-green-600 dark:text-green-400" />
                           <span className="font-bold text-sm text-green-700 dark:text-green-400">4.5</span>
-                          <span className="text-green-500/70 dark:text-green-500/50 text-xs">(250+)</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                           <Clock className="w-4 h-4" />
-                          <span className="text-sm font-medium">15-20 min</span>
+                          <span className="text-sm font-medium">{canteen.estimatedWaitTime || "15-20 min"}</span>
                         </div>
                       </div>
                     </div>
@@ -261,10 +217,14 @@ export default function HostelSelection() {
               ))}
             </div>
           </div>
-        )}
+        ) : null}
 
-        {/* Popular Dishes - Grid View */}
-        {filteredPopularDishes.length > 0 && (
+        {/* Popular Dishes */}
+        {loadingDishes ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="size-8 animate-spin text-[#D4725C]" />
+          </div>
+        ) : filteredDishes.length > 0 ? (
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6 px-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -272,185 +232,123 @@ export default function HostelSelection() {
               </h2>
             </div>
             <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-2">
-              {filteredPopularDishes.map((dish, index) => (
-                <div key={index} className="min-w-[180px] md:min-w-[220px] shrink-0">
-                  <DishCard dish={dish} featured={index === 0} />
+              {filteredDishes.map((dish) => (
+                <div key={dish.id} className="min-w-[180px] md:min-w-[220px] shrink-0">
+                  <PopularDishCard dish={dish} />
                 </div>
               ))}
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Previous Orders */}
-        {searchQuery === "" && selectedDiet === "all" && (
+        {searchQuery === "" && selectedDiet === "all" && user && previousOrder && (
           <div className="mb-16 bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Your Previous Orders 🕐</h2>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Your Previous Orders</h2>
               <Link to="/track-orders" className="text-[#D4725C] font-semibold flex items-center gap-1 hover:gap-2 transition-all text-sm">
                 View all
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {PREVIOUS_ORDERS.map((order, index) => {
-                const orderId = `${order.name}-${order.canteen}`.toLowerCase().replace(/\s+/g, '-');
 
-                return (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              From <span className="font-medium text-gray-700 dark:text-gray-300">{previousOrder.canteenName}</span>
+            </p>
+
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {previousOrder.items.map((item) => (
                 <div
-                  key={index}
-                  className="bg-gray-50/50 dark:bg-gray-950/50 hover:bg-white dark:hover:bg-gray-800 border border-transparent hover:border-gray-100 dark:hover:border-gray-700 rounded-2xl p-4 transition-all duration-300 flex gap-4 group"
+                  key={item.id}
+                  className="min-w-[160px] bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 flex flex-col gap-1"
                 >
-                  <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
-                    <ImageWithFallback
-                      src="https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBmb29kfGVufDF8fHx8MTc2OTAxMTc4NHww&ixlib=rb-4.1.0&q=80&w=1080"
-                      alt={order.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-start justify-between mb-1">
-                        <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1">{order.name}</h3>
-                        <span className="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-[10px] px-1.5 py-0.5 rounded font-bold">
-                           {order.rating} ★
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{order.canteen}</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">{order.items}</p>
-                    </div>
-                    <div className="flex items-center justify-between mt-2 gap-3">
-                      <span className="text-xs font-medium text-gray-400 dark:text-gray-500 shrink-0">{order.date}</span>
-                      <AddToCartButton
-                        item={{
-                          id: orderId,
-                          name: order.name,
-                          price: order.price,
-                          image: "",
-                          category: "previous-order",
-                          description: order.canteen,
-                        }}
-                        size="sm"
-                        fullWidth={false}
-                      />
-                    </div>
-                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-1">{item.dishName}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Qty: {item.quantity}</span>
+                  <span className="text-sm font-bold text-[#D4725C]">₹{parseFloat(item.priceAtOrder).toFixed(0)}</span>
                 </div>
-                );
-              })}
+              ))}
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <span className="text-sm text-gray-500 dark:text-gray-400">Total</span>
+              <span className="font-bold text-gray-900 dark:text-white">₹{parseFloat(previousOrder.totalPrice).toFixed(0)}</span>
             </div>
           </div>
         )}
 
         {/* No results state */}
-        {searchQuery !== "" && filteredHostels.length === 0 && filteredPopularDishes.length === 0 && (
-           <div className="text-center py-20 text-gray-500 dark:text-gray-400">
-             <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">🔍</div>
-             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No matches found</p>
-             <p className="text-gray-500 dark:text-gray-400">We couldn't find anything matching "{searchQuery}"</p>
-           </div>
+        {searchQuery !== "" && filteredCanteens.length === 0 && filteredDishes.length === 0 && (
+          <div className="text-center py-20 text-gray-500 dark:text-gray-400">
+            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+              <Search className="size-8 text-gray-400" />
+            </div>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No matches found</p>
+            <p className="text-gray-500 dark:text-gray-400">We couldn't find anything matching "{searchQuery}"</p>
+          </div>
         )}
-        
-         {/* No category/diet results state */}
-         {searchQuery === "" && selectedDiet !== "all" && filteredPopularDishes.length === 0 && (
-           <div className="text-center py-20 text-gray-500 dark:text-gray-400">
-             <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">🥣</div>
-             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No items found</p>
-             <p className="text-gray-500 dark:text-gray-400">Try changing your filters!</p>
-           </div>
-        )}
-
       </div>
 
       <Footer />
 
       <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+  .scrollbar - hide:: -webkit - scrollbar { display: none; }
+        .scrollbar - hide { -ms - overflow - style: none; scrollbar - width: none; }
+`}</style>
     </div>
   );
 }
 
-interface DishCardProps {
-  dish: {
-    name: string;
-    canteen: string;
-    price: number;
-    rating: number;
-    image: string;
-    tag: string;
-    diet: "veg" | "non-veg" | "jain" | "eggitarian";
-  };
-  featured?: boolean;
-}
-
-function DishCard({ dish, featured }: DishCardProps) {
-  const itemId = `${dish.name}-${dish.canteen}`.toLowerCase().replace(/\s+/g, '-');
-  
+function PopularDishCard({ dish }: { dish: PopularDish }) {
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 flex flex-col h-full relative ${featured ? 'ring-2 ring-orange-100 dark:ring-orange-900/50' : ''}`}>
+    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 flex flex-col h-full relative">
       <div className="relative h-40 overflow-hidden">
         <ImageWithFallback
-          src={`https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBmb29kfGVufDF8fHx8MTc2OTAxMTc4NHww&ixlib=rb-4.1.0&q=80&w=1080`}
+          src={buildFileUrl(dish.photo) || DISH_FALLBACK_IMAGE}
           alt={dish.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        {/* Floating Tag */}
-        <div className="absolute top-3 left-3">
-           <span className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md text-gray-800 dark:text-gray-200 text-[10px] font-bold px-2 py-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-700">
-             {dish.tag}
-           </span>
-        </div>
-
         {/* Diet Indicator */}
         <div className="absolute top-3 right-3">
-            <div className={`w-5 h-5 rounded-md flex items-center justify-center border ${
-                dish.diet === 'veg' || dish.diet === 'jain' ? 'border-green-600 bg-white dark:bg-gray-900' : 
-                dish.diet === 'non-veg' ? 'border-red-600 bg-white dark:bg-gray-900' : 
-                'border-orange-500 bg-white dark:bg-gray-900'
-            }`}>
-                 <div className={`w-2.5 h-2.5 rounded-full ${
-                     dish.diet === 'veg' || dish.diet === 'jain' ? 'bg-green-600' : 
-                     dish.diet === 'non-veg' ? 'bg-red-600' : 
-                     'bg-orange-500'
-                 }`} />
-            </div>
+          <div className={`w - 5 h - 5 rounded - md flex items - center justify - center border ${dish.isVeg ? "border-green-600" : "border-red-600"} bg - white dark: bg - gray - 900`}>
+            <div className={`w - 2.5 h - 2.5 rounded - full ${dish.isVeg ? "bg-green-600" : "bg-red-600"} `} />
+          </div>
         </div>
-        
-        {/* Price Tag Overlay */}
+        {/* Price Tag */}
         <div className="absolute bottom-3 right-3">
-           <span className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md text-[#D4725C] font-black px-2.5 py-1 rounded-lg shadow-sm text-sm">
-             ₹{dish.price}
-           </span>
+          <span className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md text-[#D4725C] font-black px-2.5 py-1 rounded-lg shadow-sm text-sm">
+            ₹{parseFloat(dish.price).toFixed(0)}
+          </span>
         </div>
       </div>
-      
+
       <div className="p-4 flex flex-col flex-1">
         <h4 className="font-bold text-base mb-1 line-clamp-1 text-gray-900 dark:text-white group-hover:text-[#D4725C] transition-colors">{dish.name}</h4>
         <div className="flex items-center gap-1.5 mb-3">
-           <MapPin className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-           <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{dish.canteen}</p>
+          <MapPin className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{dish.canteenName}</p>
         </div>
-        
+
         <div className="mt-auto pt-3 border-t border-dashed border-gray-100 dark:border-gray-800 flex flex-col gap-2">
           <div className="flex items-center gap-1 bg-green-50 dark:bg-green-950/30 px-1.5 py-0.5 rounded text-green-700 dark:text-green-400 w-fit">
             <Star className="w-3 h-3 fill-current" />
-            <span className="text-xs font-bold">{dish.rating}</span>
+            <span className="text-xs font-bold">{parseFloat(dish.rating).toFixed(1)}</span>
           </div>
           <AddToCartButton
-            item={{
-              id: itemId,
+            dish={{
+              id: dish.id,
               name: dish.name,
               price: dish.price,
-              image: dish.image,
+              description: dish.description,
+              isAvailable: dish.isAvailable,
+              photo: dish.photo,
+              photoUrl: null,
+              rating: dish.rating,
               category: dish.category,
-              description: dish.canteen,
+              isVeg: dish.isVeg,
+              createdAt: "",
             }}
+            canteenId={dish.canteenId}
+            canteenName={dish.canteenName}
             size="md"
             stopPropagation
           />

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 import {
@@ -18,7 +18,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { API_BASE } from '../data/data';
+import { registerCanteen } from '../api/canteens';
 
 interface FileUploadState {
   file: File | null;
@@ -85,8 +85,6 @@ export default function CanteenRegistration() {
 
     setIsSubmitting(true);
 
-    // Build FormData for multipart/form-data submission
-    // When backend is connected, uncomment the fetch call below
     const fd = new FormData();
     fd.append('name', formData.name);
     fd.append('location', formData.location);
@@ -96,22 +94,15 @@ export default function CanteenRegistration() {
     fd.append('aadhar_card', aadharCard.file);
     fd.append('hall_approval_form', hallApprovalForm.file);
 
-    // TODO: Replace with real API call when backend is connected
-    // try {
-    //   const res = await fetch(`${API_BASE}/api/canteens/register/`, {
-    //     method: 'POST',
-    //     body: fd,
-    //     credentials: 'include',
-    //   });
-    //   if (!res.ok) throw new Error('Registration failed');
-    // } catch (err) { ... }
-
-    // Simulate API delay
-    setTimeout(() => {
+    try {
+      await registerCanteen(fd);
       setIsSubmitting(false);
       setIsSuccess(true);
       toast.success('Canteen registration submitted for review!');
-    }, 1500);
+    } catch (err: any) {
+      setIsSubmitting(false);
+      toast.error(err?.message || 'Registration failed. Please try again.');
+    }
   };
 
   if (isSuccess) {

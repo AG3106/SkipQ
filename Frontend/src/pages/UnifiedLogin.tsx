@@ -3,14 +3,18 @@ import { useNavigate } from "react-router";
 import { Mail, Lock, Utensils, ChefHat, User, Sun, Moon, ShieldCheck, RotateCcw, ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
+import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
+import * as authApi from "../api/auth";
 import { motion, AnimatePresence } from "motion/react";
 import backgroundImage from "figma:asset/f55f8858fbb60a88216c2d612e3734b7b7b95056.png";
 
 export default function UnifiedLogin() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
+  const { login, register, verifyOtp, logout } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [signupStep, setSignupStep] = useState<"form" | "otp">("form");
   const [userType, setUserType] = useState<"customer" | "owner">("customer");
@@ -23,6 +27,7 @@ export default function UnifiedLogin() {
     hostel: "",
     rememberMe: false,
   });
+
 
   // OTP state
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -86,18 +91,42 @@ export default function UnifiedLogin() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isSignup) {
-      // Login flow — unchanged
-      if (userType === "owner") {
-        localStorage.setItem("userType", "owner");
-        localStorage.setItem("canteenId", "1");
-        navigate("/owner/dashboard");
-      } else {
-        localStorage.setItem("userType", "customer");
-        navigate("/hostels");
+      // Login flow — use AuthContext
+      setIsLoading(true);
+      try {
+        const { hasWalletPin } = await login(formData.email, formData.password);
+        // After successful login, check role matches selected user type
+        const profile = await authApi.getProfile();
+        const role = profile.user.role;
+        if (userType === "owner" && role !== "MANAGER") {
+          await logout();
+          toast.error("This account is not registered as a canteen owner.");
+          return;
+        }
+        if (userType === "customer" && role === "MANAGER") {
+          await logout();
+          toast.error("This account is registered as a canteen owner. Please login as Owner.");
+          return;
+        }
+        if (!hasWalletPin) {
+          navigate("/wallet/set-pin");
+          return;
+        }
+        if (userType === "owner") {
+          localStorage.setItem("userType", "owner");
+          navigate("/owner/dashboard");
+        } else {
+          localStorage.setItem("userType", "customer");
+          navigate("/hostels");
+        }
+      } catch (err: any) {
+        toast.error(err?.message || "Login failed");
+      } finally {
+        setIsLoading(false);
       }
       return;
     }
@@ -118,29 +147,40 @@ export default function UnifiedLogin() {
       return;
     }
 
-    // Move to OTP step
-    generateAndSendOtp();
-    setSignupStep("otp");
+    // Call backend register
+    setIsLoading(true);
+    try {
+      await register(formData.email, formData.password, formData.name);
+      toast.success("OTP sent to your email!");
+      setSignupStep("otp");
+    } catch (err: any) {
+      toast.error(err?.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     const enteredOtp = otp.join("");
     if (enteredOtp.length !== 6) {
       toast.error("Please enter the complete 6-digit OTP");
       return;
     }
-    if (enteredOtp !== generatedOtp) {
-      toast.error("Invalid OTP. Please try again.");
+
+    setIsLoading(true);
+    try {
+      await verifyOtp(formData.email, enteredOtp);
+      // OTP verified — newly registered user, no PIN yet
+      localStorage.setItem("userType", "customer");
+      toast.success("Email verified! Account created successfully!");
+      navigate("/wallet/set-pin?from=register");
+    } catch (err: any) {
+      toast.error(err?.message || "Invalid OTP. Please try again.");
       setOtp(["", "", "", "", "", ""]);
       document.getElementById("otp-input-0")?.focus();
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    // OTP verified — create user and go to PIN setup
-    localStorage.setItem("userType", "customer");
-    localStorage.setItem("pendingPinSetup", "true");
-    toast.success("Email verified! Account created successfully!");
-    navigate("/wallet/set-pin?from=register");
   };
 
   const handleResendOtp = () => {
@@ -208,11 +248,10 @@ export default function UnifiedLogin() {
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className={`w-12 h-14 text-center text-xl font-bold rounded-xl border-2 transition-all focus:outline-none ${
-                      digit
-                        ? "border-[#D4725C] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 text-gray-900 dark:text-white"
-                        : "border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white"
-                    } focus:border-[#D4725C] focus:ring-2 focus:ring-[#D4725C]/30`}
+                    className={`w-12 h-14 text-center text-xl font-bold rounded-xl border-2 transition-all focus:outline-none ${digit
+                      ? "border-[#D4725C] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 text-gray-900 dark:text-white"
+                      : "border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white"
+                      } focus:border-[#D4725C] focus:ring-2 focus:ring-[#D4725C]/30`}
                   />
                 ))}
               </div>
@@ -264,7 +303,7 @@ export default function UnifiedLogin() {
   }
 
   return (
-    <div 
+    <div
       className="min-h-screen flex relative transition-colors duration-300 overflow-x-hidden"
       style={{
         backgroundImage: `url(${backgroundImage})`,
@@ -291,7 +330,7 @@ export default function UnifiedLogin() {
         {/* Decorative circles with adjusted opacity */}
         <div className="absolute top-20 left-20 w-32 h-32 bg-[#D4725C]/30 rounded-full blur-3xl"></div>
         <div className="absolute bottom-32 right-20 w-48 h-48 bg-[#B85A4A]/30 rounded-full blur-3xl"></div>
-        
+
         <div className="relative z-10 text-center max-w-md">
           {/* Logo/Icon */}
           <div className="mb-8 flex justify-center">
@@ -310,7 +349,7 @@ export default function UnifiedLogin() {
           <h1 className="text-6xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
             SkipQ
           </h1>
-          
+
           {/* Tagline */}
           <p className="text-xl text-white uppercase tracking-widest font-light drop-shadow-md">
             Your Perfect Meal, Just A Click Away!
@@ -324,7 +363,7 @@ export default function UnifiedLogin() {
             </div>
             <div className="flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-[#D4725C] rounded-full shadow-lg ring-2 ring-white/50"></div>
-              <span className="drop-shadow-md font-medium">Fresh Food Daily</span>
+              <span className="drop-shadow-md font-medium">Order from Anywhere</span>
             </div>
             <div className="flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-[#D4725C] rounded-full shadow-lg ring-2 ring-white/50"></div>
@@ -368,11 +407,10 @@ export default function UnifiedLogin() {
                 <button
                   type="button"
                   onClick={() => setUserType("customer")}
-                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${
-                    userType === "customer"
-                      ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
-                      : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
+                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${userType === "customer"
+                    ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
+                    : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
                 >
                   <User className="size-4" />
                   <span>Customer</span>
@@ -386,11 +424,10 @@ export default function UnifiedLogin() {
                     }
                     setUserType("owner");
                   }}
-                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${
-                    userType === "owner"
-                      ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
-                      : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
+                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${userType === "owner"
+                    ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
+                    : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
                 >
                   <ChefHat className="size-4" />
                   <span>Owner</span>

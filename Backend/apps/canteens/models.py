@@ -4,7 +4,7 @@ Canteen and Dish models for the SkipQ system.
 Maps to class diagram entities:
   - Canteen → id, name, location, openingTime, closingTime, foodQueue,
               holidays, leadTimeConfig, operational status
-  - Dish    → id, name, price, description, isAvailable, discount,
+  - Dish    → id, name, price, description, isAvailable,
               photo, rating
 
 State diagram reference (Canteen Operational):
@@ -108,7 +108,7 @@ class Canteen(models.Model):
         Implements the state transition check from the Canteen Operational
         state diagram: isOpen() == True → Open state.
         """
-        if self.status in (self.Status.UNDER_REVIEW, self.Status.REJECTED, self.Status.EMERGENCY_CLOSURE):
+        if self.status in (self.Status.UNDER_REVIEW, self.Status.REJECTED, self.Status.CLOSED, self.Status.EMERGENCY_CLOSURE):
             return False
         now = timezone.localtime().time()
         if self.opening_time <= self.closing_time:
@@ -205,7 +205,6 @@ class Dish(models.Model):
       - updateDishDetails() → via serializer / service
       - toggleAvailability()   → toggle_availability()
       - updatePrice()          → via service
-      - updateDiscount()       → via service
       - updateRating() → via service
     """
 
@@ -218,12 +217,6 @@ class Dish(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     description = models.TextField(blank=True)
     is_available = models.BooleanField(default=True)
-    discount = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        default=0.00,
-        help_text="Discount percentage (0–100).",
-    )
     photo = models.ImageField(upload_to="dish_photos/", blank=True, null=True)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     category = models.CharField(max_length=50, blank=True)
@@ -248,9 +241,7 @@ class Dish(models.Model):
         logger.info("Dish %s availability toggled to %s", self.name, self.is_available)
 
     def get_effective_price(self):
-        """Calculate price after discount."""
-        if self.discount > 0:
-            return self.price * (1 - self.discount / 100)
+        """Return the price directly (discount feature removed)."""
         return self.price
 
 

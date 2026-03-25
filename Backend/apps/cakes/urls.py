@@ -15,6 +15,7 @@ urlpatterns = [
 
     # Manager views and actions — Cake/phase3 sequence diagram
     path("pending/", views.pending_reservations, name="pending-reservations"),
+    path("manager-all/", views.manager_all_reservations, name="manager-all-reservations"),
     path("<int:reservation_id>/accept/", views.accept_reservation, name="accept-reservation"),
     path("<int:reservation_id>/reject/", views.reject_reservation, name="reject-reservation"),
     path("<int:reservation_id>/complete/", views.complete_reservation, name="complete-reservation"),

@@ -1,81 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import {
   ArrowLeft, Cake, Clock, MapPin, Calendar, Check, X,
   CheckCircle, XCircle, Package, AlertTriangle, RefreshCw,
   ChefHat, Moon, Sun, LogOut, User, Mail, Palette, MessageSquare,
-  Scale, Eye,
+  Scale, Eye, Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { useTheme } from "../context/ThemeContext";
-
-// ─── Types ──────────────────────────────────────────────────────────────────────
-
-interface CakeRequest {
-  id: number;
-  customer_name: string;
-  customer_email: string;
-  canteen_name: string;
-  flavor: string;
-  size: string;
-  design: string;
-  message: string;
-  pickup_date: string;
-  pickup_time: string;
-  advance_amount: number;
-  status: "PENDING_APPROVAL" | "CONFIRMED" | "REJECTED" | "COMPLETED";
-  rejection_reason: string;
-  created_at: string;
-}
-
-// ─── Mock Data ──────────────────────────────────────────────────────────────────
-
-const INITIAL_REQUESTS: CakeRequest[] = [
-  {
-    id: 101, customer_name: "Rahul Kumar", customer_email: "rahul@uni.edu",
-    canteen_name: "Hall 1", flavor: "Chocolate", size: "1 kg", design: "Floral pattern",
-    message: "Happy Birthday Arjun!", pickup_date: "2026-03-28", pickup_time: "14:00",
-    advance_amount: 600, status: "PENDING_APPROVAL", rejection_reason: "", created_at: "2026-03-23T09:30:00Z",
-  },
-  {
-    id: 102, customer_name: "Priya Sharma", customer_email: "priya@uni.edu",
-    canteen_name: "Hall 1", flavor: "Red Velvet", size: "2 kg", design: "Unicorn theme",
-    message: "Congrats on your graduation!", pickup_date: "2026-03-29", pickup_time: "11:00",
-    advance_amount: 1100, status: "PENDING_APPROVAL", rejection_reason: "", created_at: "2026-03-23T14:00:00Z",
-  },
-  {
-    id: 103, customer_name: "Amit Patel", customer_email: "amit@uni.edu",
-    canteen_name: "Hall 1", flavor: "Vanilla", size: "0.5 kg", design: "",
-    message: "For the team!", pickup_date: "2026-03-27", pickup_time: "16:00",
-    advance_amount: 350, status: "PENDING_APPROVAL", rejection_reason: "", created_at: "2026-03-22T18:00:00Z",
-  },
-  {
-    id: 104, customer_name: "Sneha Reddy", customer_email: "sneha@uni.edu",
-    canteen_name: "Hall 1", flavor: "Strawberry", size: "1 kg", design: "Minimalist",
-    message: "Happy Anniversary!", pickup_date: "2026-03-26", pickup_time: "13:00",
-    advance_amount: 600, status: "CONFIRMED", rejection_reason: "", created_at: "2026-03-21T10:00:00Z",
-  },
-  {
-    id: 105, customer_name: "Vikram Singh", customer_email: "vikram@uni.edu",
-    canteen_name: "Hall 1", flavor: "Chocolate", size: "2 kg", design: "Football theme",
-    message: "", pickup_date: "2026-03-25", pickup_time: "15:00",
-    advance_amount: 1100, status: "CONFIRMED", rejection_reason: "", created_at: "2026-03-20T08:00:00Z",
-  },
-  {
-    id: 106, customer_name: "Meera Joshi", customer_email: "meera@uni.edu",
-    canteen_name: "Hall 1", flavor: "Red Velvet", size: "1 kg", design: "",
-    message: "Thank you teacher!", pickup_date: "2026-03-18", pickup_time: "12:00",
-    advance_amount: 600, status: "COMPLETED", rejection_reason: "", created_at: "2026-03-15T09:00:00Z",
-  },
-  {
-    id: 107, customer_name: "Deepak Gupta", customer_email: "deepak@uni.edu",
-    canteen_name: "Hall 1", flavor: "Vanilla", size: "0.5 kg", design: "Simple",
-    message: "Farewell party", pickup_date: "2026-03-16", pickup_time: "10:00",
-    advance_amount: 350, status: "REJECTED", rejection_reason: "Kitchen fully booked for that day",
-    created_at: "2026-03-13T11:00:00Z",
-  },
-];
+import { getManagerAllCakes, acceptCake, rejectCake, completeCake } from "../api/cakes";
+import type { CakeReservation } from "../types";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -105,50 +40,73 @@ function getDateLabel(d: string) {
 
 export default function CakeManagement() {
   const { isDark, toggleTheme } = useTheme();
-  const [requests, setRequests] = useState<CakeRequest[]>(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState<CakeReservation[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<"pending" | "active" | "history">("pending");
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  const fetchCakes = () => {
+    setLoading(true);
+    getManagerAllCakes()
+      .then(setRequests)
+      .catch(() => {
+        toast.error("Failed to load cake reservations");
+        setRequests([]);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchCakes();
+  }, []);
 
   const pending = requests.filter((r) => r.status === "PENDING_APPROVAL");
   const active = requests.filter((r) => r.status === "CONFIRMED");
   const history = requests.filter((r) => r.status === "COMPLETED" || r.status === "REJECTED");
 
   // Group active by pickup date
-  const activeByDate = active.reduce<Record<string, CakeRequest[]>>((acc, r) => {
-    (acc[r.pickup_date] = acc[r.pickup_date] || []).push(r);
+  const activeByDate = active.reduce<Record<string, CakeReservation[]>>((acc, r) => {
+    (acc[r.pickupDate] = acc[r.pickupDate] || []).push(r);
     return acc;
   }, {});
   const sortedDates = Object.keys(activeByDate).sort();
 
-  const handleAccept = (id: number) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "CONFIRMED" as const } : r))
-    );
-    toast.success("Cake reservation confirmed! Added to active queue.");
+  const handleAccept = async (id: number) => {
+    try {
+      const updated = await acceptCake(id);
+      setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      toast.success("Cake reservation confirmed! Added to active queue.");
+    } catch {
+      toast.error("Failed to accept reservation");
+    }
   };
 
-  const handleReject = (id: number) => {
+  const handleReject = async (id: number) => {
     if (!rejectionReason.trim()) {
       toast.error("Please provide a rejection reason");
       return;
     }
-    setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, status: "REJECTED" as const, rejection_reason: rejectionReason } : r
-      )
-    );
-    setRejectingId(null);
-    setRejectionReason("");
-    toast.success("Reservation rejected. Customer's wallet will be refunded automatically.");
+    try {
+      const updated = await rejectCake(id, rejectionReason);
+      setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      setRejectingId(null);
+      setRejectionReason("");
+      toast.success("Reservation rejected. Customer's wallet will be refunded automatically.");
+    } catch {
+      toast.error("Failed to reject reservation");
+    }
   };
 
-  const handleComplete = (id: number) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "COMPLETED" as const } : r))
-    );
-    toast.success("Cake marked as picked up!");
+  const handleComplete = async (id: number) => {
+    try {
+      const updated = await completeCake(id);
+      setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      toast.success("Cake marked as picked up!");
+    } catch {
+      toast.error("Failed to mark as complete");
+    }
   };
 
   const views = [
@@ -230,6 +188,11 @@ export default function CakeManagement() {
           ))}
         </div>
 
+        {loading ? (
+          <div className="flex justify-center py-24">
+            <Loader2 className="size-10 animate-spin text-[#D4725C]" />
+          </div>
+        ) : (
         <AnimatePresence mode="wait">
           {/* ─── Pending View ──────────────────────────────────────────── */}
           {activeView === "pending" && (
@@ -256,7 +219,7 @@ export default function CakeManagement() {
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-gray-400">Advance Paid</p>
-                        <p className="text-xl font-black text-[#D4725C]">₹{r.advance_amount}</p>
+                        <p className="text-xl font-black text-[#D4725C]">₹{parseFloat(r.advanceAmount).toFixed(0)}</p>
                       </div>
                     </div>
 
@@ -265,19 +228,15 @@ export default function CakeManagement() {
                       <Calendar className="size-5 text-[#D4725C] shrink-0" />
                       <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400">Requested Pickup</p>
-                        <p className="font-bold text-gray-900 dark:text-white">{getDateLabel(r.pickup_date)} at {r.pickup_time}</p>
+                        <p className="font-bold text-gray-900 dark:text-white">{getDateLabel(r.pickupDate)} at {r.pickupTime}</p>
                       </div>
                     </div>
 
                     {/* Customer & Details */}
                     <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-4 border border-gray-100/50 dark:border-gray-800 space-y-2 text-sm mb-4">
                       <div className="flex justify-between">
-                        <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><User className="size-3" /> Customer</span>
-                        <span className="font-bold text-gray-900 dark:text-white">{r.customer_name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Mail className="size-3" /> Email</span>
-                        <span className="font-medium text-gray-700 dark:text-gray-300 text-xs">{r.customer_email}</span>
+                        <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Mail className="size-3" /> Customer</span>
+                        <span className="font-bold text-gray-900 dark:text-white">{r.customerEmail}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Palette className="size-3" /> Flavor</span>
@@ -313,7 +272,7 @@ export default function CakeManagement() {
                           <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 rounded-xl p-4">
                             <div className="flex items-center gap-2 mb-3">
                               <AlertTriangle className="size-4 text-red-600 dark:text-red-400" />
-                              <p className="text-sm font-bold text-red-800 dark:text-red-300">Rejection will auto-refund ₹{r.advance_amount} to the customer's wallet</p>
+                              <p className="text-sm font-bold text-red-800 dark:text-red-300">Rejection will auto-refund ₹{parseFloat(r.advanceAmount).toFixed(0)} to the customer's wallet</p>
                             </div>
                             <textarea
                               value={rejectionReason}
@@ -360,7 +319,7 @@ export default function CakeManagement() {
                     )}
 
                     <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-3">
-                      Submitted {new Date(r.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      Submitted {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                     </p>
                   </motion.div>
                 ))
@@ -409,10 +368,10 @@ export default function CakeManagement() {
                               </div>
                               <div>
                                 <h3 className="font-bold text-gray-900 dark:text-white">{r.flavor} — {r.size}</h3>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">{r.customer_name} • Pickup at {r.pickup_time}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{r.customerEmail} • Pickup at {r.pickupTime}</p>
                               </div>
                             </div>
-                            <span className="text-lg font-black text-[#D4725C]">₹{r.advance_amount}</span>
+                            <span className="text-lg font-black text-[#D4725C]">₹{parseFloat(r.advanceAmount).toFixed(0)}</span>
                           </div>
 
                           {/* Expandable details */}
@@ -446,7 +405,7 @@ export default function CakeManagement() {
                                   )}
                                   <div className="flex justify-between">
                                     <span className="text-gray-500 dark:text-gray-400">Email</span>
-                                    <span className="font-medium text-gray-700 dark:text-gray-300 text-xs">{r.customer_email}</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300 text-xs">{r.customerEmail}</span>
                                   </div>
                                 </div>
                               </motion.div>
@@ -498,7 +457,7 @@ export default function CakeManagement() {
                           </div>
                           <div>
                             <h3 className="font-bold text-gray-900 dark:text-white text-sm">{r.flavor} — {r.size}</h3>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">{r.customer_name} • {formatDate(r.pickup_date)}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{r.customerEmail} • {formatDate(r.pickupDate)}</p>
                           </div>
                         </div>
                         <div className="text-right">
@@ -509,15 +468,15 @@ export default function CakeManagement() {
                           }`}>
                             {isCompleted ? <><Package className="size-3" /> Picked Up</> : <><XCircle className="size-3" /> Rejected</>}
                           </span>
-                          <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1">₹{r.advance_amount}</p>
+                          <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1">₹{parseFloat(r.advanceAmount).toFixed(0)}</p>
                         </div>
                       </div>
 
-                      {r.status === "REJECTED" && r.rejection_reason && (
+                      {r.status === "REJECTED" && r.rejectionReason && (
                         <div className="bg-red-50 dark:bg-red-950/20 border border-red-200/60 dark:border-red-800/40 rounded-lg p-2.5 mt-2">
                           <p className="text-xs text-red-700 dark:text-red-400 flex items-start gap-1.5">
                             <AlertTriangle className="size-3 shrink-0 mt-0.5" />
-                            <span><span className="font-bold">Reason:</span> {r.rejection_reason} — Amount refunded.</span>
+                            <span><span className="font-bold">Reason:</span> {r.rejectionReason} — Amount refunded.</span>
                           </p>
                         </div>
                       )}
@@ -528,6 +487,7 @@ export default function CakeManagement() {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </div>
     </div>
   );

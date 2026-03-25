@@ -6,3 +6,13 @@ Backend/files/
 *.pyc
 *.py[cod]
 __pycache__/
+fe2/
+.playwright/
+.playwright-cli/
+Backend/Database/
+# Cache, Build & Logs
+Frontend/node_modules/
+Frontend/build/
+Frontend/tests/
+.claude/
+Context/

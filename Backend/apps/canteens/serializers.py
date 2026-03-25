@@ -20,21 +20,17 @@ class DishRatingSerializer(serializers.ModelSerializer):
 
 
 class DishSerializer(serializers.ModelSerializer):
-    """Dish representation with effective price and photo URL."""
-    effective_price = serializers.SerializerMethodField()
+    """Dish representation with photo URL."""
     photo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Dish
         fields = [
-            "id", "name", "price", "effective_price", "description",
-            "is_available", "discount", "photo", "photo_url", "rating", "category",
+            "id", "name", "price", "description",
+            "is_available", "photo", "photo_url", "rating", "category",
             "is_veg", "created_at",
         ]
         read_only_fields = ["id", "rating", "created_at"]
-
-    def get_effective_price(self, obj):
-        return str(obj.get_effective_price())
 
     def get_photo_url(self, obj):
         """Return /files/dish_images/<dish_id>.jpg if the file exists."""
@@ -47,7 +43,7 @@ class DishCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating dishes."""
     class Meta:
         model = Dish
-        fields = ["name", "price", "description", "is_available", "discount", "photo", "category", "is_veg"]
+        fields = ["name", "price", "description", "is_available", "photo", "category", "is_veg"]
 
 
 class CanteenHolidaySerializer(serializers.ModelSerializer):
@@ -106,7 +102,6 @@ class CanteenStatusUpdateSerializer(serializers.Serializer):
 
 class PopularDishSerializer(serializers.ModelSerializer):
     """Dish representation for the popular dishes endpoint — includes canteen info and popularity metrics."""
-    effective_price = serializers.SerializerMethodField()
     canteen_id = serializers.IntegerField(source="canteen.id", read_only=True)
     canteen_name = serializers.CharField(source="canteen.name", read_only=True)
     canteen_location = serializers.CharField(source="canteen.location", read_only=True)
@@ -115,12 +110,9 @@ class PopularDishSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dish
         fields = [
-            "id", "name", "price", "effective_price", "description",
-            "is_available", "discount", "photo", "rating", "category",
+            "id", "name", "price", "description",
+            "is_available", "photo", "rating", "category",
             "is_veg", "canteen_id", "canteen_name", "canteen_location",
             "rating_count",
         ]
         read_only_fields = fields
-
-    def get_effective_price(self, obj):
-        return str(obj.get_effective_price())

@@ -2,6 +2,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { ArrowLeft, ShieldCheck, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Delete } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+import { setWalletPin as setWalletPinApi } from "../api/auth";
 import { motion, AnimatePresence } from "motion/react";
 
 type Step = "set" | "confirm" | "success";
@@ -9,6 +11,7 @@ type Step = "set" | "confirm" | "success";
 export default function SetWalletPin() {
   const navigate = useNavigate();
   const { isDark } = useTheme();
+  const { refreshProfile } = useAuth();
   const [searchParams] = useSearchParams();
   const isFromRegister = searchParams.get("from") === "register";
 
@@ -112,7 +115,7 @@ export default function SetWalletPin() {
 
   const isFilled = currentPin.every((d) => d !== "");
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!isFilled) return;
 
     if (step === "set") {
@@ -134,9 +137,16 @@ export default function SetWalletPin() {
         setConfirmPin(["", "", "", ""]);
         return;
       }
-      // Save PIN (localStorage for demo)
-      localStorage.setItem("skipq_wallet_pin", pinStr);
-      setStep("success");
+      // Save PIN via backend API
+      try {
+        await setWalletPinApi(pinStr);
+        // Refresh profile so AuthContext knows PIN is set
+        await refreshProfile();
+        setStep("success");
+      } catch (err: any) {
+        setError(err?.message || "Failed to set PIN. Please try again.");
+        triggerShake();
+      }
     }
   };
 
@@ -325,15 +335,14 @@ export default function SetWalletPin() {
                       borderColor: digit
                         ? "#D4725C"
                         : isFocusable
-                        ? "rgba(212, 114, 92, 0.4)"
-                        : isDark ? "rgba(75, 85, 99, 0.5)" : "rgba(209, 213, 219, 1)",
+                          ? "rgba(212, 114, 92, 0.4)"
+                          : isDark ? "rgba(75, 85, 99, 0.5)" : "rgba(209, 213, 219, 1)",
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className={`w-16 h-16 md:w-[72px] md:h-[72px] rounded-2xl border-2 flex items-center justify-center transition-colors ${
-                      digit
+                    className={`w-16 h-16 md:w-[72px] md:h-[72px] rounded-2xl border-2 flex items-center justify-center transition-colors ${digit
                         ? "bg-[#D4725C]/5 dark:bg-[#D4725C]/15"
                         : "bg-white dark:bg-gray-900"
-                    } shadow-sm`}
+                      } shadow-sm`}
                   >
                     <AnimatePresence mode="wait">
                       {digit ? (
@@ -363,11 +372,10 @@ export default function SetWalletPin() {
                           key="empty"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className={`w-3 h-3 rounded-full ${
-                            isFocusable
+                          className={`w-3 h-3 rounded-full ${isFocusable
                               ? "bg-[#D4725C]/20 dark:bg-[#D4725C]/30"
                               : "bg-gray-200 dark:bg-gray-700"
-                          }`}
+                            }`}
                         />
                       )}
                     </AnimatePresence>
@@ -398,15 +406,14 @@ export default function SetWalletPin() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className={`h-1 w-8 rounded-full transition-all duration-300 ${
-                    filledCount >= i
+                  className={`h-1 w-8 rounded-full transition-all duration-300 ${filledCount >= i
                       ? filledCount >= 4
                         ? "bg-green-500"
                         : filledCount >= 2
-                        ? "bg-yellow-500"
-                        : "bg-[#D4725C]"
+                          ? "bg-yellow-500"
+                          : "bg-[#D4725C]"
                       : "bg-gray-200 dark:bg-gray-800"
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -417,11 +424,10 @@ export default function SetWalletPin() {
             onClick={handleContinue}
             disabled={!isFilled}
             whileTap={isFilled ? { scale: 0.97 } : {}}
-            className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg ${
-              isFilled
+            className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg ${isFilled
                 ? "bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.01]"
                 : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none"
-            }`}
+              }`}
           >
             {step === "set" ? "Continue" : "Set PIN"}
           </motion.button>
@@ -447,11 +453,10 @@ export default function SetWalletPin() {
                   <button
                     key={key}
                     onClick={() => handleNumpadPress(key)}
-                    className={`h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95 ${
-                      key === "delete"
+                    className={`h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95 ${key === "delete"
                         ? "bg-transparent text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400"
                         : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 shadow-sm hover:shadow-md font-bold text-xl"
-                    }`}
+                      }`}
                   >
                     {key === "delete" ? (
                       <Delete className="size-5" />

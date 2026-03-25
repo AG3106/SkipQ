@@ -31,7 +31,7 @@ def get_estimated_wait_time(canteen):
 
 
 @transaction.atomic
-def place_order(customer_profile, canteen, items, wallet_pin, notes=""):
+def place_order(customer_profile, canteen, items, wallet_pin, notes="", customer_name="", roll_no=""):
     """
     Sequence diagram (Order/phase2):
       1. FE → placeOrder(userID, items, pinHash)
@@ -88,6 +88,8 @@ def place_order(customer_profile, canteen, items, wallet_pin, notes=""):
         canteen=canteen,
         status=Order.Status.PENDING,
         notes=notes,
+        customer_name=customer_name,
+        roll_no=roll_no,
     )
 
     for item_data in order_items_data:

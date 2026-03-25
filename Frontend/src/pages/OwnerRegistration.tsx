@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { motion } from "motion/react";
 import { useTheme } from "../context/ThemeContext";
 import {

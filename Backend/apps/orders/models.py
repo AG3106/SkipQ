@@ -79,6 +79,17 @@ class Order(models.Model):
     )
     # Special instructions from the customer
     notes = models.TextField(blank=True)
+    # Pickup identification
+    customer_name = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Name of the person picking up the order.",
+    )
+    roll_no = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Roll number for identification at pickup.",
+    )
     reject_reason = models.TextField(
         blank=True,
         help_text="Reason provided by manager when order is rejected.",
@@ -190,7 +201,7 @@ class Order(models.Model):
     # --- Class diagram methods ---
 
     @classmethod
-    def create_order(cls, customer, canteen, status=None, notes=""):
+    def create_order(cls, customer, canteen, status=None, notes="", customer_name="", roll_no=""):
         """
         createOrder(status: String): Order — from class diagram.
         Wraps Order.objects.create() for reuse across code paths.
@@ -202,6 +213,8 @@ class Order(models.Model):
             canteen=canteen,
             status=status,
             notes=notes,
+            customer_name=customer_name,
+            roll_no=roll_no,
         )
 
     # TODO: implement this wherever required like active orders for canteen dashboard

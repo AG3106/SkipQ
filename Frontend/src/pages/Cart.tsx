@@ -1,32 +1,23 @@
 import { Link } from "react-router";
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from "lucide-react";
+import { useCart } from "../context/CartContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useCart } from "../context/CartContext";
 import { Button } from "../components/ui/button";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { buildFileUrl } from "../api/client";
+
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity, getTotalPrice } = useCart();
+  const { items, removeItem, updateQuantity, getTotal, getItemCount } = useCart();
 
-  const tax = getTotalPrice() * 0.05; // 5% tax
-  const totalAmount = getTotalPrice() + tax;
+  const subtotal = getTotal();
+  const tax = subtotal * 0.05; // 5% tax
+  const totalAmount = subtotal + tax;
 
-  const getImageForCategory = (category: string) => {
-    switch (category) {
-      case "cake":
-        return "https://images.unsplash.com/photo-1700448293876-07dca826c161?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaG9jb2xhdGUlMjBjYWtlJTIwc2xpY2V8ZW58MXx8fHwxNzY5MDI4Mzg1fDA&ixlib=rb-4.1.0&q=80&w=1080";
-      case "pizza":
-        return "https://images.unsplash.com/photo-1703073186021-021fb5a0bde1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXp6YSUyMGZvb2R8ZW58MXx8fHwxNzY5MDY2MzU1fDA&ixlib=rb-4.1.0&q=80&w=1080";
-      default:
-        return "https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBmb29kJTIwdGhhbGl8ZW58MXx8fHwxNzY5MDExNzg0fDA&ixlib=rb-4.1.0&q=80&w=1080";
-    }
-  };
-
-  if (cart.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 flex flex-col">
-        <Header />
         <div className="flex-1 container mx-auto px-4 flex items-center justify-center py-20">
           <div className="max-w-md w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl p-10 shadow-xl border border-white/20 dark:border-gray-700/20 text-center">
             <div className="w-24 h-24 bg-orange-50 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -43,7 +34,6 @@ export default function Cart() {
             </Link>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -72,81 +62,70 @@ export default function Cart() {
           {/* Cart Items */}
           <div className="lg:col-span-2">
             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-white/40 dark:border-gray-700/40 p-6 md:p-8">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Shopping Cart</h2>
-              
-              <div className="space-y-4">
-                {cart.map((item) => {
-                  const finalPrice = item.discount
-                    ? item.price * (1 - item.discount / 100)
-                    : item.price;
+              <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+                Shopping Cart ({getItemCount()} items)
+              </h2>
 
-                  return (
-                    <div
-                      key={item.id}
-                      className="group flex gap-4 p-4 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-2xl hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-md transition-all duration-300"
-                    >
-                      {/* Item Image */}
-                      <div className="relative size-24 md:size-32 rounded-xl overflow-hidden flex-shrink-0">
-                        <ImageWithFallback
-                          src={getImageForCategory(item.category)}
-                          alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
+              <div className="space-y-4">
+                {items.map((item) => (
+                  <div
+                    key={item.dishId}
+                    className="group flex gap-4 p-4 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-2xl hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-md transition-all duration-300"
+                  >
+                    {/* Item Image */}
+                    <div className="relative size-24 md:size-32 rounded-xl overflow-hidden flex-shrink-0">
+                      <img
+                        src={buildFileUrl(item.photoUrl) || FALLBACK_IMAGE}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+
+                    {/* Item Details */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1">{item.name}</h3>
+                          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
+                            {item.canteenName}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.dishId)}
+                          className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1"
+                        >
+                          <Trash2 className="size-5" />
+                        </button>
                       </div>
 
-                      {/* Item Details */}
-                      <div className="flex-1 flex flex-col justify-between">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1">{item.name}</h3>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-1 mt-0.5">
-                              {item.description || "Delicious food item"}
-                            </p>
-                          </div>
+                      <div className="flex items-center justify-between mt-4">
+                        {/* Price */}
+                        <span className="text-xl font-bold text-[#D4725C]">
+                          ₹{item.price.toFixed(0)}
+                        </span>
+
+                        {/* Quantity Controls */}
+                        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 rounded-xl p-1.5 border border-gray-200 dark:border-gray-600">
                           <button
-                            onClick={() => removeFromCart(item.id)}
-                            className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1"
+                            onClick={() => updateQuantity(item.dishId, item.quantity - 1)}
+                            className="size-8 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
                           >
-                            <Trash2 className="size-5" />
+                            <Minus className="size-4" />
                           </button>
-                        </div>
-
-                        <div className="flex items-center justify-between mt-4">
-                          {/* Price */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-[#D4725C]">
-                              ₹{finalPrice.toFixed(0)}
-                            </span>
-                            {item.discount && (
-                              <span className="text-gray-400 dark:text-gray-500 line-through text-sm">
-                                ₹{item.price}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Quantity Controls */}
-                          <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 rounded-xl p-1.5 border border-gray-200 dark:border-gray-600">
-                            <button
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="size-8 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
-                            >
-                              <Minus className="size-4" />
-                            </button>
-                            <span className="font-bold min-w-[1.5rem] text-center text-gray-900 dark:text-white">
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="size-8 flex items-center justify-center rounded-lg bg-[#D4725C] shadow-md shadow-orange-200 dark:shadow-orange-900/30 text-white hover:bg-[#B85A4A] transition-colors"
-                            >
-                              <Plus className="size-4" />
-                            </button>
-                          </div>
+                          <span className="font-bold min-w-[1.5rem] text-center text-gray-900 dark:text-white">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.dishId, item.quantity + 1)}
+                            className="size-8 flex items-center justify-center rounded-lg bg-[#D4725C] shadow-md shadow-orange-200 dark:shadow-orange-900/30 text-white hover:bg-[#B85A4A] transition-colors"
+                          >
+                            <Plus className="size-4" />
+                          </button>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -159,9 +138,9 @@ export default function Cart() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">₹{getTotalPrice().toFixed(2)}</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">₹{subtotal.toFixed(2)}</span>
                 </div>
-                
+
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Tax (5%)</span>
                   <span className="font-semibold text-gray-900 dark:text-white">₹{tax.toFixed(2)}</span>
