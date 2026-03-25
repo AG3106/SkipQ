@@ -114,11 +114,15 @@ export default function OwnerDashboard() {
       setActiveOrders(trueActive);
       setCancelRequestedOrders(cancelRequested);
     } catch (err: any) {
+      if (err?.message === "No canteen assigned") {
+        navigate("/canteen-register");
+        return;
+      }
       toast.error(err?.message || "Failed to load orders");
     } finally {
       setLoadingOrders(false);
     }
-  }, []);
+  }, [navigate]);
 
   // ─── Fetch Cakes ────────────────────────────────────────────────────────────
   const fetchCakes = useCallback(async () => {
@@ -129,11 +133,15 @@ export default function OwnerDashboard() {
       setPendingCakesList(all.filter((c) => c.status === "PENDING_APPROVAL"));
       // Active and history are managed locally from actions; pending endpoint only returns PENDING_APPROVAL
     } catch (err: any) {
+      if (err?.message === "No canteen assigned") {
+        navigate("/canteen-register");
+        return;
+      }
       toast.error(err?.message || "Failed to load cake reservations");
     } finally {
       setLoadingCakes(false);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     fetchOrders();

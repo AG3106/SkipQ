@@ -1,6 +1,6 @@
 // Hostel data
 // API base URL — change this when connecting to the real backend
-export const API_BASE = "http://localhost:8000";
+export const API_BASE = `http://${window.location.hostname}:8000`;
 
 // Helper to construct full image URLs from backend paths
 export const getCanteenImageUrl = (imageUrl?: string | null, fallback?: string) =>
@@ -29,7 +29,7 @@ export const isCanteenOpen = (openingTime: string, closingTime: string): boolean
 
   const [openHour, openMinute] = openingTime.split(':').map(Number);
   const [closeHour, closeMinute] = closingTime.split(':').map(Number);
-  
+
   const openTime = openHour * 60 + openMinute;
   const closeTime = closeHour * 60 + closeMinute;
 
@@ -98,34 +98,34 @@ export const foodItems: FoodItem[] = [
   { id: "2", name: "Idli Sambar", description: "Soft idlis with sambar and chutney", price: 50, image: "", category: "breakfast" },
   { id: "3", name: "Poha", description: "Flattened rice with vegetables", price: 40, image: "", category: "breakfast" },
   { id: "4", name: "Upma", description: "Semolina with vegetables", price: 35, image: "", category: "breakfast" },
-  
+
   // Meals
   { id: "5", name: "Thali", description: "Complete Indian meal with rice, roti, dal, and vegetables", price: 120, image: "", category: "meals", discount: 20 },
   { id: "6", name: "Biryani", description: "Aromatic rice with chicken/veg", price: 150, image: "", category: "meals" },
   { id: "7", name: "Chole Bhature", description: "Chickpea curry with fried bread", price: 90, image: "", category: "meals" },
   { id: "8", name: "Paneer Butter Masala", description: "Paneer in creamy tomato gravy with rice", price: 140, image: "", category: "meals", discount: 15 },
-  
+
   // Pizza & Snacks
   { id: "9", name: "Margherita Pizza", description: "Classic cheese pizza", price: 180, image: "", category: "pizza" },
   { id: "10", name: "Veggie Pizza", description: "Loaded with vegetables", price: 220, image: "", category: "pizza" },
   { id: "11", name: "Samosa", description: "Crispy fried pastry with potato filling", price: 20, image: "", category: "pizza" },
   { id: "12", name: "Spring Rolls", description: "Crispy rolls with vegetable filling", price: 80, image: "", category: "pizza" },
-  
+
   // Burgers
   { id: "13", name: "Veg Burger", description: "Vegetable patty burger", price: 70, image: "", category: "burgers" },
   { id: "14", name: "Paneer Burger", description: "Grilled paneer burger", price: 90, image: "", category: "burgers" },
   { id: "15", name: "Aloo Tikki Burger", description: "Potato patty burger", price: 60, image: "", category: "burgers" },
-  
+
   // Healthy
   { id: "16", name: "Fruit Bowl", description: "Mixed seasonal fruits", price: 80, image: "", category: "healthy" },
   { id: "17", name: "Salad Bowl", description: "Fresh vegetable salad", price: 70, image: "", category: "healthy" },
   { id: "18", name: "Smoothie", description: "Fresh fruit smoothie", price: 90, image: "", category: "healthy" },
-  
+
   // Sweets
   { id: "19", name: "Gulab Jamun", description: "Sweet milk balls in syrup", price: 40, image: "", category: "sweets" },
   { id: "20", name: "Jalebi", description: "Crispy sweet spirals", price: 50, image: "", category: "sweets" },
   { id: "21", name: "Rasmalai", description: "Cottage cheese in sweet milk", price: 60, image: "", category: "sweets" },
-  
+
   // Cakes
   { id: "22", name: "Chocolate Cake", description: "Rich chocolate cake slice", price: 80, image: "", category: "cake", discount: 10 },
   { id: "23", name: "Vanilla Cake", description: "Classic vanilla cake slice", price: 70, image: "", category: "cake" },

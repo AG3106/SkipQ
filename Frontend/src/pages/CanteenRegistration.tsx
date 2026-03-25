@@ -127,10 +127,10 @@ export default function CanteenRegistration() {
             Your canteen registration has been submitted for admin review. You'll be notified once it's approved.
           </p>
           <Button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/')}
             className="w-full py-3 bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white rounded-xl"
           >
-            Back to Login
+            Return to Home
           </Button>
         </motion.div>
       </div>
@@ -143,18 +143,9 @@ export default function CanteenRegistration() {
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border-b border-gray-200/50 dark:border-gray-700/50">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link
-              to="/owner-register"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            </Link>
             <div>
               <h1 className="text-gray-900 dark:text-white flex items-center gap-2">
                 Register Your Canteen
-                <span className="bg-orange-100 dark:bg-orange-950/30 text-[#D4725C] dark:text-orange-400 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">
-                  Step 2 of 2
-                </span>
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">Canteen details & documents</p>
             </div>
@@ -168,29 +159,7 @@ export default function CanteenRegistration() {
         </div>
       </header>
 
-      {/* Progress Bar */}
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-6">
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-6 h-6 bg-[#D4725C] rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md shadow-orange-200 dark:shadow-orange-900/30">
-                ✓
-              </div>
-              <span className="text-sm text-[#D4725C] font-bold">Owner Details</span>
-            </div>
-            <div className="h-1.5 bg-[#D4725C] rounded-full shadow-sm" />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-6 h-6 bg-[#D4725C] rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md shadow-orange-200 dark:shadow-orange-900/30">
-                2
-              </div>
-              <span className="text-sm text-[#D4725C] font-bold">Canteen Details</span>
-            </div>
-            <div className="h-1.5 bg-[#D4725C] rounded-full shadow-sm" />
-          </div>
-        </div>
-      </div>
+
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
         <form onSubmit={handleSubmit} className="space-y-6">
