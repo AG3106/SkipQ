@@ -31,7 +31,7 @@ interface AuthState {
 
 interface AuthContextType extends AuthState {
     login: (email: string, password: string, rememberMe?: boolean) => Promise<{ hasWalletPin: boolean }>;
-    register: (email: string, password: string, name: string) => Promise<{ message: string }>;
+    register: (email: string, password: string, name: string, role?: "CUSTOMER" | "MANAGER") => Promise<{ message: string }>;
     verifyOtp: (email: string, otp: string) => Promise<void>;
     logout: () => Promise<void>;
     refreshProfile: () => Promise<void>;
@@ -99,8 +99,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { hasWalletPin: data.hasWalletPin };
     };
 
-    const register = async (email: string, password: string, name: string) => {
-        return authApi.register({ email, password, name });
+    const register = async (email: string, password: string, name: string, role?: "CUSTOMER" | "MANAGER") => {
+        return authApi.register({ email, password, name, role });
     };
 
     const verifyOtp = async (email: string, otp: string) => {

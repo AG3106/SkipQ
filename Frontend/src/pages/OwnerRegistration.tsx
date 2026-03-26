@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { motion } from "motion/react";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import * as authApi from "../api/auth";
 import {
   ArrowLeft, User, Mail, Lock, Phone, Eye, EyeOff, ChefHat, Sun, Moon, ArrowRight, ShieldCheck, RotateCcw
 } from "lucide-react";
@@ -12,7 +13,7 @@ import { Button } from "../components/ui/button";
 export default function OwnerRegistration() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
-  const { register, verifyOtp } = useAuth();
+  const { register } = useAuth();
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -101,8 +102,8 @@ export default function OwnerRegistration() {
     }
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
     }
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
@@ -140,18 +141,13 @@ export default function OwnerRegistration() {
 
     setIsLoading(true);
     try {
-      await verifyOtp(formData.email, enteredOtp);
-      toast.success("Manager account pending approval!");
+      await authApi.verifyOtp({ email: formData.email, otp: enteredOtp });
+      toast.success("Verification successful! Account pending admin approval.");
       navigate("/login");
     } catch (err: any) {
-      if (err?.message === "Registration pending admin approval. You will receive an email once reviewed.") {
-         toast.success("Verification successful! Account pending admin approval.");
-         navigate("/login");
-      } else {
-         toast.error(err?.message || "Invalid OTP. Please try again.");
-         setOtp(["", "", "", "", "", ""]);
-         document.getElementById("otp-input-0")?.focus();
-      }
+      toast.error(err?.message || "Invalid OTP. Please try again.");
+      setOtp(["", "", "", "", "", ""]);
+      document.getElementById("otp-input-0")?.focus();
     } finally {
       setIsLoading(false);
     }
