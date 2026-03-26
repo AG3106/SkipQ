@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Mail, Lock, Utensils, ChefHat, User, Sun, Moon, ShieldCheck, RotateCcw, ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -13,8 +13,21 @@ import backgroundImage from "figma:asset/f55f8858fbb60a88216c2d612e3734b7b7b9505
 export default function UnifiedLogin() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
-  const { login, register, verifyOtp, logout } = useAuth();
+  const { login, register, verifyOtp, logout, isAuthenticated, isLoading: authLoading, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect authenticated users away from login/signup
+  useEffect(() => {
+    if (authLoading) return;
+    if (isAuthenticated && user) {
+      const role = user.role;
+      if (role === "MANAGER") {
+        navigate("/owner/dashboard", { replace: true });
+      } else {
+        navigate("/hostels", { replace: true });
+      }
+    }
+  }, [isAuthenticated, authLoading, user, navigate]);
   const [isSignup, setIsSignup] = useState(false);
   const [signupStep, setSignupStep] = useState<"form" | "otp">("form");
   const [userType, setUserType] = useState<"customer" | "owner">("customer");
