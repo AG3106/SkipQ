@@ -304,23 +304,17 @@ def get_last_order(customer_profile):
 
 def get_detailed_order_history(customer_profile):
     """
-    Returns all terminal-state orders for a customer with prefetched
+    Returns all orders for a customer (active + terminal) with prefetched
     items, dishes, and payment for efficient serialization on the
     order history page.
     """
     return Order.objects.filter(
         customer=customer_profile,
-        status__in=[
-            Order.Status.COMPLETED,
-            Order.Status.REFUNDED,
-            Order.Status.CANCELLED,
-            Order.Status.REJECTED,
-        ],
     ).select_related(
         "canteen", "payment",
     ).prefetch_related(
         "items__dish",
-    )
+    ).order_by("-created_at")
 
 
 def get_manager_order_history(canteen):

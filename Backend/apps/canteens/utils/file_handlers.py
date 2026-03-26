@@ -168,12 +168,12 @@ def save_canteen_document(canteen_id, doc_type, doc_file):
 
 def get_canteen_documents(canteen_id):
     """
-    Return a dict of existing document paths for a canteen.
+    Return a dict of authenticated document URLs for a canteen.
 
     Returns:
         {
-            "aadhar_card": "/files/documents/<id>/aadhar_card.<ext>" or None,
-            "hall_approval_form": "/files/documents/<id>/hall_approval_form.<ext>" or None,
+            "aadhar_card": "/api/canteens/<id>/documents/aadhar_card.<ext>/" or None,
+            "hall_approval_form": "/api/canteens/<id>/documents/hall_approval_form.<ext>/" or None,
         }
     """
     doc_dir = os.path.join(settings.FILES_ROOT, "documents", str(canteen_id))
@@ -185,7 +185,7 @@ def get_canteen_documents(canteen_id):
     for fname in os.listdir(doc_dir):
         for doc_type in VALID_DOC_TYPES:
             if fname.startswith(doc_type):
-                result[doc_type] = f"/files/documents/{canteen_id}/{fname}"
+                result[doc_type] = f"/api/canteens/{canteen_id}/documents/{fname}/"
                 break
 
     return result

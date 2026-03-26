@@ -21,7 +21,10 @@ const getStatusIcon = (status: string) => {
     case "READY":
       return <Package className="w-5 h-5 text-[#D4725C]" />;
     case "ACCEPTED":
+    case "CONFIRMED":
       return <Clock className="w-5 h-5 text-orange-500" />;
+    case "PENDING_APPROVAL":
+      return <Clock className="w-5 h-5 text-blue-500" />;
     case "CANCEL_REQUESTED":
       return <Clock className="w-5 h-5 text-amber-500" />;
     case "CANCELLED":
@@ -36,8 +39,10 @@ const getStatusText = (status: string) => {
   switch (status) {
     case "COMPLETED": return "Completed";
     case "READY": return "Ready";
+    case "CONFIRMED": return "Confirmed";
     case "ACCEPTED": return "Preparing";
     case "PENDING": return "Pending";
+    case "PENDING_APPROVAL": return "Pending Approval";
     case "CANCEL_REQUESTED": return "Cancel Requested";
     case "CANCELLED": return "Cancelled";
     case "REJECTED": return "Rejected";
@@ -53,7 +58,10 @@ const getStatusColor = (status: string) => {
     case "READY":
       return "bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] dark:text-orange-400 border-[#D4725C]/20 dark:border-[#D4725C]/30";
     case "ACCEPTED":
+    case "CONFIRMED":
       return "bg-orange-100 dark:bg-orange-950/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800";
+    case "PENDING_APPROVAL":
+      return "bg-blue-100 dark:bg-blue-950/30 text-blue-800 dark:text-blue-400 border-blue-200 dark:border-blue-800";
     case "CANCEL_REQUESTED":
       return "bg-amber-100 dark:bg-amber-950/30 text-amber-800 dark:text-amber-400 border-amber-200 dark:border-amber-800";
     case "CANCELLED":
@@ -67,8 +75,10 @@ const getStatusColor = (status: string) => {
 
 function getProgressWidth(status: string) {
   switch (status) {
-    case "PENDING": return "20%";
-    case "ACCEPTED": return "40%";
+    case "PENDING": return "15%";
+    case "PENDING_APPROVAL": return "15%";
+    case "ACCEPTED": return "35%";
+    case "CONFIRMED": return "50%";
     case "READY": return "75%";
     case "COMPLETED": return "100%";
     default: return "0%";
@@ -76,7 +86,7 @@ function getProgressWidth(status: string) {
 }
 
 const isActiveOrder = (status: string) =>
-  ["PENDING", "ACCEPTED", "READY", "CANCEL_REQUESTED"].includes(status);
+  ["PENDING", "PENDING_APPROVAL", "ACCEPTED", "CONFIRMED", "READY", "CANCEL_REQUESTED"].includes(status);
 
 export default function TrackOrders() {
   const navigate = useNavigate();
@@ -204,8 +214,9 @@ export default function TrackOrders() {
       {isActiveOrder(order.status) && (
         <div className="mb-5">
           <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2 tracking-wider">
-            <span className={["PENDING", "ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Placed</span>
-            <span className={["ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Cooking</span>
+            <span className={["PENDING", "PENDING_APPROVAL", "ACCEPTED", "CONFIRMED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Placed</span>
+            <span className={["ACCEPTED", "CONFIRMED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Accepted</span>
+            <span className={["CONFIRMED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Confirmed</span>
             <span className={order.status === "READY" ? "text-[#D4725C]" : ""}>Ready</span>
             <span>Done</span>
           </div>
