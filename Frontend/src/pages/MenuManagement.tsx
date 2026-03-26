@@ -15,7 +15,7 @@ import {
   deleteDish,
   toggleDishAvailability,
 } from "../api/canteens";
-import { buildFileUrl } from "../api/client";
+import { api, buildFileUrl } from "../api/client";
 import type { Dish, Canteen } from "../types";
 
 const CATEGORIES = [
@@ -139,14 +139,25 @@ export default function MenuManagement() {
     setSubmitting(true);
     try {
       if (editingItem) {
-        // Update existing dish
-        await updateDish(editingItem.id, {
-          name: formData.name,
-          description: formData.description,
-          price: formData.price,
-          category: formData.category,
-          isVeg: formData.isVeg,
-        });
+        // Update existing dish — use FormData if a new photo was selected
+        if (photoFile) {
+          const fd = new FormData();
+          fd.append("name", formData.name);
+          fd.append("price", formData.price);
+          fd.append("description", formData.description);
+          fd.append("category", formData.category);
+          fd.append("is_veg", formData.isVeg ? "true" : "false");
+          fd.append("photo", photoFile);
+          await api.upload(`/api/canteens/dishes/${editingItem.id}/`, fd, "PATCH");
+        } else {
+          await updateDish(editingItem.id, {
+            name: formData.name,
+            description: formData.description,
+            price: formData.price,
+            category: formData.category,
+            isVeg: formData.isVeg,
+          });
+        }
         toast.success("Dish updated successfully");
       } else {
         // Add new dish via FormData (supports photo upload)
@@ -538,7 +549,7 @@ export default function MenuManagement() {
                   </select>
                 </div>
 
-                {!editingItem && (
+                {(
                   <div>
                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
                       Photo (Optional)
@@ -574,6 +585,10 @@ export default function MenuManagement() {
                       )}
                     </label>
                   </div>
+                )}
+
+                {editingItem && (editingItem as any).photoUrl && !photoPreview && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Current photo will be kept unless you upload a new one.</p>
                 )}
 
                 <div className="flex gap-4 pt-6">

@@ -113,6 +113,7 @@ export interface PopularDish {
     description: string;
     isAvailable: boolean;
     photo: string | null;
+    photoUrl: string | null;
     rating: string;
     category: string;
     isVeg: boolean;

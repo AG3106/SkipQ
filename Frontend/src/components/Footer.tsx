@@ -17,7 +17,9 @@ export default function Footer() {
               <span className="text-[#D4725C]">SkipQ</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              The smartest way to order food at your university campus. Skip the queue, enjoy the food.
+              The smartest way to order food at your university campus.
+              <br />
+              Skip the queue, enjoy the food.
             </p>
           </div>
         </div>

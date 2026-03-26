@@ -1,18 +1,31 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Mail, Lock, Shield, Sun, Moon, ArrowLeft } from "lucide-react";
+import { Mail, Lock, Shield, Sun, Moon, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("userType", "admin");
-    navigate("/admin");
+    setIsLoading(true);
+    try {
+      await login(formData.email, formData.password);
+      localStorage.setItem("userType", "admin");
+      navigate("/admin");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Invalid credentials";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -99,9 +112,11 @@ export default function AdminLogin() {
 
             <Button
               type="submit"
-              className="w-full py-5 bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white rounded-xl hover:shadow-lg hover:shadow-[#D4725C]/30 transition-all"
+              disabled={isLoading}
+              className="w-full py-5 bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white rounded-xl hover:shadow-lg hover:shadow-[#D4725C]/30 transition-all flex items-center justify-center gap-2"
             >
-              Sign In as Admin
+              {isLoading && <Loader2 className="size-4 animate-spin" />}
+              {isLoading ? "Signing in..." : "Sign In as Admin"}
             </Button>
           </form>
         </div>

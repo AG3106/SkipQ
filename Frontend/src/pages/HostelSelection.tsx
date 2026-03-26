@@ -97,7 +97,7 @@ export default function HostelSelection() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && searchQuery.trim()) {
-                      navigate(`/ search ? q = ${encodeURIComponent(searchQuery)} `);
+                      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
                     }
                   }}
                   placeholder="Search for food, canteen, or cuisine..."
@@ -106,7 +106,7 @@ export default function HostelSelection() {
                 <button
                   onClick={() => {
                     if (searchQuery.trim()) {
-                      navigate(`/ search ? q = ${encodeURIComponent(searchQuery)} `);
+                      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
                     }
                   }}
                   className="hidden md:block bg-[#D4725C] hover:bg-[#B85A4A] text-white px-8 py-3 rounded-xl font-semibold transition-all transform active:scale-95 shadow-lg shadow-orange-200 dark:shadow-orange-900/30"
@@ -129,14 +129,14 @@ export default function HostelSelection() {
               <button
                 key={filter.id}
                 onClick={() => setSelectedDiet(filter.id as DietaryFilter)}
-                className={`px - 6 py - 2.5 rounded - full font - medium transition - all duration - 300 flex items - center gap - 2 border ${selectedDiet === filter.id
+                className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 flex items-center gap-2 border ${selectedDiet === filter.id
                   ? `${filter.activeColor} text-white shadow-lg shadow-gray-200 dark:shadow-black/20 scale-105 border-transparent`
                   : `bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700`
-                  } `}
+                  }`}
               >
                 {filter.color && (
-                  <div className={`w - 4 h - 4 border border - current rounded flex items - center justify - center ${selectedDiet === filter.id ? "text-white" : filter.color === "green" ? "text-green-600" : "text-red-600"} `}>
-                    <div className={`w - 2 h - 2 rounded - full ${filter.color === "green" ? "bg-green-600" : "bg-red-600"} `} />
+                  <div className={`w-4 h-4 border border-current rounded flex items-center justify-center ${selectedDiet === filter.id ? "text-white" : filter.color === "green" ? "text-green-600" : "text-red-600"}`}>
+                    <div className={`w-2 h-2 rounded-full ${filter.color === "green" ? "bg-green-600" : "bg-red-600"}`} />
                   </div>
                 )}
                 {filter.label}
@@ -291,8 +291,8 @@ export default function HostelSelection() {
       <Footer />
 
       <style>{`
-  .scrollbar - hide:: -webkit - scrollbar { display: none; }
-        .scrollbar - hide { -ms - overflow - style: none; scrollbar - width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 `}</style>
     </div>
   );
@@ -303,14 +303,14 @@ function PopularDishCard({ dish }: { dish: PopularDish }) {
     <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 flex flex-col h-full relative">
       <div className="relative h-40 overflow-hidden">
         <ImageWithFallback
-          src={buildFileUrl(dish.photo) || DISH_FALLBACK_IMAGE}
+          src={buildFileUrl(dish.photoUrl) || DISH_FALLBACK_IMAGE}
           alt={dish.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         {/* Diet Indicator */}
         <div className="absolute top-3 right-3">
-          <div className={`w - 5 h - 5 rounded - md flex items - center justify - center border ${dish.isVeg ? "border-green-600" : "border-red-600"} bg - white dark: bg - gray - 900`}>
-            <div className={`w - 2.5 h - 2.5 rounded - full ${dish.isVeg ? "bg-green-600" : "bg-red-600"} `} />
+          <div className={`w-5 h-5 rounded-md flex items-center justify-center border ${dish.isVeg ? "border-green-600" : "border-red-600"} bg-white dark:bg-gray-900`}>
+            <div className={`w-2.5 h-2.5 rounded-full ${dish.isVeg ? "bg-green-600" : "bg-red-600"}`} />
           </div>
         </div>
         {/* Price Tag */}

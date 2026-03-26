@@ -106,13 +106,20 @@ class PopularDishSerializer(serializers.ModelSerializer):
     canteen_name = serializers.CharField(source="canteen.name", read_only=True)
     canteen_location = serializers.CharField(source="canteen.location", read_only=True)
     rating_count = serializers.IntegerField(read_only=True)
+    photo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Dish
         fields = [
             "id", "name", "price", "description",
-            "is_available", "photo", "rating", "category",
+            "is_available", "photo", "photo_url", "rating", "category",
             "is_veg", "canteen_id", "canteen_name", "canteen_location",
             "rating_count",
         ]
         read_only_fields = fields
+
+    def get_photo_url(self, obj):
+        """Return /files/dish_images/<dish_id>.jpg if the file exists."""
+        if dish_image_exists(obj.pk):
+            return f"/files/dish_images/{obj.pk}.jpg"
+        return None

@@ -31,7 +31,7 @@ def get_menu(canteen):
     return canteen.dishes.all()
 
 
-def add_dish(canteen, name, price, description="", category="", discount=0, photo=None, is_veg=True):
+def add_dish(canteen, name, price, description="", category="", photo=None, is_veg=True):
     """
     updateMenu(dish: Dish): void — from class diagram (Canteen).
     Adds a new dish to the canteen's menu.
@@ -42,7 +42,6 @@ def add_dish(canteen, name, price, description="", category="", discount=0, phot
         price=Decimal(str(price)),
         description=description,
         category=category,
-        discount=Decimal(str(discount)),
         photo=photo,
         is_veg=is_veg,
     )
@@ -67,13 +66,6 @@ def update_price(dish, new_price):
     dish.price = Decimal(str(new_price))
     dish.save(update_fields=["price"])
     logger.info("Dish '%s' price updated to ₹%s", dish.name, new_price)
-
-
-def update_discount(dish, new_discount):
-    """updateDiscount(newDiscount: Float): void — from class diagram."""
-    dish.discount = Decimal(str(new_discount))
-    dish.save(update_fields=["discount"])
-    logger.info("Dish '%s' discount updated to %s%%", dish.name, new_discount)
 
 
 def add_rating(dish, customer_profile, rating, order=None):

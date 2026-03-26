@@ -8,12 +8,15 @@ import {
   Plus,
   Minus,
   ArrowLeft,
+  Wallet,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { useCart } from "../context/CartContext";
 import { useWallet } from "../context/WalletContext";
 import { useAuth } from "../context/AuthContext";
+import { addFunds } from "../api/wallet";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -27,6 +30,29 @@ export default function Checkout() {
   const [rollNo, setRollNo] = useState("");
 
   const total = getTotal();
+  const [topUpAmount, setTopUpAmount] = useState("");
+  const [isTopingUp, setIsTopingUp] = useState(false);
+  const { refreshBalance } = useWallet();
+
+  const handleTopUp = async () => {
+    const amount = parseFloat(topUpAmount);
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
+    setIsTopingUp(true);
+    try {
+      await addFunds(amount);
+      await refreshBalance();
+      setTopUpAmount("");
+      toast.success(`₹${amount.toFixed(0)} added to wallet`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Top-up failed";
+      toast.error(message);
+    } finally {
+      setIsTopingUp(false);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -225,15 +251,32 @@ export default function Checkout() {
                   </span>
                 </div>
                 {balance < total && (
-                  <p className="text-xs text-red-500 mt-1">
-                    Insufficient balance.{" "}
-                    <button
-                      onClick={() => navigate("/wallet")}
-                      className="text-[#D4725C] underline"
-                    >
-                      Add funds
-                    </button>
-                  </p>
+                  <div className="mt-2 space-y-2">
+                    <p className="text-xs text-red-500">
+                      Insufficient balance. Add funds below:
+                    </p>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                        <input
+                          type="number"
+                          min="1"
+                          value={topUpAmount}
+                          onChange={(e) => setTopUpAmount(e.target.value)}
+                          placeholder={`${Math.ceil(total - balance)}`}
+                          className="w-full pl-7 pr-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50"
+                        />
+                      </div>
+                      <button
+                        onClick={handleTopUp}
+                        disabled={isTopingUp}
+                        className="px-4 py-2 bg-[#D4725C] text-white text-sm font-semibold rounded-lg hover:bg-[#B85A4A] transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                      >
+                        {isTopingUp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wallet className="w-3.5 h-3.5" />}
+                        Add
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
 

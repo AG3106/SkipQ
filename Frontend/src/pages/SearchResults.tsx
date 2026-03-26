@@ -94,7 +94,7 @@ export default function SearchResults() {
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 opacity-60" />
               <ImageWithFallback
-                src={buildFileUrl(dish.photo) || DISH_FALLBACK_IMAGE}
+                src={buildFileUrl(dish.photoUrl) || DISH_FALLBACK_IMAGE}
                 alt={dish.name}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />

@@ -22,6 +22,8 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { useWallet } from "../context/WalletContext";
 import { useAuth } from "../context/AuthContext";
+import { getOrderHistory } from "../api/orders";
+import { updateProfile } from "../api/auth";
 
 interface ProfileField {
   key: string;
@@ -41,6 +43,12 @@ export default function UserProfile() {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [saveAnimation, setSaveAnimation] = useState<string | null>(null);
+  const [orderCount, setOrderCount] = useState(0);
+
+  // Fetch real order count
+  useEffect(() => {
+    getOrderHistory().then(orders => setOrderCount(orders.length)).catch(() => {});
+  }, []);
 
   // Derive initial values from AuthContext, fallback to localStorage cache
   const [profile, setProfile] = useState(() => {
@@ -68,10 +76,18 @@ export default function UserProfile() {
     }
   }, [user, authProfile]);
 
-  const saveProfile = (key: string, value: string) => {
+  const saveProfile = async (key: string, value: string) => {
     const updated = { ...profile, [key]: value };
     setProfile(updated);
     localStorage.setItem("skipq_profile", JSON.stringify(updated));
+    // Persist backend-supported fields to the server
+    if (key === "name" || key === "phone") {
+      try {
+        await updateProfile({ [key]: value });
+      } catch {
+        // localStorage still has the value as fallback
+      }
+    }
     setSaveAnimation(key);
     setTimeout(() => setSaveAnimation(null), 1200);
     setEditingField(null);
@@ -147,16 +163,12 @@ export default function UserProfile() {
             {/* Quick stats */}
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 text-center border border-gray-100 dark:border-gray-800">
-                <p className="text-xl font-bold text-[#D4725C]">12</p>
+                <p className="text-xl font-bold text-[#D4725C]">{orderCount}</p>
                 <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Orders</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 text-center border border-gray-100 dark:border-gray-800">
                 <p className="text-xl font-bold text-[#D4725C]">₹{balance.toFixed(0)}</p>
                 <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Wallet</p>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 text-center border border-gray-100 dark:border-gray-800">
-                <p className="text-xl font-bold text-[#D4725C]">3</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Coupons</p>
               </div>
             </div>
           </div>

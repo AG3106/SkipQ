@@ -98,7 +98,7 @@ export default function UnifiedLogin() {
       // Login flow — use AuthContext
       setIsLoading(true);
       try {
-        const { hasWalletPin } = await login(formData.email, formData.password);
+        const { hasWalletPin } = await login(formData.email, formData.password, formData.rememberMe);
         // After successful login, check role matches selected user type
         const profile = await authApi.getProfile();
         const role = profile.user.role;
