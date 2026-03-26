@@ -314,7 +314,7 @@ def get_detailed_order_history(customer_profile):
         "canteen", "payment",
     ).prefetch_related(
         "items__dish",
-    ).order_by("-created_at")
+    ).order_by("-book_time")
 
 
 def get_manager_order_history(canteen):
