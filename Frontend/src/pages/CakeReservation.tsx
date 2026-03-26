@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import {
   ArrowLeft, Cake, Clock, MapPin, AlertCircle, Check, Wallet,
-  Calendar, ChevronDown, Eye, EyeOff, XCircle,
+  Calendar, ChevronDown, XCircle,
   CheckCircle, Package, RefreshCw, Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { listCanteens } from "../api/canteens";
-import { checkCakeAvailability, submitReservation, getMyReservations } from "../api/cakes";
+import { checkCakeAvailability, getMyReservations } from "../api/cakes";
 import { useWallet } from "../context/WalletContext";
 import type { Canteen, CakeReservation as CakeReservationType } from "../types";
 
@@ -70,6 +70,9 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 // ─── Component ──────────────────────────────────────────────────────────────────
 
 export default function CakeReservation() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // Tab: "reserve" | "my-reservations"
   const [activeTab, setActiveTab] = useState<"reserve" | "my-reservations">("reserve");
 
@@ -93,9 +96,6 @@ export default function CakeReservation() {
   const [design, setDesign] = useState("");
   const [cakeMessage, setCakeMessage] = useState("");
   const [pickupTime, setPickupTime] = useState("");
-  const [walletPin, setWalletPin] = useState("");
-  const [showPin, setShowPin] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
   // After submit
   const [submitted, setSubmitted] = useState(false);
@@ -104,6 +104,16 @@ export default function CakeReservation() {
 
   const canteen = useMemo(() => canteens.find((c) => c.id === selectedCanteen), [canteens, selectedCanteen]);
   const advanceAmount = size ? SIZE_PRICES[size] || 0 : 0;
+
+  // Handle return from VerifyWalletPin after successful cake reservation
+  useEffect(() => {
+    const state = location.state as { cakeSubmitted?: boolean } | null;
+    if (state?.cakeSubmitted) {
+      setSubmitted(true);
+      // Clear the navigation state so refresh doesn't re-trigger
+      window.history.replaceState({}, "");
+    }
+  }, [location.state]);
 
   // Load canteens on mount
   useEffect(() => {
@@ -151,7 +161,7 @@ export default function CakeReservation() {
     }
   };
 
-  const handleSubmitReservation = async () => {
+  const handleSubmitReservation = () => {
     if (!selectedCanteen) return;
     if (!flavor) { toast.error("Please select a flavor"); return; }
     if (!size) { toast.error("Please select a size"); return; }
@@ -166,29 +176,24 @@ export default function CakeReservation() {
       return;
     }
 
-    if (walletPin.length !== 4) { toast.error("Enter a valid 4-digit wallet PIN"); return; }
     if (advanceAmount > balance) { toast.error("Insufficient wallet balance"); return; }
 
-    setSubmitting(true);
-    try {
-      await submitReservation({
-        canteenId: selectedCanteen,
-        flavor,
-        size,
-        design: design || undefined,
-        message: cakeMessage || undefined,
-        pickupDate: selectedDate,
-        pickupTime,
-        advanceAmount: advanceAmount.toFixed(2),
-        walletPin,
-      });
-      setSubmitted(true);
-      toast.success("Reservation submitted!");
-    } catch {
-      toast.error("Failed to submit reservation. Check your PIN and try again.");
-    } finally {
-      setSubmitting(false);
-    }
+    // Navigate to VerifyWalletPin with cake data
+    navigate("/wallet/verify-pin", {
+      state: {
+        mode: "cake",
+        cakeData: {
+          canteenId: selectedCanteen,
+          flavor,
+          size,
+          design: design || undefined,
+          message: cakeMessage || undefined,
+          pickupDate: selectedDate,
+          pickupTime,
+          advanceAmount: advanceAmount.toFixed(2),
+        },
+      },
+    });
   };
 
   const resetForm = () => {
@@ -200,7 +205,6 @@ export default function CakeReservation() {
     setDesign("");
     setCakeMessage("");
     setPickupTime("");
-    setWalletPin("");
     setSubmitted(false);
   };
 
@@ -551,28 +555,6 @@ export default function CakeReservation() {
                           <span className="font-black text-green-700 dark:text-green-400">₹{balance.toLocaleString()}</span>
                         </div>
 
-                        {/* Wallet PIN */}
-                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                          Wallet PIN
-                        </label>
-                        <div className="relative mb-5">
-                          <input
-                            type={showPin ? "text" : "password"}
-                            value={walletPin}
-                            onChange={(e) => setWalletPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                            placeholder="Enter 4-digit PIN"
-                            maxLength={4}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent tracking-[0.3em] pr-12"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPin(!showPin)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                          >
-                            {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                          </button>
-                        </div>
-
                         {/* Info */}
                         <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-xl p-3 mb-5">
                           <p className="text-xs text-amber-700 dark:text-amber-400 flex items-start gap-2">
@@ -584,14 +566,10 @@ export default function CakeReservation() {
                         {/* Submit */}
                         <button
                           onClick={handleSubmitReservation}
-                          disabled={!flavor || !size || !pickupTime || walletPin.length !== 4 || submitting}
+                          disabled={!flavor || !size || !pickupTime}
                           className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white font-bold text-sm shadow-lg shadow-[#D4725C]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                         >
-                          {submitting ? (
-                            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Processing…</>
-                          ) : (
-                            <><Wallet className="size-4" /> Reserve & Pay ₹{advanceAmount}</>
-                          )}
+                          <Wallet className="size-4" /> Continue to Pay ₹{advanceAmount}
                         </button>
                       </motion.div>
                     )}

@@ -64,18 +64,47 @@ def generate_and_send_otp(email, password="", role="CUSTOMER", name="", phone=""
         phone=phone,
     )
 
-    from django.core.mail import send_mail
+    from django.core.mail import EmailMultiAlternatives
     from django.conf import settings
 
     subject = 'Your SkipQ Verification Code'
-    message = f'Hello {name or "User"},\n\nYour One-Time Password (OTP) for SkipQ is: {otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you,\nThe SkipQ Team'
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'skipqiitk@gmail.com')
+    greeting = name or "User"
+
+    text_message = (
+        f'Hello {greeting},\n\n'
+        f'Your One-Time Password (OTP) for SkipQ is: {otp}\n\n'
+        f'This OTP is valid for 10 minutes.\n\n'
+        f'Thank you,\nThe SkipQ Team'
+    )
+
+    html_message = (
+        f'<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;">'
+        f'<div style="text-align:center;margin-bottom:24px;">'
+        f'<h1 style="color:#D4725C;margin:0;font-size:28px;">SkipQ</h1>'
+        f'<p style="color:#666;font-size:13px;margin-top:4px;">Campus Food Ordering</p>'
+        f'</div>'
+        f'<p style="color:#333;font-size:15px;">Hello {greeting},</p>'
+        f'<p style="color:#333;font-size:15px;">Use the following OTP to verify your email:</p>'
+        f'<div style="text-align:center;margin:24px 0;">'
+        f'<span style="display:inline-block;font-size:32px;font-weight:bold;letter-spacing:8px;'
+        f'color:#D4725C;background:#FFF5F3;padding:16px 32px;border-radius:12px;'
+        f'border:2px dashed #D4725C;">{otp}</span>'
+        f'</div>'
+        f'<p style="color:#888;font-size:13px;text-align:center;">This OTP is valid for <strong>10 minutes</strong>.</p>'
+        f'<hr style="border:none;border-top:1px solid #eee;margin:24px 0;">'
+        f'<p style="color:#aaa;font-size:12px;text-align:center;">If you did not request this, please ignore this email.</p>'
+        f'</div>'
+    )
 
     try:
-        send_mail(subject, message, from_email, [email], fail_silently=False)
+        email_msg = EmailMultiAlternatives(subject, text_message, from_email, [email])
+        email_msg.attach_alternative(html_message, "text/html")
+        email_msg.send(fail_silently=False)
         logger.info("OTP email sent successfully to %s", email)
     except Exception as e:
         logger.error("Failed to send OTP email to %s: %s", email, str(e))
+        raise ValueError(f"Failed to send OTP email. Please try again later.")
 
     return otp
 
@@ -119,7 +148,7 @@ def initiate_signup(email, password, role="CUSTOMER", name="", phone=""):
     """
     validate_registration_email(email, role)
     otp = generate_and_send_otp(email, password=password, role=role, name=name, phone=phone)
-    return {"message": "OTP sent to your email", "otp_dev": otp}
+    return {"message": "OTP sent to your email"}
 
 
 def complete_registration(email, password=None, password_hash=None, role="CUSTOMER", name="", phone=""):

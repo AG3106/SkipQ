@@ -76,6 +76,15 @@ export async function registerCanteen(data: FormData): Promise<{ message: string
     return api.upload<{ message: string; canteen: Canteen }>("/api/canteens/register/", data);
 }
 
+export async function updateCanteenImage(
+    canteenId: number,
+    imageFile: File,
+): Promise<Canteen> {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+    return api.upload<Canteen>(`/api/canteens/${canteenId}/image/`, formData, "PATCH");
+}
+
 // Holiday management
 
 export async function getHolidays(canteenId: number): Promise<{ id: number; date: string; description: string }[]> {

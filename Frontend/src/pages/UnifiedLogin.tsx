@@ -46,7 +46,6 @@ export default function UnifiedLogin() {
 
   // OTP state
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [generatedOtp, setGeneratedOtp] = useState("");
   const [otpTimer, setOtpTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
 
@@ -68,17 +67,6 @@ export default function UnifiedLogin() {
         return prev - 1;
       });
     }, 1000);
-  };
-
-  const generateAndSendOtp = () => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOtp(code);
-    console.log(`OTP for ${formData.email}: ${code}`);
-    toast.success(`OTP sent to ${formData.email}`, {
-      description: `Demo OTP: ${code}`,
-      duration: 8000,
-    });
-    startOtpTimer();
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -152,8 +140,8 @@ export default function UnifiedLogin() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters");
       return;
     }
 
@@ -168,6 +156,7 @@ export default function UnifiedLogin() {
       await register(formData.email, formData.password, formData.name, "CUSTOMER", formData.phone);
       toast.success("OTP sent to your email!");
       setSignupStep("otp");
+      startOtpTimer();
     } catch (err: any) {
       toast.error(err?.message || "Registration failed");
     } finally {
@@ -198,9 +187,15 @@ export default function UnifiedLogin() {
     }
   };
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     setOtp(["", "", "", "", "", ""]);
-    generateAndSendOtp();
+    try {
+      await register(formData.email, formData.password, formData.name, "CUSTOMER", formData.phone);
+      toast.success("New OTP sent to your email!");
+      startOtpTimer();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to resend OTP");
+    }
   };
 
   // Show OTP verification screen
@@ -546,6 +541,11 @@ export default function UnifiedLogin() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
+                {isSignup && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 ml-1">
+                    Must be at least 8 characters
+                  </p>
+                )}
               </div>
 
               {isSignup && (

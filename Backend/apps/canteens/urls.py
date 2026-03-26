@@ -15,6 +15,9 @@ urlpatterns = [
     # Canteen registration — NewCanteen sequence diagram
     path("register/", views.register_canteen, name="register-canteen"),
 
+    # Canteen image update — manager can change cover photo
+    path("<int:canteen_id>/image/", views.update_canteen_image, name="update-canteen-image"),
+
     # Operational status — Canteen Operational state diagram
     path("<int:canteen_id>/status/", views.update_canteen_status, name="update-canteen-status"),
 

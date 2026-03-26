@@ -1,23 +1,42 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { ArrowLeft, User, Mail, Phone, MapPin, Building2, Edit, LogOut, Shield, Bell, ChevronRight, Loader2 } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, MapPin, Building2, LogOut, Shield, Bell, ChevronRight, Loader2, Camera } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../context/AuthContext";
 import type { ManagerProfile } from "../types";
-import { api } from "../api/client";
+import { buildFileUrl } from "../api/client";
+import { getManagerDashboard, updateCanteenImage } from "../api/canteens";
+import { toast } from "sonner";
 
 export default function OwnerAccount() {
   const { user, profile, logout } = useAuth();
   const navigate = useNavigate();
-  const [canteenInfo, setCanteenInfo] = useState<{ name: string; location: string } | null>(null);
+  const [canteenInfo, setCanteenInfo] = useState<{ id: number; name: string; location: string; imageUrl: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
-    api.get<{ canteen: { name: string; location: string } }>("/api/canteens/manager/dashboard/")
-      .then((data) => setCanteenInfo({ name: data.canteen.name, location: data.canteen.location }))
+    getManagerDashboard()
+      .then((data) => setCanteenInfo({ id: data.canteen.id, name: data.canteen.name, location: data.canteen.location, imageUrl: data.canteen.imageUrl ?? null }))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !canteenInfo) return;
+    setUploadingImage(true);
+    try {
+      const updated = await updateCanteenImage(canteenInfo.id, file);
+      setCanteenInfo((prev) => prev ? { ...prev, imageUrl: updated.imageUrl ?? null } : prev);
+      toast.success("Canteen photo updated!");
+    } catch {
+      toast.error("Failed to update photo");
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
+    }
+  };
 
   const managerProfile = profile as ManagerProfile | null;
 
@@ -63,10 +82,37 @@ export default function OwnerAccount() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Profile Card */}
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden mb-8 hover:shadow-lg transition-shadow">
-          {/* Header Banner */}
-          <div className="h-40 relative bg-gradient-to-r from-[#D4725C] to-[#B85A4A] overflow-hidden">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
-             <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/5 rounded-full blur-2xl -ml-10 -mb-10" />
+          {/* Header Banner — Canteen Cover Photo */}
+          <div className="h-40 relative bg-gradient-to-r from-[#D4725C] to-[#B85A4A] overflow-hidden group">
+             {canteenInfo?.imageUrl ? (
+               <img
+                 src={buildFileUrl(canteenInfo.imageUrl) ?? ""}
+                 alt="Canteen cover"
+                 className="w-full h-full object-cover"
+               />
+             ) : (
+               <>
+                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
+                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/5 rounded-full blur-2xl -ml-10 -mb-10" />
+               </>
+             )}
+             {/* Change Photo Overlay */}
+             <label className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-colors cursor-pointer">
+               <input
+                 type="file"
+                 accept="image/*"
+                 onChange={handleImageChange}
+                 className="hidden"
+                 disabled={uploadingImage}
+               />
+               <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 text-white font-bold text-sm bg-black/50 px-4 py-2 rounded-xl">
+                 {uploadingImage ? (
+                   <><Loader2 className="size-4 animate-spin" /> Uploading...</>
+                 ) : (
+                   <><Camera className="size-4" /> Change Cover Photo</>
+                 )}
+               </span>
+             </label>
           </div>
 
           {/* Profile Info */}

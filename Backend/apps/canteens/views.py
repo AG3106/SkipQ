@@ -153,6 +153,34 @@ def register_canteen(request):
 
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def update_canteen_image(request, canteen_id):
+    """
+    PATCH /api/canteens/<canteen_id>/image/  (multipart/form-data)
+
+    Update the canteen cover photo. Only the canteen's manager can do this.
+
+    File fields:
+      • image  (required) — New cover photo. Accepts JPEG, PNG, WEBP, BMP, etc.
+                            Converted to JPEG → saved as files/canteen_images/<canteen_id>.jpg
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can update canteen image"}, status=status.HTTP_403_FORBIDDEN)
+    try:
+        canteen = Canteen.objects.get(pk=canteen_id, manager=request.user.manager_profile)
+    except Canteen.DoesNotExist:
+        return Response({"error": "Canteen not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    image_file = request.FILES.get("image")
+    if not image_file:
+        return Response({"error": "No image file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+    save_canteen_image(canteen.pk, image_file)
+    return Response(CanteenSerializer(canteen).data)
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
 def update_canteen_status(request, canteen_id):
     """
     PATCH /api/canteens/<canteen_id>/status/

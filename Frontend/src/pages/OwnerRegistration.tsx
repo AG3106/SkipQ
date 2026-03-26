@@ -397,7 +397,7 @@ export default function OwnerRegistration() {
                     value={formData.password}
                     onChange={handleInputChange}
                     className={`${inputClass("password")} !pr-11`}
-                    placeholder="Min. 6 characters"
+                    placeholder="Min. 8 characters"
                   />
                   <button
                     type="button"

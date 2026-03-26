@@ -9,6 +9,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useCart } from "../context/CartContext";
 import { useWallet } from "../context/WalletContext";
 import { placeOrder } from "../api/orders";
+import { submitReservation } from "../api/cakes";
 import { ApiError } from "../api/client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -22,15 +23,32 @@ export default function VerifyWalletPin() {
   const { items, canteenId, clearCart } = useCart();
   const { balance, refreshBalance } = useWallet();
 
-  // Read order details from navigation state (passed by Checkout)
+  // Read navigation state — supports both order and cake reservation modes
   const locationState = (location.state || {}) as {
     customerName?: string;
     rollNo?: string;
+    mode?: "order" | "cake";
+    cakeData?: {
+      canteenId: number;
+      flavor: string;
+      size: string;
+      design?: string;
+      message?: string;
+      pickupDate: string;
+      pickupTime: string;
+      advanceAmount: string;
+    };
   };
   const customerName = locationState.customerName || "";
   const rollNo = locationState.rollNo || "";
+  const mode = locationState.mode || "order";
+  const cakeData = locationState.cakeData;
 
-  const totalAmount = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const totalAmount = mode === "cake" && cakeData
+    ? parseFloat(cakeData.advanceAmount)
+    : items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const itemCount = mode === "cake" ? 1 : items.length;
+  const itemLabel = mode === "cake" ? "cake reservation" : `item${items.length > 1 ? "s" : ""}`;
 
   const [pin, setPin] = useState<string[]>(["", "", "", ""]);
   const [showPin, setShowPin] = useState(false);
@@ -43,12 +61,14 @@ export default function VerifyWalletPin() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Redirect if no cart items or missing checkout data
+  // Redirect if missing required data
   useEffect(() => {
-    if (items.length === 0 || !customerName) {
-      navigate("/checkout", { replace: true });
+    if (mode === "cake") {
+      if (!cakeData) navigate("/cake-reservation", { replace: true });
+    } else {
+      if (items.length === 0 || !customerName) navigate("/checkout", { replace: true });
     }
-  }, [items.length, customerName, navigate]);
+  }, [mode, cakeData, items.length, customerName, navigate]);
 
   // Focus first input on mount
   useEffect(() => {
@@ -159,25 +179,34 @@ export default function VerifyWalletPin() {
     setError("");
 
     try {
-      const order = await placeOrder({
-        canteenId: canteenId!,
-        items: items.map((item) => ({
-          dishId: item.dishId,
-          quantity: item.quantity,
-        })),
-        walletPin: enteredPin,
-        customerName,
-        rollNo,
-      });
-
-      clearCart();
-      await refreshBalance();
-      toast.success("Order placed successfully!");
-      navigate(`/order-confirmation/${order.id}`, { replace: true });
+      if (mode === "cake" && cakeData) {
+        await submitReservation({
+          ...cakeData,
+          walletPin: enteredPin,
+        });
+        await refreshBalance();
+        toast.success("Reservation submitted!");
+        navigate("/cake-reservation", { replace: true, state: { cakeSubmitted: true } });
+      } else {
+        const order = await placeOrder({
+          canteenId: canteenId!,
+          items: items.map((item) => ({
+            dishId: item.dishId,
+            quantity: item.quantity,
+          })),
+          walletPin: enteredPin,
+          customerName,
+          rollNo,
+        });
+        clearCart();
+        await refreshBalance();
+        toast.success("Order placed successfully!");
+        navigate(`/order-confirmation/${order.id}`, { replace: true });
+      }
     } catch (err) {
       setProcessing(false);
       const message =
-        err instanceof ApiError ? err.message : "Failed to place order";
+        err instanceof ApiError ? err.message : mode === "cake" ? "Failed to submit reservation" : "Failed to place order";
 
       // Check if it's a PIN error
       const isPinError =
@@ -221,7 +250,7 @@ export default function VerifyWalletPin() {
   const hasError = error !== "";
   const filledCount = pin.filter((d) => d !== "").length;
 
-  if (items.length === 0 || !customerName) return null;
+  if (mode === "cake" ? !cakeData : (items.length === 0 || !customerName)) return null;
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex flex-col overflow-x-hidden">
@@ -305,8 +334,8 @@ export default function VerifyWalletPin() {
                     }`} />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Payment Amount</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{items.length} item{items.length > 1 ? "s" : ""}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{mode === "cake" ? "Advance Payment" : "Payment Amount"}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{itemCount} {itemLabel}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -377,7 +406,7 @@ export default function VerifyWalletPin() {
               {locked
                 ? "Account Locked"
                 : processing
-                ? "Placing Order..."
+                ? mode === "cake" ? "Reserving Cake..." : "Placing Order..."
                 : hasError
                 ? "Incorrect PIN"
                 : "Enter Wallet PIN"
@@ -413,7 +442,7 @@ export default function VerifyWalletPin() {
                   <input
                     ref={(el) => { inputRefs.current[i] = el; }}
                     type={showPin ? "text" : "password"}
-                    inputMode="numeric"
+                    inputMode="none"
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleDigitChange(i, e.target.value)}
@@ -598,6 +627,8 @@ export default function VerifyWalletPin() {
               ? "Processing..."
               : locked
               ? `Locked (${lockTimer}s)`
+              : mode === "cake"
+              ? `Reserve & Pay · ₹${totalAmount.toFixed(2)}`
               : `Confirm Payment · ₹${totalAmount.toFixed(2)}`
             }
           </motion.button>

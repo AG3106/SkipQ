@@ -318,7 +318,7 @@ export default function SetWalletPin() {
                   <input
                     ref={(el) => { currentRefs.current[i] = el; }}
                     type={showPin ? "text" : "password"}
-                    inputMode="numeric"
+                    inputMode="none"
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleDigitChange(i, e.target.value)}
