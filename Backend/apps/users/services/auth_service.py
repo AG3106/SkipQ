@@ -232,6 +232,29 @@ def logout_user(request):
 # Forgot Password
 # ---------------------------------------------------------------------------
 
+def validate_otp(email, entered_otp):
+    """
+    Validate an OTP without consuming it.
+    Used by the forgot-password flow to verify the OTP before showing
+    the password reset form.
+    """
+    otp_record = OTPVerification.objects.filter(
+        email=email,
+        is_used=False,
+    ).order_by("-created_at").first()
+
+    if not otp_record:
+        raise ValueError("No pending OTP found for this email")
+
+    if timezone.now() - otp_record.created_at > timedelta(minutes=10):
+        raise ValueError("OTP has expired. Please request a new one.")
+
+    if otp_record.otp != entered_otp:
+        raise ValueError("Invalid OTP")
+
+    return True
+
+
 def forgot_password_request(email):
     """
     Step 1 of Forgot Password flow.

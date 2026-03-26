@@ -34,6 +34,10 @@ export async function forgotPassword(email: string): Promise<{ message: string }
     return api.post<{ message: string }>("/api/auth/forgot-password/", { email });
 }
 
+export async function verifyForgotPasswordOtp(email: string, otp: string): Promise<{ message: string }> {
+    return api.post<{ message: string }>("/api/auth/verify-forgot-password-otp/", { email, otp });
+}
+
 export async function resetPassword(
     email: string,
     otp: string,

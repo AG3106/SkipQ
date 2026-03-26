@@ -76,13 +76,7 @@ export function ForgotPassword() {
       otpRefs.current[index + 1]?.focus();
     }
 
-    // Auto-advance when all 6 digits entered
-    if (newOtp.every(d => d !== '') && newOtp.join('').length === 6) {
-      setTimeout(() => {
-        toast.success('OTP entered — now set your new password');
-        setStep('reset');
-      }, 300);
-    }
+    // No auto-advance — user must click "Verify OTP" button
   };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
@@ -98,14 +92,33 @@ export function ForgotPassword() {
       const newOtp = pasted.split('');
       setOtp(newOtp);
       otpRefs.current[5]?.focus();
-      setTimeout(() => {
-        toast.success('OTP entered — now set your new password');
-        setStep('reset');
-      }, 300);
     }
   };
 
-  // OTP verification happens on the backend via reset-password endpoint
+  const handleVerifyOtp = async () => {
+    const otpCode = otp.join('');
+    if (otpCode.length !== 6) {
+      setError('Please enter all 6 digits');
+      return;
+    }
+    setError('');
+    setIsLoading(true);
+    try {
+      await authApi.verifyForgotPasswordOtp(email, otpCode);
+      toast.success('OTP verified — now set your new password');
+      setStep('reset');
+    } catch (err) {
+      setOtpShake(true);
+      setTimeout(() => setOtpShake(false), 400);
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError('OTP verification failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleResendOtp = async () => {
     if (resendTimer > 0) return;
@@ -376,6 +389,21 @@ export function ForgotPassword() {
                     )}
                   </p>
                 </div>
+
+                <button
+                  onClick={handleVerifyOtp}
+                  disabled={otp.some((d: string) => d === '') || isLoading}
+                  className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-gradient-to-r from-[#D4725C] to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#D4725C]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-5 h-5" />
+                      <span>Verify OTP</span>
+                    </>
+                  )}
+                </button>
 
                 <button
                   onClick={() => {

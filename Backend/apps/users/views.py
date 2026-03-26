@@ -172,6 +172,26 @@ def forgot_password_view(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+def verify_forgot_password_otp_view(request):
+    """
+    POST /api/auth/verify-forgot-password-otp/
+
+    Validates the OTP without consuming it, so the frontend can confirm
+    the OTP is correct before showing the password reset form.
+    """
+    email = request.data.get("email")
+    otp = request.data.get("otp")
+    if not email or not otp:
+        return Response({"error": "Email and OTP are required"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        auth_service.validate_otp(email, otp)
+        return Response({"message": "OTP verified"}, status=status.HTTP_200_OK)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
 def reset_password_view(request):
     """
     POST /api/auth/reset-password/

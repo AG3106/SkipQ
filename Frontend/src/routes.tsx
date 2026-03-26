@@ -25,8 +25,14 @@ import OwnerRegistration from "./pages/OwnerRegistration";
 import TrackOrders from "./pages/TrackOrders";
 import CakeReservation from "./pages/CakeReservation";
 import CakeManagement from "./pages/CakeManagement";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+function protect(Component: React.ComponentType) {
+  return <ProtectedRoute><Component /></ProtectedRoute>;
+}
 
 export const router = createBrowserRouter([
+  // Public routes
   {
     path: "/",
     Component: UnifiedLogin,
@@ -36,103 +42,104 @@ export const router = createBrowserRouter([
     Component: UnifiedLogin,
   },
   {
-    path: "/search",
-    Component: SearchResults,
-  },
-  {
-    path: "/payment-result",
-    Component: PaymentResult,
-  },
-  {
-    path: "/wallet",
-    Component: WalletPage,
-  },
-  {
-    path: "/wallet/set-pin",
-    Component: SetWalletPin,
-  },
-  {
-    path: "/wallet/verify-pin",
-    Component: VerifyWalletPin,
-  },
-  {
-    path: "/profile",
-    Component: UserProfile,
-  },
-  {
-    path: "/hostels",
-    Component: HostelSelection,
-  },
-  {
-    path: "/menu/:hostelId",
-    Component: MenuBrowsing,
-  },
-  {
-    path: "/cart",
-    Component: Cart,
-  },
-  {
-    path: "/checkout",
-    Component: Checkout,
-  },
-  {
-    path: "/order-confirmation/:orderId",
-    Component: OrderConfirmation,
-  },
-  {
-    path: "/owner/dashboard",
-    Component: OwnerDashboard,
-  },
-  {
-    path: "/owner/account",
-    Component: OwnerAccount,
-  },
-  {
-    path: "/owner/menu",
-    Component: MenuManagement,
-  },
-  {
-    path: "/owner/discounts",
-    Component: DiscountManagement,
-  },
-  {
-    path: "/owner/schedule",
-    Component: ScheduleManagement,
-  },
-  {
-    path: "/owner/stats",
-    Component: Statistics,
-  },
-  {
-    path: "/forgot-password",
-    Component: ForgotPassword,
-  },
-  {
-    path: "/admin",
-    Component: AdminPanel,
-  },
-  {
     path: "/admin/login",
     Component: AdminLogin,
-  },
-  {
-    path: "/canteen-register",
-    Component: CanteenRegistration,
   },
   {
     path: "/owner-register",
     Component: OwnerRegistration,
   },
   {
+    path: "/forgot-password",
+    Component: ForgotPassword,
+  },
+  // Protected routes
+  {
+    path: "/search",
+    element: protect(SearchResults),
+  },
+  {
+    path: "/payment-result",
+    element: protect(PaymentResult),
+  },
+  {
+    path: "/wallet",
+    element: protect(WalletPage),
+  },
+  {
+    path: "/wallet/set-pin",
+    element: protect(SetWalletPin),
+  },
+  {
+    path: "/wallet/verify-pin",
+    element: protect(VerifyWalletPin),
+  },
+  {
+    path: "/profile",
+    element: protect(UserProfile),
+  },
+  {
+    path: "/hostels",
+    element: protect(HostelSelection),
+  },
+  {
+    path: "/menu/:hostelId",
+    element: protect(MenuBrowsing),
+  },
+  {
+    path: "/cart",
+    element: protect(Cart),
+  },
+  {
+    path: "/checkout",
+    element: protect(Checkout),
+  },
+  {
+    path: "/order-confirmation/:orderId",
+    element: protect(OrderConfirmation),
+  },
+  {
+    path: "/owner/dashboard",
+    element: protect(OwnerDashboard),
+  },
+  {
+    path: "/owner/account",
+    element: protect(OwnerAccount),
+  },
+  {
+    path: "/owner/menu",
+    element: protect(MenuManagement),
+  },
+  {
+    path: "/owner/discounts",
+    element: protect(DiscountManagement),
+  },
+  {
+    path: "/owner/schedule",
+    element: protect(ScheduleManagement),
+  },
+  {
+    path: "/owner/stats",
+    element: protect(Statistics),
+  },
+  {
+    path: "/admin",
+    element: protect(AdminPanel),
+  },
+  {
+    path: "/canteen-register",
+    element: protect(CanteenRegistration),
+  },
+  {
     path: "/track-orders",
-    Component: TrackOrders,
+    element: protect(TrackOrders),
   },
   {
     path: "/cake-reservation",
-    Component: CakeReservation,
+    element: protect(CakeReservation),
   },
   {
     path: "/owner/cakes",
-    Component: CakeManagement,
+    element: protect(CakeManagement),
   },
 ]);
