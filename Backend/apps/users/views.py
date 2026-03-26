@@ -78,6 +78,7 @@ def verify_otp(request):
             password_hash=otp_record.password_hash,
             role=otp_record.role or "CUSTOMER",
             name=otp_record.name or "",
+            phone=otp_record.phone or "",
         )
         # Manager flow: pending admin approval (no user created yet)
         if user is None:

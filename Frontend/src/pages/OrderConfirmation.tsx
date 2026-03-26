@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router";
-import { CheckCircle, Home, Package, Clock, ChefHat, Loader2 } from "lucide-react";
+import { CheckCircle, Home, Package, Clock, ChefHat, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { getOrderDetail } from "../api/orders";
 import type { Order } from "../types";
@@ -17,13 +17,27 @@ export default function OrderConfirmation() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const isActive = (status: string) =>
+    ["PENDING", "ACCEPTED", "READY", "CANCEL_REQUESTED"].includes(status);
+
+  const fetchOrder = useCallback(() => {
     if (!orderId) return;
     getOrderDetail(Number(orderId))
       .then(setOrder)
       .catch(() => { })
       .finally(() => setLoading(false));
   }, [orderId]);
+
+  useEffect(() => {
+    fetchOrder();
+  }, [fetchOrder]);
+
+  // Auto-poll every 10s while order is active
+  useEffect(() => {
+    if (!order || !isActive(order.status)) return;
+    const interval = setInterval(fetchOrder, 60000);
+    return () => clearInterval(interval);
+  }, [order, fetchOrder]);
 
   const stepLabels = [
     { label: "Order Confirmed", desc: "Your order has been received", icon: CheckCircle },
@@ -44,6 +58,14 @@ export default function OrderConfirmation() {
 
       <div className="relative z-10 container mx-auto px-4 py-8 pb-20">
         <div className="max-w-2xl mx-auto">
+          <Link
+            to="/track-orders"
+            className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#D4725C] mb-6 transition-colors font-medium"
+          >
+            <ArrowLeft className="size-5" />
+            Order History
+          </Link>
+
           {loading ? (
             <div className="flex items-center justify-center py-24">
               <Loader2 className="size-8 animate-spin text-[#D4725C]" />
@@ -53,17 +75,47 @@ export default function OrderConfirmation() {
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#D4725C] to-green-500" />
 
               <div className="relative mb-8">
-                <div className="w-24 h-24 bg-green-100 dark:bg-green-950/30 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle className="size-12 text-green-600 dark:text-green-400" />
-                </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-green-600 dark:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full border-4 border-white dark:border-gray-900 shadow-sm">
-                  Success
-                </div>
+                {order?.status === "REJECTED" || order?.status === "CANCELLED" || order?.status === "REFUNDED" ? (
+                  <>
+                    <div className="w-24 h-24 bg-red-100 dark:bg-red-950/30 rounded-full flex items-center justify-center mx-auto">
+                      <Package className="size-12 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-red-600 dark:bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full border-4 border-white dark:border-gray-900 shadow-sm">
+                      Cancelled
+                    </div>
+                  </>
+                ) : order?.status === "READY" ? (
+                  <>
+                    <div className="w-24 h-24 bg-orange-100 dark:bg-orange-950/30 rounded-full flex items-center justify-center mx-auto">
+                      <Package className="size-12 text-[#D4725C]" />
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#D4725C] text-white text-xs font-bold px-3 py-1 rounded-full border-4 border-white dark:border-gray-900 shadow-sm">
+                      Ready!
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-24 h-24 bg-green-100 dark:bg-green-950/30 rounded-full flex items-center justify-center mx-auto">
+                      <CheckCircle className="size-12 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-green-600 dark:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full border-4 border-white dark:border-gray-900 shadow-sm">
+                      {order?.status === "COMPLETED" ? "Done" : "Success"}
+                    </div>
+                  </>
+                )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">Order Placed!</h1>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+                {order?.status === "COMPLETED" ? "Order Complete!" : order?.status === "READY" ? "Order Ready!" : order?.status === "REJECTED" || order?.status === "CANCELLED" ? "Order Cancelled" : "Order Placed!"}
+              </h1>
               <p className="text-gray-500 dark:text-gray-400 text-lg mb-8 max-w-md mx-auto">
-                Your order has been confirmed and sent to the kitchen. Get ready for some delicious food!
+                {order?.status === "COMPLETED"
+                  ? "Your order has been collected. Hope you enjoyed it!"
+                  : order?.status === "READY"
+                  ? "Your order is ready! Head to the counter to pick it up."
+                  : order?.status === "REJECTED" || order?.status === "CANCELLED"
+                  ? "This order was cancelled. Your wallet has been refunded."
+                  : "Your order has been confirmed and sent to the kitchen. Get ready for some delicious food!"}
               </p>
 
               {/* Order ID */}

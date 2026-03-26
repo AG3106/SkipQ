@@ -22,6 +22,7 @@ class InitiateSignupSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, write_only=True)
     role = serializers.ChoiceField(choices=User.Role.choices, default=User.Role.CUSTOMER)
     name = serializers.CharField(max_length=255, required=False, default="")
+    phone = serializers.CharField(max_length=20, required=False, default="")
 
 
 class VerifyOTPSerializer(serializers.Serializer):

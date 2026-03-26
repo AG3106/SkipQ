@@ -121,7 +121,7 @@ export default function OwnerRegistration() {
 
     setIsLoading(true);
     try {
-      await register(formData.email, formData.password, formData.fullName, "MANAGER");
+      await register(formData.email, formData.password, formData.fullName, "MANAGER", formData.phone);
       toast.success("OTP sent to your email! Please check your inbox.");
       setSignupStep("otp");
       startOtpTimer();
@@ -156,7 +156,7 @@ export default function OwnerRegistration() {
   const handleResendOtp = async () => {
     setOtp(["", "", "", "", "", ""]);
     try {
-      await register(formData.email, formData.password, formData.fullName, "MANAGER");
+      await register(formData.email, formData.password, formData.fullName, "MANAGER", formData.phone);
       toast.success("New OTP sent to your email!");
       startOtpTimer();
     } catch (err: any) {

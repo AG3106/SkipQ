@@ -55,6 +55,7 @@ export interface RegisterRequest {
     password: string;
     role?: "CUSTOMER" | "MANAGER";
     name?: string;
+    phone?: string;
 }
 
 export interface VerifyOtpRequest {

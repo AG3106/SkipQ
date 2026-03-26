@@ -247,6 +247,7 @@ class OTPVerification(models.Model):
     password_hash = models.CharField(max_length=128, blank=True, help_text="Hashed password stored during initiate_signup")
     role = models.CharField(max_length=10, blank=True)
     name = models.CharField(max_length=255, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
 
@@ -280,6 +281,7 @@ class PendingManagerRegistration(models.Model):
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=128, help_text="Pre-hashed password from OTP step")
     name = models.CharField(max_length=255, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
     status = models.CharField(
         max_length=10,
         choices=Status.choices,

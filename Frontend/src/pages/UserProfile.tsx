@@ -22,6 +22,7 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { useWallet } from "../context/WalletContext";
 import { useAuth } from "../context/AuthContext";
+import type { CustomerProfile } from "../types";
 import { getOrderHistory } from "../api/orders";
 import { updateProfile } from "../api/auth";
 
@@ -39,7 +40,8 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
   const { balance } = useWallet();
-  const { user, profile: authProfile, logout } = useAuth();
+  const { user, profile: rawAuthProfile, logout } = useAuth();
+  const authProfile = rawAuthProfile as CustomerProfile | null;
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [saveAnimation, setSaveAnimation] = useState<string | null>(null);
@@ -55,9 +57,9 @@ export default function UserProfile() {
     const saved = typeof window !== "undefined" ? localStorage.getItem("skipq_profile") : null;
     const cached = saved ? JSON.parse(saved) : {};
     return {
-      name: (authProfile as any)?.name || cached.name || "",
+      name: authProfile?.name || cached.name || "",
       email: user?.email || cached.email || "",
-      phone: (authProfile as any)?.phone || cached.phone || "",
+      phone: authProfile?.phone || cached.phone || "",
       hostel: cached.hostel || "",
       room: cached.room || "",
       rollNumber: cached.rollNumber || "",
@@ -69,9 +71,9 @@ export default function UserProfile() {
     if (user?.email || authProfile) {
       setProfile(prev => ({
         ...prev,
-        name: (authProfile as any)?.name || prev.name,
+        name: authProfile?.name || prev.name,
         email: user?.email || prev.email,
-        phone: (authProfile as any)?.phone || prev.phone,
+        phone: authProfile?.phone || prev.phone,
       }));
     }
   }, [user, authProfile]);
@@ -109,9 +111,7 @@ export default function UserProfile() {
     { key: "name", label: "Full Name", value: profile.name, icon: <User className="size-5" />, placeholder: "Enter your name" },
     { key: "email", label: "Email Address", value: profile.email, icon: <Mail className="size-5" />, type: "email", placeholder: "Enter your email" },
     { key: "phone", label: "Phone Number", value: profile.phone, icon: <Phone className="size-5" />, type: "tel", placeholder: "+91 XXXXX XXXXX" },
-    { key: "hostel", label: "Hostel", value: profile.hostel, icon: <Building2 className="size-5" />, options: hostelOptions },
-    { key: "room", label: "Room Number", value: profile.room, icon: <MapPin className="size-5" />, placeholder: "e.g. B-214" },
-    { key: "rollNumber", label: "Roll Number", value: profile.rollNumber, icon: <Shield className="size-5" />, placeholder: "e.g. 22CS10045" },
+    { key: "rollNumber", label: "Roll Number", value: profile.rollNumber, icon: <Shield className="size-5" />, placeholder: "e.g. 240000" },
   ];
 
   const handleLogout = async () => {

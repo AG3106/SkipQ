@@ -165,7 +165,7 @@ export default function UnifiedLogin() {
     // Call backend register
     setIsLoading(true);
     try {
-      await register(formData.email, formData.password, formData.name);
+      await register(formData.email, formData.password, formData.name, "CUSTOMER", formData.phone);
       toast.success("OTP sent to your email!");
       setSignupStep("otp");
     } catch (err: any) {
@@ -246,10 +246,10 @@ export default function UnifiedLogin() {
               </div>
 
               {/* Demo OTP Banner */}
-              <div className="mb-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 text-center">
+              {/* <div className="mb-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 text-center">
                 <p className="text-xs text-amber-600 dark:text-amber-400 mb-1">Demo OTP (for testing)</p>
                 <p className="text-2xl font-bold tracking-[0.3em] text-amber-700 dark:text-amber-300">{generatedOtp}</p>
-              </div>
+              </div> */}
 
               {/* OTP Input */}
               <div className="flex justify-center gap-2.5 mb-6" onPaste={handleOtpPaste}>

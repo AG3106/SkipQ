@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router";
-import { Package, CheckCircle, Clock, ArrowLeft, Star, XCircle, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { Package, CheckCircle, Clock, ArrowLeft, Star, XCircle, Loader2, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { getDetailedOrderHistory, requestCancelOrder, rateOrder } from "../api/orders";
@@ -79,6 +79,7 @@ const isActiveOrder = (status: string) =>
   ["PENDING", "ACCEPTED", "READY", "CANCEL_REQUESTED"].includes(status);
 
 export default function TrackOrders() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancelModal, setCancelModal] = useState<number | null>(null);
@@ -107,6 +108,14 @@ export default function TrackOrders() {
     fetchOrders();
   }, [fetchOrders]);
 
+  // Auto-refresh when there are active orders
+  useEffect(() => {
+    const hasActive = orders.some((o) => isActiveOrder(o.status));
+    if (!hasActive) return;
+    const interval = setInterval(fetchOrders, 60000);
+    return () => clearInterval(interval);
+  }, [orders, fetchOrders]);
+
   const openRatingModal = (order: Order) => {
     const initial: Record<number, number> = {};
     order.items.forEach((item) => { initial[item.dish] = 0; });
@@ -117,7 +126,7 @@ export default function TrackOrders() {
 
   const handleSubmitRating = async () => {
     if (!ratingModal) return;
-    const allRated = Object.values(itemRatings).every((r) => r > 0);
+    const allRated = (Object.values(itemRatings) as number[]).every((r) => r > 0);
     if (!allRated) {
       toast.error("Please rate all items");
       return;
@@ -132,7 +141,7 @@ export default function TrackOrders() {
       await rateOrder(ratingModal, ratings);
       toast.success("Thanks for your rating!");
       setRatingModal(null);
-      fetchOrders(); // Refresh to update isRated
+      fetchOrders();
     } catch {
       toast.error("Failed to submit rating");
     } finally {
@@ -165,6 +174,149 @@ export default function TrackOrders() {
 
   const getRatingLabel = (r: number) =>
     r === 1 ? "Poor" : r === 2 ? "Fair" : r === 3 ? "Good" : r === 4 ? "Very Good" : "Excellent!";
+
+  const renderOrderCard = (order: Order) => (
+    <>
+      {/* Order Header */}
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${getStatusColor(order.status)}`}>
+              {getStatusIcon(order.status)}
+              {getStatusText(order.status)}
+            </span>
+          </div>
+          <h3 className="font-bold text-gray-900 dark:text-white tracking-wide">
+            Order #{order.id}
+          </h3>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{order.canteenName}</p>
+        </div>
+        <div className="text-right flex items-center gap-2">
+          <div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Order Amount</p>
+            <p className="text-2xl font-black text-[#D4725C]">₹{parseFloat(order.totalPrice).toFixed(0)}</p>
+          </div>
+          <ChevronRight className="size-5 text-gray-300 dark:text-gray-600 group-hover:text-[#D4725C] transition-colors" />
+        </div>
+      </div>
+
+      {/* Progress Bar for active orders */}
+      {isActiveOrder(order.status) && (
+        <div className="mb-5">
+          <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2 tracking-wider">
+            <span className={["PENDING", "ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Placed</span>
+            <span className={["ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Cooking</span>
+            <span className={order.status === "READY" ? "text-[#D4725C]" : ""}>Ready</span>
+            <span>Done</span>
+          </div>
+          <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#D4725C] to-[#B85A4A] shadow-[0_0_10px_rgba(212,114,92,0.5)] transition-all duration-1000 ease-out relative"
+              style={{ width: getProgressWidth(order.status) }}
+            >
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" />
+            </div>
+          </div>
+          {order.estimatedWaitMinutes && (
+            <p className="text-xs text-[#D4725C] font-bold mt-2 flex items-center gap-1">
+              <Clock className="size-3" />
+              ~{order.estimatedWaitMinutes} min estimated
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Items */}
+      <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
+        <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
+          Items Ordered
+        </p>
+        <ul className="space-y-2">
+          {order.items.map((item) => (
+            <li key={item.id} className="text-sm text-gray-700 dark:text-gray-300 flex items-center justify-between font-medium">
+              <span className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                {item.dishName} &times; {item.quantity}
+              </span>
+              <span>₹{(parseFloat(item.priceAtOrder) * item.quantity).toFixed(0)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Cancel Request Status */}
+      {order.status === "CANCEL_REQUESTED" && (
+        <div className="rounded-2xl p-4 mb-4 border bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center shrink-0">
+              <Clock className="size-4 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-amber-800 dark:text-amber-300">Cancellation Requested</p>
+              <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Waiting for canteen to respond</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {order.status === "REJECTED" && order.rejectReason && (
+        <div className="rounded-2xl p-4 mb-4 border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
+              <XCircle className="size-4 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-red-800 dark:text-red-300">Order Rejected</p>
+              <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">Reason: {order.rejectReason}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rate / Cancel buttons */}
+      <div className="flex gap-3 mb-4">
+        {order.status === "COMPLETED" && !order.isRated && (
+          <button
+            onClick={(e) => { e.stopPropagation(); openRatingModal(order); }}
+            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-200 dark:border-amber-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700 transition-all group/rate"
+          >
+            <Star className="size-4 text-amber-500 group-hover/rate:fill-amber-500 transition-colors" />
+            <span className="text-sm font-bold text-amber-700 dark:text-amber-400">Rate this Order</span>
+          </button>
+        )}
+        {order.status === "COMPLETED" && order.isRated && (
+          <div className="flex-1 flex items-center gap-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/40 rounded-xl px-4 py-3">
+            <CheckCircle className="size-4 text-green-600 dark:text-green-400" />
+            <span className="text-sm font-bold text-green-700 dark:text-green-400">Rated</span>
+          </div>
+        )}
+        {order.status === "PENDING" && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setCancelModal(order.id); }}
+            className="flex-1 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-red-300 dark:hover:border-red-700 transition-all"
+          >
+            <XCircle className="size-4 text-red-500" />
+            <span className="text-sm font-bold text-red-700 dark:text-red-400">Request Cancel</span>
+          </button>
+        )}
+      </div>
+
+      {/* Footer Info */}
+      <div className="flex items-center pt-3 border-t border-gray-100/50 dark:border-gray-800/50">
+        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <Clock className="size-4" />
+          <span>
+            Ordered: <span className="text-gray-900 dark:text-white font-bold">
+              {new Date(order.bookTime).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+            </span>
+          </span>
+        </div>
+      </div>
+    </>
+  );
+
+  const activeOrders = orders.filter((o) => isActiveOrder(o.status));
+  const pastOrders = orders.filter((o) => !isActiveOrder(o.status));
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
@@ -212,146 +364,57 @@ export default function TrackOrders() {
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {orders.map((order, index) => (
-              <motion.div
-                key={order.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 hover:shadow-xl hover:shadow-orange-100/30 dark:hover:shadow-orange-900/10 transition-all duration-300"
-              >
-                {/* Order Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        {getStatusText(order.status)}
-                      </span>
-                    </div>
-                    <h3 className="font-bold text-gray-900 dark:text-white tracking-wide">
-                      Order #{order.id}
-                    </h3>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{order.canteenName}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Order Amount</p>
-                    <p className="text-2xl font-black text-[#D4725C]">₹{parseFloat(order.totalPrice).toFixed(0)}</p>
-                  </div>
+          <div className="space-y-8">
+            {/* Active Orders Section */}
+            {activeOrders.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+                    Active Orders ({activeOrders.length})
+                  </h2>
                 </div>
-
-                {/* Progress Bar for active orders */}
-                {isActiveOrder(order.status) && (
-                  <div className="mb-5">
-                    <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2 tracking-wider">
-                      <span className={["PENDING", "ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Placed</span>
-                      <span className={["ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Cooking</span>
-                      <span className={order.status === "READY" ? "text-[#D4725C]" : ""}>Ready</span>
-                      <span>Done</span>
-                    </div>
-                    <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-[#D4725C] to-[#B85A4A] shadow-[0_0_10px_rgba(212,114,92,0.5)] transition-all duration-1000 ease-out relative"
-                        style={{ width: getProgressWidth(order.status) }}
-                      >
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Items */}
-                <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
-                    Items Ordered
-                  </p>
-                  <ul className="space-y-2">
-                    {order.items.map((item) => (
-                      <li key={item.id} className="text-sm text-gray-700 dark:text-gray-300 flex items-center justify-between font-medium">
-                        <span className="flex items-center gap-2.5">
-                          <span className="w-1.5 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
-                          {item.dishName} &times; {item.quantity}
-                        </span>
-                        <span>₹{(parseFloat(item.priceAtOrder) * item.quantity).toFixed(0)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Cancel Request Status */}
-                {order.status === "CANCEL_REQUESTED" && (
-                  <div className="rounded-2xl p-4 mb-4 border bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center shrink-0">
-                        <Clock className="size-4 text-amber-600 dark:text-amber-400" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-amber-800 dark:text-amber-300">Cancellation Requested</p>
-                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Waiting for canteen to respond</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {order.status === "REJECTED" && order.rejectReason && (
-                  <div className="rounded-2xl p-4 mb-4 border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
-                        <XCircle className="size-4 text-red-600 dark:text-red-400" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-red-800 dark:text-red-300">Order Rejected</p>
-                        <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">Reason: {order.rejectReason}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Rate / Cancel buttons */}
-                <div className="flex gap-3 mb-4">
-                  {order.status === "COMPLETED" && !order.isRated && (
-                    <button
-                      onClick={() => openRatingModal(order)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-200 dark:border-amber-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700 transition-all group/rate"
+                <div className="space-y-6">
+                  {activeOrders.map((order, index) => (
+                    <motion.div
+                      key={order.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      onClick={() => navigate(`/order-confirmation/${order.id}`)}
+                      className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-6 rounded-3xl border-2 border-[#D4725C]/20 dark:border-[#D4725C]/30 hover:border-[#D4725C]/50 dark:hover:border-[#D4725C]/60 hover:shadow-xl hover:shadow-orange-100/30 dark:hover:shadow-orange-900/10 transition-all duration-300 cursor-pointer ring-1 ring-[#D4725C]/10"
                     >
-                      <Star className="size-4 text-amber-500 group-hover/rate:fill-amber-500 transition-colors" />
-                      <span className="text-sm font-bold text-amber-700 dark:text-amber-400">Rate this Order</span>
-                    </button>
-                  )}
-                  {order.status === "COMPLETED" && order.isRated && (
-                    <div className="flex-1 flex items-center gap-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/40 rounded-xl px-4 py-3">
-                      <CheckCircle className="size-4 text-green-600 dark:text-green-400" />
-                      <span className="text-sm font-bold text-green-700 dark:text-green-400">Rated</span>
-                    </div>
-                  )}
-                  {order.status === "PENDING" && (
-                    <button
-                      onClick={() => setCancelModal(order.id)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-red-300 dark:hover:border-red-700 transition-all"
-                    >
-                      <XCircle className="size-4 text-red-500" />
-                      <span className="text-sm font-bold text-red-700 dark:text-red-400">Request Cancel</span>
-                    </button>
-                  )}
+                      {renderOrderCard(order)}
+                    </motion.div>
+                  ))}
                 </div>
+              </div>
+            )}
 
-                {/* Footer Info */}
-                <div className="flex items-center pt-3 border-t border-gray-100/50 dark:border-gray-800/50">
-                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                    <Clock className="size-4" />
-                    <span>
-                      Ordered: <span className="text-gray-900 dark:text-white font-bold">
-                        {new Date(order.bookTime).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                    </span>
-                  </div>
+            {/* Past Orders Section */}
+            {pastOrders.length > 0 && (
+              <div>
+                {activeOrders.length > 0 && (
+                  <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Past Orders</h2>
+                )}
+                <div className="space-y-6">
+                  {pastOrders.map((order, index) => (
+                    <motion.div
+                      key={order.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: (activeOrders.length + index) * 0.05 }}
+                      onClick={() => navigate(`/order-confirmation/${order.id}`)}
+                      className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/50 hover:shadow-xl hover:shadow-orange-100/30 dark:hover:shadow-orange-900/10 transition-all duration-300 cursor-pointer"
+                    >
+                      {renderOrderCard(order)}
+                    </motion.div>
+                  ))}
                 </div>
-              </motion.div>
-            ))}
+              </div>
+            )}
           </div>
         )}
-
       </div>
 
       {/* Cancel Modal */}

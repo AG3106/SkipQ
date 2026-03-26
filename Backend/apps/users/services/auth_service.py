@@ -40,14 +40,14 @@ def validate_registration_email(email, role):
         raise ValueError("An account with this email already exists")
 
 
-def generate_and_send_otp(email, password="", role="CUSTOMER", name=""):
+def generate_and_send_otp(email, password="", role="CUSTOMER", name="", phone=""):
     """
     Sequence diagram (NewUser/phase1, steps 23–28):
       BE → generateOTP()
       BE → hashPassword(password)
       BE → sendVerificationEmail(email, otp)
 
-    Stores hashed password, role, and name in OTP record so that
+    Stores hashed password, role, name, and phone in OTP record so that
     verify-otp only needs email + otp to complete registration.
     """
     otp = f"{random.randint(100000, 999999)}"
@@ -61,6 +61,7 @@ def generate_and_send_otp(email, password="", role="CUSTOMER", name=""):
         password_hash=password_hash,
         role=role,
         name=name,
+        phone=phone,
     )
 
     from django.core.mail import send_mail
@@ -108,7 +109,7 @@ def verify_otp(email, entered_otp):
     return otp_record
 
 
-def initiate_signup(email, password, role="CUSTOMER", name=""):
+def initiate_signup(email, password, role="CUSTOMER", name="", phone=""):
     """
     Sequence diagram (NewUser/phase1, step 13):
       FE → initiateSignup(role, email, password)
@@ -117,11 +118,11 @@ def initiate_signup(email, password, role="CUSTOMER", name=""):
     User is created after OTP verification.
     """
     validate_registration_email(email, role)
-    otp = generate_and_send_otp(email, password=password, role=role, name=name)
+    otp = generate_and_send_otp(email, password=password, role=role, name=name, phone=phone)
     return {"message": "OTP sent to your email", "otp_dev": otp}
 
 
-def complete_registration(email, password=None, password_hash=None, role="CUSTOMER", name=""):
+def complete_registration(email, password=None, password_hash=None, role="CUSTOMER", name="", phone=""):
     """
     Called after OTP is verified.
     Sequence diagram (NewUser/phase1, step 36):
@@ -144,6 +145,7 @@ def complete_registration(email, password=None, password_hash=None, role="CUSTOM
             email=email,
             password_hash=password_hash,
             name=name,
+            phone=phone,
         )
         logger.info("Manager registration pending approval for %s", email)
         return None  # No user created yet
@@ -159,7 +161,7 @@ def complete_registration(email, password=None, password_hash=None, role="CUSTOM
     user.save()
 
     if role == User.Role.CUSTOMER:
-        CustomerProfile.objects.create(user=user, name=name)
+        CustomerProfile.objects.create(user=user, name=name, phone=phone)
     elif role == User.Role.ADMIN:
         AdminProfile.objects.create(user=user)
 
@@ -323,7 +325,7 @@ def approve_manager_registration(pending_id):
     user = User(email=pending.email, role=User.Role.MANAGER, is_verified=True)
     user.password = pending.password_hash
     user.save()
-    CanteenManagerProfile.objects.create(user=user, contact_details=pending.name)
+    CanteenManagerProfile.objects.create(user=user, contact_details=pending.phone or pending.name)
 
     # Mark as approved
     pending.status = PendingManagerRegistration.Status.APPROVED
