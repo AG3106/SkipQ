@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { Wallet, Plus, ArrowLeft, Sparkles, TrendingUp, Clock, Lock } from "lucide-react";
 import Header from "../components/Header";
+import OwnerHeader from "../components/OwnerHeader";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { useWallet } from "../context/WalletContext";
@@ -45,17 +46,23 @@ export default function WalletPage() {
         <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-amber-500/5 dark:bg-amber-500/10 rounded-full blur-3xl" />
       </div>
 
-      <Header />
+      {isManager ? (
+        <OwnerHeader backTo="/owner/dashboard" backLabel="Dashboard" />
+      ) : (
+        <Header />
+      )}
 
       <div className="relative z-10 container mx-auto px-4 py-8 pb-32 max-w-2xl">
-        {/* Back */}
-        <Link
-          to={isManager ? "/owner/dashboard" : "/hostels"}
-          className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#D4725C] mb-8 transition-colors font-medium"
-        >
-          <ArrowLeft className="size-5" />
-          {isManager ? "Back to Dashboard" : "Back to Menu"}
-        </Link>
+        {/* Back (for customers only — owner header has its own back button) */}
+        {!isManager && (
+          <Link
+            to="/hostels"
+            className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#D4725C] mb-8 transition-colors font-medium"
+          >
+            <ArrowLeft className="size-5" />
+            Back to Menu
+          </Link>
+        )}
 
         {/* Success toast */}
         {showSuccess && (

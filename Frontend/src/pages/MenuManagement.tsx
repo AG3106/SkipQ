@@ -304,7 +304,7 @@ export default function MenuManagement() {
                 placeholder="Search menu items..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
 
@@ -313,7 +313,7 @@ export default function MenuManagement() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="pl-12 pr-10 py-3.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] appearance-none bg-white min-w-[220px] transition-all text-gray-900 dark:text-white"
+                className="pl-12 pr-10 py-3.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] appearance-none bg-white dark:bg-gray-800 min-w-[220px] transition-all text-gray-900 dark:text-white"
               >
                 <option value="all">All Categories</option>
                 {CATEGORIES.map((cat) => (
@@ -368,8 +368,8 @@ export default function MenuManagement() {
                     <button
                       onClick={() => handleToggleAvailability(item.id)}
                       className={`backdrop-blur-sm p-2 rounded-full shadow-sm transition-colors ${!item.isAvailable
-                          ? "bg-red-50/90 dark:bg-red-950/90 hover:bg-red-100 dark:hover:bg-red-900"
-                          : "bg-white/90 dark:bg-gray-900/90 hover:bg-white dark:hover:bg-gray-900"
+                        ? "bg-red-50/90 dark:bg-red-950/90 hover:bg-red-100 dark:hover:bg-red-900"
+                        : "bg-white/90 dark:bg-gray-900/90 hover:bg-white dark:hover:bg-gray-900"
                         }`}
                       title={!item.isAvailable ? "Mark as available" : "Mark as out of stock"}
                     >
@@ -406,14 +406,14 @@ export default function MenuManagement() {
                   <div className="flex gap-3">
                     <Button
                       onClick={() => handleEdit(item)}
-                      className="flex-1 bg-white border-2 border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+                      className="flex-1 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
                     >
                       <Edit className="size-4" />
                       Edit
                     </Button>
                     <Button
                       onClick={() => handleDelete(item.id)}
-                      className="flex-1 bg-white border-2 border-gray-100 dark:border-gray-700 hover:border-red-100 dark:hover:border-red-800 text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+                      className="flex-1 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 hover:border-red-100 dark:hover:border-red-800 text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
                     >
                       <Trash2 className="size-4" />
                       Delete
@@ -464,7 +464,7 @@ export default function MenuManagement() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                    className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                     placeholder="Enter dish name"
                   />
                 </div>
@@ -479,7 +479,7 @@ export default function MenuManagement() {
                     onChange={handleInputChange}
                     required
                     rows={3}
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                    className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                     placeholder="Enter description"
                   />
                 </div>
@@ -497,7 +497,7 @@ export default function MenuManagement() {
                       required
                       min="0"
                       step="0.01"
-                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                       placeholder="0.00"
                     />
                   </div>
@@ -527,7 +527,7 @@ export default function MenuManagement() {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all appearance-none text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all appearance-none text-gray-900 dark:text-white"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat.id} value={cat.id}>
@@ -584,7 +584,7 @@ export default function MenuManagement() {
                     type="button"
                     onClick={resetForm}
                     disabled={submitting}
-                    className="flex-1 bg-white border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-6 rounded-xl font-bold transition-all"
+                    className="flex-1 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-6 rounded-xl font-bold transition-all"
                   >
                     Cancel
                   </Button>
