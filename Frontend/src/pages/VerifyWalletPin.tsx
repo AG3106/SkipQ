@@ -257,43 +257,41 @@ export default function VerifyWalletPin() {
       {/* Background ambience */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div
-          className={`absolute top-[-5%] right-[-10%] w-[500px] h-[500px] rounded-full blur-3xl transition-colors duration-500 ${
-            hasError
-              ? "bg-red-500/8 dark:bg-red-500/15"
-              : "bg-[#D4725C]/5 dark:bg-[#D4725C]/10"
-          }`}
+          className={`absolute top-[-5%] right-[-10%] w-[500px] h-[500px] rounded-full blur-3xl transition-colors duration-500 ${hasError
+            ? "bg-red-500/8 dark:bg-red-500/15"
+            : "bg-[#D4725C]/5 dark:bg-[#D4725C]/10"
+            }`}
         />
         <div
-          className={`absolute bottom-[-10%] left-[-15%] w-[600px] h-[600px] rounded-full blur-3xl transition-colors duration-500 ${
-            hasError
-              ? "bg-red-400/5 dark:bg-red-400/10"
-              : "bg-[#B85A4A]/5 dark:bg-[#B85A4A]/10"
-          }`}
+          className={`absolute bottom-[-10%] left-[-15%] w-[600px] h-[600px] rounded-full blur-3xl transition-colors duration-500 ${hasError
+            ? "bg-red-400/5 dark:bg-red-400/10"
+            : "bg-[#B85A4A]/5 dark:bg-[#B85A4A]/10"
+            }`}
         />
       </div>
 
       {/* Top bar */}
-      <div className="relative z-10 px-4 pt-6 pb-2">
+      <div className="relative z-10 px-4 pt-3 pb-1 md:pt-6 md:pb-2">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm"
+            className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm"
           >
-            <ArrowLeft className="size-5" />
+            <ArrowLeft className="size-4 md:size-5" />
           </button>
 
           <div className="flex items-center gap-1.5">
-            <ShieldCheck className="size-4 text-green-500 dark:text-green-400" />
-            <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <ShieldCheck className="size-3.5 md:size-4 text-green-500 dark:text-green-400" />
+            <span className="text-[10px] md:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               Secure Payment
             </span>
           </div>
 
           <button
             onClick={() => setShowPin(!showPin)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm"
+            className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm"
           >
-            {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {showPin ? <EyeOff className="size-3.5 md:size-4" /> : <Eye className="size-3.5 md:size-4" />}
           </button>
         </div>
       </div>
@@ -306,32 +304,28 @@ export default function VerifyWalletPin() {
             initial={{ y: 12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.05 }}
-            className="mb-8"
+            className="mb-4 md:mb-8"
           >
-            <div className={`relative overflow-hidden rounded-2xl p-5 border transition-colors duration-500 ${
-              hasError
-                ? "bg-red-50/80 dark:bg-red-950/20 border-red-200/60 dark:border-red-800/40"
-                : "bg-white/80 dark:bg-gray-900/80 border-white/40 dark:border-gray-800"
-            } backdrop-blur-xl shadow-sm`}>
+            <div className={`relative overflow-hidden rounded-2xl p-3.5 md:p-5 border transition-colors duration-500 ${hasError
+              ? "bg-red-50/80 dark:bg-red-950/20 border-red-200/60 dark:border-red-800/40"
+              : "bg-white/80 dark:bg-gray-900/80 border-white/40 dark:border-gray-800"
+              } backdrop-blur-xl shadow-sm`}>
               {/* Subtle gradient accent */}
-              <div className={`absolute top-0 left-0 right-0 h-1 transition-colors duration-500 ${
-                hasError
-                  ? "bg-gradient-to-r from-red-400 to-red-500"
-                  : processing
+              <div className={`absolute top-0 left-0 right-0 h-1 transition-colors duration-500 ${hasError
+                ? "bg-gradient-to-r from-red-400 to-red-500"
+                : processing
                   ? "bg-gradient-to-r from-green-400 to-emerald-500"
                   : "bg-gradient-to-r from-[#D4725C] to-[#B85A4A]"
-              }`} />
+                }`} />
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors duration-500 ${
-                    hasError
-                      ? "bg-red-100 dark:bg-red-900/40"
-                      : "bg-orange-50 dark:bg-orange-950/30"
-                  }`}>
-                    <Wallet className={`size-5 transition-colors duration-500 ${
-                      hasError ? "text-red-500 dark:text-red-400" : "text-[#D4725C]"
-                    }`} />
+                  <div className={`w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-colors duration-500 ${hasError
+                    ? "bg-red-100 dark:bg-red-900/40"
+                    : "bg-orange-50 dark:bg-orange-950/30"
+                    }`}>
+                    <Wallet className={`size-4 md:size-5 transition-colors duration-500 ${hasError ? "text-red-500 dark:text-red-400" : "text-[#D4725C]"
+                      }`} />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{mode === "cake" ? "Advance Payment" : "Payment Amount"}</p>
@@ -339,9 +333,8 @@ export default function VerifyWalletPin() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`text-2xl font-black tracking-tight transition-colors duration-500 ${
-                    hasError ? "text-red-500 dark:text-red-400" : "text-[#D4725C]"
-                  }`}>
+                  <p className={`text-xl md:text-2xl font-black tracking-tight transition-colors duration-500 ${hasError ? "text-red-500 dark:text-red-400" : "text-[#D4725C]"
+                    }`}>
                     ₹{totalAmount.toFixed(2)}
                   </p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
@@ -357,25 +350,24 @@ export default function VerifyWalletPin() {
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-center mb-8"
+            className="text-center mb-4 md:mb-8"
           >
-            <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 border transition-all duration-500 ${
-              locked
-                ? "bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800"
-                : hasError
+            <div className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-3 md:mb-5 border transition-all duration-500 ${locked
+              ? "bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800"
+              : hasError
                 ? "bg-red-50 dark:bg-red-950/20 border-red-200/50 dark:border-red-800/40"
                 : processing
-                ? "bg-green-50 dark:bg-green-950/20 border-green-200/50 dark:border-green-800/40"
-                : "bg-gradient-to-br from-[#D4725C]/10 to-[#B85A4A]/10 dark:from-[#D4725C]/20 dark:to-[#B85A4A]/20 border-[#D4725C]/20 dark:border-[#D4725C]/30"
-            }`}>
+                  ? "bg-green-50 dark:bg-green-950/20 border-green-200/50 dark:border-green-800/40"
+                  : "bg-gradient-to-br from-[#D4725C]/10 to-[#B85A4A]/10 dark:from-[#D4725C]/20 dark:to-[#B85A4A]/20 border-[#D4725C]/20 dark:border-[#D4725C]/30"
+              }`}>
               <AnimatePresence mode="wait">
                 {locked ? (
                   <motion.div key="locked" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    <XCircle className="size-9 text-red-500 dark:text-red-400" />
+                    <XCircle className="size-7 md:size-9 text-red-500 dark:text-red-400" />
                   </motion.div>
                 ) : hasError ? (
                   <motion.div key="error" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    <AlertCircle className="size-9 text-red-500 dark:text-red-400" />
+                    <AlertCircle className="size-7 md:size-9 text-red-500 dark:text-red-400" />
                   </motion.div>
                 ) : processing ? (
                   <motion.div
@@ -384,44 +376,42 @@ export default function VerifyWalletPin() {
                     animate={{ scale: 1, rotate: 360 }}
                     transition={{ rotate: { duration: 1, repeat: Infinity, ease: "linear" } }}
                   >
-                    <Fingerprint className="size-9 text-green-500 dark:text-green-400" />
+                    <Fingerprint className="size-7 md:size-9 text-green-500 dark:text-green-400" />
                   </motion.div>
                 ) : (
                   <motion.div key="lock" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    <Lock className="size-9 text-[#D4725C]" />
+                    <Lock className="size-7 md:size-9 text-[#D4725C]" />
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            <h1 className={`text-2xl font-extrabold mb-2 transition-colors duration-500 ${
-              locked
-                ? "text-red-500 dark:text-red-400"
-                : hasError
+            <h1 className={`text-xl md:text-2xl font-extrabold mb-1 md:mb-2 transition-colors duration-500 ${locked
+              ? "text-red-500 dark:text-red-400"
+              : hasError
                 ? "text-red-600 dark:text-red-400"
                 : processing
-                ? "text-green-600 dark:text-green-400"
-                : "text-gray-900 dark:text-white"
-            }`}>
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-gray-900 dark:text-white"
+              }`}>
               {locked
                 ? "Account Locked"
                 : processing
-                ? mode === "cake" ? "Reserving Cake..." : "Placing Order..."
-                : hasError
-                ? "Incorrect PIN"
-                : "Enter Wallet PIN"
+                  ? mode === "cake" ? "Reserving Cake..." : "Placing Order..."
+                  : hasError
+                    ? "Incorrect PIN"
+                    : "Enter Wallet PIN"
               }
             </h1>
-            <p className={`text-sm transition-colors duration-500 ${
-              hasError || locked ? "text-red-400 dark:text-red-500" : "text-gray-500 dark:text-gray-400"
-            }`}>
+            <p className={`text-sm transition-colors duration-500 ${hasError || locked ? "text-red-400 dark:text-red-500" : "text-gray-500 dark:text-gray-400"
+              }`}>
               {locked
                 ? `Too many failed attempts. Retry in ${lockTimer}s`
                 : processing
-                ? "Please wait while we process your payment"
-                : hasError
-                ? "The PIN you entered is incorrect"
-                : "Enter your 4-digit PIN to confirm payment"
+                  ? "Please wait while we process your payment"
+                  : hasError
+                    ? "The PIN you entered is incorrect"
+                    : "Enter your 4-digit PIN to confirm payment"
               }
             </p>
           </motion.div>
@@ -431,7 +421,7 @@ export default function VerifyWalletPin() {
             initial={{ x: 0 }}
             animate={shake ? { x: [0, -14, 14, -10, 10, -5, 5, 0] } : { x: 0 }}
             transition={{ duration: 0.45 }}
-            className="flex items-center justify-center gap-5 mb-6"
+            className="flex items-center justify-center gap-4 md:gap-5 mb-4 md:mb-6"
           >
             {[0, 1, 2, 3].map((i) => {
               const digit = pin[i];
@@ -459,23 +449,22 @@ export default function VerifyWalletPin() {
                       borderColor: locked
                         ? isDark ? "rgba(239, 68, 68, 0.4)" : "rgba(239, 68, 68, 0.5)"
                         : hasError
-                        ? isDark ? "rgba(239, 68, 68, 0.5)" : "rgba(239, 68, 68, 0.6)"
-                        : digit
-                        ? "#D4725C"
-                        : isFocusable
-                        ? "rgba(212, 114, 92, 0.4)"
-                        : isDark ? "rgba(75, 85, 99, 0.5)" : "rgba(209, 213, 219, 1)",
+                          ? isDark ? "rgba(239, 68, 68, 0.5)" : "rgba(239, 68, 68, 0.6)"
+                          : digit
+                            ? "#D4725C"
+                            : isFocusable
+                              ? "rgba(212, 114, 92, 0.4)"
+                              : isDark ? "rgba(75, 85, 99, 0.5)" : "rgba(209, 213, 219, 1)",
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className={`w-16 h-16 md:w-[72px] md:h-[72px] rounded-2xl border-2 flex items-center justify-center transition-colors shadow-sm ${
-                      locked
-                        ? "bg-red-50/50 dark:bg-red-950/20"
-                        : hasError
+                    className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl border-2 flex items-center justify-center transition-colors shadow-sm ${locked
+                      ? "bg-red-50/50 dark:bg-red-950/20"
+                      : hasError
                         ? "bg-red-50/80 dark:bg-red-950/30"
                         : digit
-                        ? "bg-[#D4725C]/5 dark:bg-[#D4725C]/15"
-                        : "bg-white dark:bg-gray-900"
-                    }`}
+                          ? "bg-[#D4725C]/5 dark:bg-[#D4725C]/15"
+                          : "bg-white dark:bg-gray-900"
+                      }`}
                   >
                     <AnimatePresence mode="wait">
                       {digit ? (
@@ -486,9 +475,8 @@ export default function VerifyWalletPin() {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0, opacity: 0 }}
                             transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                            className={`text-2xl font-extrabold ${
-                              hasError || locked ? "text-red-500 dark:text-red-400" : "text-[#D4725C]"
-                            }`}
+                            className={`text-2xl font-extrabold ${hasError || locked ? "text-red-500 dark:text-red-400" : "text-[#D4725C]"
+                              }`}
                           >
                             {digit}
                           </motion.span>
@@ -499,9 +487,8 @@ export default function VerifyWalletPin() {
                             animate={{ scale: 1 }}
                             exit={{ scale: 0 }}
                             transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                            className={`w-4 h-4 rounded-full ${
-                              hasError || locked ? "bg-red-500 dark:bg-red-400" : "bg-[#D4725C]"
-                            }`}
+                            className={`w-4 h-4 rounded-full ${hasError || locked ? "bg-red-500 dark:bg-red-400" : "bg-[#D4725C]"
+                              }`}
                           />
                         )
                       ) : (
@@ -509,15 +496,14 @@ export default function VerifyWalletPin() {
                           key="empty"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className={`w-3 h-3 rounded-full ${
-                            locked
-                              ? "bg-red-200 dark:bg-red-800"
-                              : hasError
+                          className={`w-3 h-3 rounded-full ${locked
+                            ? "bg-red-200 dark:bg-red-800"
+                            : hasError
                               ? "bg-red-200 dark:bg-red-800/50"
                               : isFocusable
-                              ? "bg-[#D4725C]/20 dark:bg-[#D4725C]/30"
-                              : "bg-gray-200 dark:bg-gray-700"
-                          }`}
+                                ? "bg-[#D4725C]/20 dark:bg-[#D4725C]/30"
+                                : "bg-gray-200 dark:bg-gray-700"
+                            }`}
                         />
                       )}
                     </AnimatePresence>
@@ -528,7 +514,7 @@ export default function VerifyWalletPin() {
           </motion.div>
 
           {/* Error / Attempts message */}
-          <div className="h-14 flex flex-col items-center justify-center mb-2">
+          <div className="h-12 md:h-14 flex flex-col items-center justify-center mb-1 md:mb-2">
             <AnimatePresence mode="wait">
               {(hasError && !locked) && (
                 <motion.div
@@ -586,11 +572,10 @@ export default function VerifyWalletPin() {
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className={`h-1 w-8 rounded-full transition-all duration-300 ${
-                          filledCount >= i
-                            ? "bg-[#D4725C]"
-                            : "bg-gray-200 dark:bg-gray-800"
-                        }`}
+                        className={`h-1 w-8 rounded-full transition-all duration-300 ${filledCount >= i
+                          ? "bg-[#D4725C]"
+                          : "bg-gray-200 dark:bg-gray-800"
+                          }`}
                       />
                     ))}
                   </div>
@@ -615,21 +600,20 @@ export default function VerifyWalletPin() {
             onClick={handleConfirm}
             disabled={!isFilled || locked || processing}
             whileTap={isFilled && !locked && !processing ? { scale: 0.97 } : {}}
-            className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg ${
-              processing
-                ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-green-200 dark:shadow-green-900/30 cursor-wait"
-                : isFilled && !locked
+            className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg transition-all duration-300 shadow-lg ${processing
+              ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-green-200 dark:shadow-green-900/30 cursor-wait"
+              : isFilled && !locked
                 ? "bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.01]"
                 : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none"
-            }`}
+              }`}
           >
             {processing
               ? "Processing..."
               : locked
-              ? `Locked (${lockTimer}s)`
-              : mode === "cake"
-              ? `Reserve & Pay · ₹${totalAmount.toFixed(2)}`
-              : `Confirm Payment · ₹${totalAmount.toFixed(2)}`
+                ? `Locked (${lockTimer}s)`
+                : mode === "cake"
+                  ? `Reserve & Pay · ₹${totalAmount.toFixed(2)}`
+                  : `Confirm Payment · ₹${totalAmount.toFixed(2)}`
             }
           </motion.button>
 
@@ -646,26 +630,23 @@ export default function VerifyWalletPin() {
           )} */}
 
           {/* Security note */}
-          <div className={`mt-6 flex items-start gap-2.5 backdrop-blur-md rounded-xl p-3.5 border transition-colors duration-500 ${
-            hasError || locked
-              ? "bg-red-50/60 dark:bg-red-950/20 border-red-100 dark:border-red-900/40"
-              : "bg-white/60 dark:bg-gray-900/60 border-gray-100 dark:border-gray-800"
-          }`}>
-            <ShieldCheck className={`size-4 mt-0.5 shrink-0 transition-colors duration-500 ${
-              hasError || locked
-                ? "text-red-400 dark:text-red-500"
-                : "text-green-500 dark:text-green-400"
-            }`} />
-            <p className={`text-xs leading-relaxed transition-colors duration-500 ${
-              hasError || locked
-                ? "text-red-600/80 dark:text-red-400/80"
-                : "text-gray-500 dark:text-gray-400"
+          <div className={`mt-3 md:mt-6 flex items-start gap-2 md:gap-2.5 backdrop-blur-md rounded-xl p-2.5 md:p-3.5 border transition-colors duration-500 ${hasError || locked
+            ? "bg-red-50/60 dark:bg-red-950/20 border-red-100 dark:border-red-900/40"
+            : "bg-white/60 dark:bg-gray-900/60 border-gray-100 dark:border-gray-800"
             }`}>
+            <ShieldCheck className={`size-3.5 md:size-4 mt-0.5 shrink-0 transition-colors duration-500 ${hasError || locked
+              ? "text-red-400 dark:text-red-500"
+              : "text-green-500 dark:text-green-400"
+              }`} />
+            <p className={`text-[10px] md:text-xs leading-relaxed transition-colors duration-500 ${hasError || locked
+              ? "text-red-600/80 dark:text-red-400/80"
+              : "text-gray-500 dark:text-gray-400"
+              }`}>
               {locked
                 ? `Your wallet is temporarily locked for security. You can retry after ${lockTimer} seconds.`
                 : hasError
-                ? `Incorrect PIN entered. You have ${MAX_ATTEMPTS - attempts} attempt${MAX_ATTEMPTS - attempts === 1 ? "" : "s"} left before temporary lock.`
-                : "Your PIN is verified securely on the server. It is never stored on your device."
+                  ? `Incorrect PIN entered. You have ${MAX_ATTEMPTS - attempts} attempt${MAX_ATTEMPTS - attempts === 1 ? "" : "s"} left before temporary lock.`
+                  : "Your PIN is verified securely on the server. It is never stored on your device."
               }
             </p>
           </div>
@@ -673,9 +654,9 @@ export default function VerifyWalletPin() {
       </div>
 
       {/* Numpad */}
-      <div className="relative z-10 px-4 pb-8 pt-4 md:pb-12">
+      <div className="relative z-10 px-4 pb-4 pt-2 md:pb-8 md:pt-4">
         <div className="max-w-xs mx-auto">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 md:gap-3">
             {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"].map(
               (key) => {
                 if (key === "") return <div key="empty" />;
@@ -685,15 +666,13 @@ export default function VerifyWalletPin() {
                     key={key}
                     onClick={() => handleNumpadPress(key)}
                     disabled={isDisabled}
-                    className={`h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95 ${
-                      isDisabled
-                        ? "opacity-40 cursor-not-allowed"
-                        : ""
-                    } ${
-                      key === "delete"
+                    className={`h-12 md:h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95 ${isDisabled
+                      ? "opacity-40 cursor-not-allowed"
+                      : ""
+                      } ${key === "delete"
                         ? "bg-transparent text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400"
                         : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 shadow-sm hover:shadow-md font-bold text-xl"
-                    }`}
+                      }`}
                   >
                     {key === "delete" ? (
                       <Delete className="size-5" />

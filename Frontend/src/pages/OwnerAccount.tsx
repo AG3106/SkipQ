@@ -18,7 +18,7 @@ export default function OwnerAccount() {
   useEffect(() => {
     getManagerDashboard()
       .then((data) => setCanteenInfo({ id: data.canteen.id, name: data.canteen.name, location: data.canteen.location, imageUrl: data.canteen.imageUrl ?? null }))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
@@ -84,58 +84,58 @@ export default function OwnerAccount() {
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden mb-8 hover:shadow-lg transition-shadow">
           {/* Header Banner — Canteen Cover Photo */}
           <div className="h-40 relative bg-gradient-to-r from-[#D4725C] to-[#B85A4A] overflow-hidden group">
-             {canteenInfo?.imageUrl ? (
-               <img
-                 src={buildFileUrl(canteenInfo.imageUrl) ?? ""}
-                 alt="Canteen cover"
-                 className="w-full h-full object-cover"
-               />
-             ) : (
-               <>
-                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
-                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/5 rounded-full blur-2xl -ml-10 -mb-10" />
-               </>
-             )}
-             {/* Change Photo Overlay */}
-             <label className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-colors cursor-pointer">
-               <input
-                 type="file"
-                 accept="image/*"
-                 onChange={handleImageChange}
-                 className="hidden"
-                 disabled={uploadingImage}
-               />
-               <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 text-white font-bold text-sm bg-black/50 px-4 py-2 rounded-xl">
-                 {uploadingImage ? (
-                   <><Loader2 className="size-4 animate-spin" /> Uploading...</>
-                 ) : (
-                   <><Camera className="size-4" /> Change Cover Photo</>
-                 )}
-               </span>
-             </label>
+            {canteenInfo?.imageUrl ? (
+              <img
+                src={buildFileUrl(canteenInfo.imageUrl) ?? ""}
+                alt="Canteen cover"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/5 rounded-full blur-2xl -ml-10 -mb-10" />
+              </>
+            )}
+            {/* Change Photo Overlay */}
+            <label className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-colors cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                disabled={uploadingImage}
+              />
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 text-white font-bold text-sm bg-black/50 px-4 py-2 rounded-xl">
+                {uploadingImage ? (
+                  <><Loader2 className="size-4 animate-spin" /> Uploading...</>
+                ) : (
+                  <><Camera className="size-4" /> Change Cover Photo</>
+                )}
+              </span>
+            </label>
           </div>
 
           {/* Profile Info */}
           <div className="px-8 pb-8 relative">
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between -mt-12 mb-8 gap-4">
-               <div className="flex items-end gap-6">
-                  <div className="w-32 h-32 bg-white dark:bg-gray-900 rounded-full p-1 shadow-lg shadow-gray-200 dark:shadow-black/20">
-                    <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center overflow-hidden border border-gray-100 dark:border-gray-700">
-                      <User className="size-12 text-gray-400 dark:text-gray-600" />
-                    </div>
+              <div className="flex items-end gap-6">
+                <div className="w-32 h-32 bg-white dark:bg-gray-900 rounded-full p-1 shadow-lg shadow-gray-200 dark:shadow-black/20">
+                  <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <User className="size-12 text-gray-400 dark:text-gray-600" />
                   </div>
-                  <div className="mb-2">
-                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-1">{user.email.split("@")[0]}</h2>
-                    <div className="flex items-center gap-2">
-                       <span className="bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] dark:text-orange-400 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
-                         Canteen Manager
-                       </span>
-                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                         Member since {new Date(user.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
-                       </span>
-                    </div>
+                </div>
+                <div className="mb-2">
+                  <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-1">{user.email.split("@")[0]}</h2>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] dark:text-orange-400 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
+                      Canteen Manager
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Member since {new Date(user.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
+                    </span>
                   </div>
-               </div>
+                </div>
+              </div>
             </div>
 
             {/* Details Grid */}
@@ -215,8 +215,8 @@ export default function OwnerAccount() {
 
         {/* Settings Cards */}
         {/* <div className="grid md:grid-cols-2 gap-6 mb-8"> */}
-          {/* Security */}
-          {/* <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
+        {/* Security */}
+        {/* <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
             <div className="w-12 h-12 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-500 transition-colors">
                <Shield className="size-6 text-purple-600 dark:text-purple-400 group-hover:text-white transition-colors" />
             </div>
@@ -227,8 +227,8 @@ export default function OwnerAccount() {
             </div>
           </div> */}
 
-          {/* Notifications */}
-          {/* <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
+        {/* Notifications */}
+        {/* <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
             <div className="w-12 h-12 bg-yellow-50 dark:bg-yellow-950/30 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-yellow-500 transition-colors">
                <Bell className="size-6 text-yellow-600 dark:text-yellow-400 group-hover:text-white transition-colors" />
             </div>
@@ -238,7 +238,7 @@ export default function OwnerAccount() {
                Manage Notifications <ChevronRight className="size-4 ml-1" />
             </div>
           </div> */}
-        </div>
+        {/* </div> */}
 
         {/* Logout Button */}
         <div className="bg-red-50/50 dark:bg-red-950/30 rounded-3xl border border-red-100 dark:border-red-800 p-8 flex flex-col md:flex-row items-center justify-between gap-6">

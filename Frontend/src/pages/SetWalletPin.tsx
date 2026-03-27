@@ -230,19 +230,19 @@ export default function SetWalletPin() {
       </div>
 
       {/* Top bar */}
-      <div className="relative z-10 px-4 pt-6 pb-2">
+      <div className="relative z-10 px-4 pt-3 pb-1 md:pt-6 md:pb-2">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <button
             onClick={handleBack}
-            className={`w-10 h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm ${isFromRegister && step === "set" ? "opacity-30 cursor-not-allowed" : ""}`}
+            className={`w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm ${isFromRegister && step === "set" ? "opacity-30 cursor-not-allowed" : ""}`}
             disabled={isFromRegister && step === "set"}
           >
-            <ArrowLeft className="size-5" />
+            <ArrowLeft className="size-4 md:size-5" />
           </button>
 
           {/* Step indicator */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <span className="text-[10px] md:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               Step {step === "set" ? "1" : "2"} of 2
             </span>
           </div>
@@ -250,15 +250,15 @@ export default function SetWalletPin() {
           {/* Toggle PIN visibility */}
           <button
             onClick={() => setShowPin(!showPin)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm"
+            className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#D4725C] hover:text-[#D4725C] transition-all shadow-sm"
             aria-label={showPin ? "Hide PIN" : "Show PIN"}
           >
-            {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {showPin ? <EyeOff className="size-3.5 md:size-4" /> : <Eye className="size-3.5 md:size-4" />}
           </button>
         </div>
 
         {/* Progress bar */}
-        <div className="max-w-md mx-auto mt-4">
+        <div className="max-w-md mx-auto mt-2 md:mt-4">
           <div className="h-1 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-gradient-to-r from-[#D4725C] to-[#B85A4A] rounded-full"
@@ -279,17 +279,17 @@ export default function SetWalletPin() {
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="text-center mb-8"
+            className="text-center mb-4 md:mb-8"
           >
-            <div className="w-20 h-20 bg-gradient-to-br from-[#D4725C]/10 to-[#B85A4A]/10 dark:from-[#D4725C]/20 dark:to-[#B85A4A]/20 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[#D4725C]/20 dark:border-[#D4725C]/30">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#D4725C]/10 to-[#B85A4A]/10 dark:from-[#D4725C]/20 dark:to-[#B85A4A]/20 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-3 md:mb-6 border border-[#D4725C]/20 dark:border-[#D4725C]/30">
               {step === "set" ? (
-                <Lock className="size-9 text-[#D4725C]" />
+                <Lock className="size-7 md:size-9 text-[#D4725C]" />
               ) : (
-                <ShieldCheck className="size-9 text-[#D4725C]" />
+                <ShieldCheck className="size-7 md:size-9 text-[#D4725C]" />
               )}
             </div>
 
-            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white mb-1 md:mb-2">
               {step === "set" ? "Set Wallet PIN" : "Confirm Wallet PIN"}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -306,7 +306,7 @@ export default function SetWalletPin() {
             initial={{ x: 0 }}
             animate={shake ? { x: [0, -12, 12, -8, 8, -4, 4, 0] } : { x: 0 }}
             transition={{ duration: 0.4 }}
-            className="flex items-center justify-center gap-5 mb-8"
+            className="flex items-center justify-center gap-4 md:gap-5 mb-5 md:mb-8"
           >
             {[0, 1, 2, 3].map((i) => {
               const digit = currentPin[i];
@@ -339,9 +339,9 @@ export default function SetWalletPin() {
                           : isDark ? "rgba(75, 85, 99, 0.5)" : "rgba(209, 213, 219, 1)",
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className={`w-16 h-16 md:w-[72px] md:h-[72px] rounded-2xl border-2 flex items-center justify-center transition-colors ${digit
-                        ? "bg-[#D4725C]/5 dark:bg-[#D4725C]/15"
-                        : "bg-white dark:bg-gray-900"
+                    className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl border-2 flex items-center justify-center transition-colors ${digit
+                      ? "bg-[#D4725C]/5 dark:bg-[#D4725C]/15"
+                      : "bg-white dark:bg-gray-900"
                       } shadow-sm`}
                   >
                     <AnimatePresence mode="wait">
@@ -373,8 +373,8 @@ export default function SetWalletPin() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           className={`w-3 h-3 rounded-full ${isFocusable
-                              ? "bg-[#D4725C]/20 dark:bg-[#D4725C]/30"
-                              : "bg-gray-200 dark:bg-gray-700"
+                            ? "bg-[#D4725C]/20 dark:bg-[#D4725C]/30"
+                            : "bg-gray-200 dark:bg-gray-700"
                             }`}
                         />
                       )}
@@ -402,17 +402,17 @@ export default function SetWalletPin() {
 
           {/* Strength hints (only on set step) */}
           {step === "set" && (
-            <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="flex items-center justify-center gap-3 mb-5 md:mb-8">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
                   className={`h-1 w-8 rounded-full transition-all duration-300 ${filledCount >= i
-                      ? filledCount >= 4
-                        ? "bg-green-500"
-                        : filledCount >= 2
-                          ? "bg-yellow-500"
-                          : "bg-[#D4725C]"
-                      : "bg-gray-200 dark:bg-gray-800"
+                    ? filledCount >= 4
+                      ? "bg-green-500"
+                      : filledCount >= 2
+                        ? "bg-yellow-500"
+                        : "bg-[#D4725C]"
+                    : "bg-gray-200 dark:bg-gray-800"
                     }`}
                 />
               ))}
@@ -424,18 +424,18 @@ export default function SetWalletPin() {
             onClick={handleContinue}
             disabled={!isFilled}
             whileTap={isFilled ? { scale: 0.97 } : {}}
-            className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg ${isFilled
-                ? "bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.01]"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none"
+            className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg transition-all duration-300 shadow-lg ${isFilled
+              ? "bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.01]"
+              : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none"
               }`}
           >
             {step === "set" ? "Continue" : "Set PIN"}
           </motion.button>
 
           {/* Security note */}
-          <div className="mt-6 flex items-start gap-2.5 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-xl p-3.5 border border-gray-100 dark:border-gray-800">
+          <div className="mt-3 md:mt-6 flex items-start gap-2 md:gap-2.5 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-xl p-2.5 md:p-3.5 border border-gray-100 dark:border-gray-800">
             <ShieldCheck className="size-4 text-green-500 dark:text-green-400 mt-0.5 shrink-0" />
-            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+            <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
               Your PIN is encrypted and stored securely. Never share it with anyone. You'll need this PIN to authorize wallet transactions.
             </p>
           </div>
@@ -443,9 +443,9 @@ export default function SetWalletPin() {
       </div>
 
       {/* Numpad for mobile */}
-      <div className="relative z-10 px-4 pb-8 pt-4 md:pb-12">
+      <div className="relative z-10 px-4 pb-4 pt-2 md:pb-8 md:pt-4">
         <div className="max-w-xs mx-auto">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 md:gap-3">
             {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"].map(
               (key) => {
                 if (key === "") return <div key="empty" />;
@@ -453,9 +453,9 @@ export default function SetWalletPin() {
                   <button
                     key={key}
                     onClick={() => handleNumpadPress(key)}
-                    className={`h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95 ${key === "delete"
-                        ? "bg-transparent text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400"
-                        : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 shadow-sm hover:shadow-md font-bold text-xl"
+                    className={`h-12 md:h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95 ${key === "delete"
+                      ? "bg-transparent text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400"
+                      : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 shadow-sm hover:shadow-md font-bold text-xl"
                       }`}
                   >
                     {key === "delete" ? (
