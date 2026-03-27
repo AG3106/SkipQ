@@ -116,7 +116,7 @@ export default function CakeManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-pink-100/30 dark:bg-pink-950/15 rounded-full blur-3xl" />

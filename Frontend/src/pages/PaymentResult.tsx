@@ -37,7 +37,7 @@ export default function PaymentResult() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div

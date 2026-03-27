@@ -221,7 +221,7 @@ export default function MenuManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="size-10 text-[#D4725C] animate-spin" />
           <p className="text-gray-500 dark:text-gray-400 font-medium">Loading menu...</p>
@@ -232,7 +232,7 @@ export default function MenuManagement() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center max-w-md">
           <div className="w-16 h-16 bg-red-50 dark:bg-red-950 rounded-full flex items-center justify-center mx-auto mb-4">
             <X className="size-8 text-red-500" />
@@ -254,7 +254,7 @@ export default function MenuManagement() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -z-10" />

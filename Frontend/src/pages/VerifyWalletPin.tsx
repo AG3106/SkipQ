@@ -253,7 +253,7 @@ export default function VerifyWalletPin() {
   if (mode === "cake" ? !cakeData : (items.length === 0 || !customerName)) return null;
 
   return (
-    <div className="h-[100dvh] bg-[#FDFCFB] dark:bg-gray-950 flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-transparent dark:bg-gray-950 flex flex-col overflow-hidden">
       {/* Background ambience */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div

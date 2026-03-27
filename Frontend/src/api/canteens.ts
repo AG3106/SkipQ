@@ -147,8 +147,8 @@ export async function getManagerDishAnalytics(): Promise<{
     canteenName: string;
     period: string;
     dishFrequency: DishFrequency[];
-    top5ByFrequency: DishFrequency[];
-    top5ByRevenue: DishRevenue[];
+    topByFrequency: DishFrequency[];
+    topByRevenue: DishRevenue[];
 }> {
     return api.get("/api/canteens/manager/dish-analytics/");
 }

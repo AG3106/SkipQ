@@ -47,14 +47,14 @@ export default function OwnerAccount() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
         <Loader2 className="size-10 animate-spin text-[#D4725C]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -z-10" />
@@ -196,7 +196,7 @@ export default function OwnerAccount() {
             </div>
 
             {/* Manager ID Badge */}
-            {managerProfile?.managerId && (
+            {/* {managerProfile?.managerId && (
               <div className="mt-8 bg-gray-50/80 dark:bg-gray-950/80 rounded-xl p-4 border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-between">
                 <div>
                    <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">Manager ID</p>
@@ -209,14 +209,14 @@ export default function OwnerAccount() {
                   Copy ID
                 </button>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
         {/* Settings Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        {/* <div className="grid md:grid-cols-2 gap-6 mb-8"> */}
           {/* Security */}
-          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
+          {/* <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
             <div className="w-12 h-12 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-500 transition-colors">
                <Shield className="size-6 text-purple-600 dark:text-purple-400 group-hover:text-white transition-colors" />
             </div>
@@ -225,10 +225,10 @@ export default function OwnerAccount() {
             <div className="flex items-center text-purple-600 dark:text-purple-400 font-bold text-sm">
                Change Password <ChevronRight className="size-4 ml-1" />
             </div>
-          </div>
+          </div> */}
 
           {/* Notifications */}
-          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
+          {/* <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all group cursor-pointer">
             <div className="w-12 h-12 bg-yellow-50 dark:bg-yellow-950/30 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-yellow-500 transition-colors">
                <Bell className="size-6 text-yellow-600 dark:text-yellow-400 group-hover:text-white transition-colors" />
             </div>
@@ -237,7 +237,7 @@ export default function OwnerAccount() {
             <div className="flex items-center text-yellow-600 dark:text-yellow-400 font-bold text-sm">
                Manage Notifications <ChevronRight className="size-4 ml-1" />
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Logout Button */}

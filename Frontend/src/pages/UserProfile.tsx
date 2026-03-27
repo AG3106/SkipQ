@@ -124,7 +124,7 @@ export default function UserProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
       {/* Background */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />

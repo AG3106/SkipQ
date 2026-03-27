@@ -213,7 +213,7 @@ export default function CakeReservation() {
   const showStep2 = availabilityResult?.available === true;
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-pink-100/30 dark:bg-pink-950/15 rounded-full blur-3xl" />

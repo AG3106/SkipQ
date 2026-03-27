@@ -231,6 +231,18 @@ def update_canteen_timings(request, canteen_id):
     if opening_time is None and closing_time is None:
         return Response({"error": "Provide opening_time and/or closing_time"}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Parse string times into datetime.time objects so model comparisons work
+    from datetime import time as dt_time
+    try:
+        if opening_time is not None and isinstance(opening_time, str):
+            parts = opening_time.split(":")
+            opening_time = dt_time(int(parts[0]), int(parts[1]), int(parts[2]) if len(parts) > 2 else 0)
+        if closing_time is not None and isinstance(closing_time, str):
+            parts = closing_time.split(":")
+            closing_time = dt_time(int(parts[0]), int(parts[1]), int(parts[2]) if len(parts) > 2 else 0)
+    except (ValueError, IndexError):
+        return Response({"error": "Invalid time format. Use HH:MM or HH:MM:SS"}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
         canteen = canteen_service.update_canteen_timings(canteen, opening_time, closing_time)
         return Response(CanteenSerializer(canteen).data)
@@ -716,8 +728,8 @@ def manager_dish_analytics(request):
         "canteen_name": canteen.name,
         "period": "last_30_days",
         "dish_frequency": dish_frequency,
-        "top_5_by_frequency": top_by_frequency,
-        "top_5_by_revenue": top_by_revenue,
+        "top_by_frequency": top_by_frequency,
+        "top_by_revenue": top_by_revenue,
     })
 
 

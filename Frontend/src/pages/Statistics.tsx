@@ -45,7 +45,7 @@ export default function Statistics() {
 
         setCanteenName(dashboard.canteen.name);
         setMonthlyData(analytics.monthlyBreakdown);
-        setTopDishes(dishAnalytics.top5ByRevenue);
+        setTopDishes(dishAnalytics.topByRevenue ?? []);
 
         // Compute totals from monthly breakdown
         let orders = 0;
@@ -83,14 +83,14 @@ export default function Statistics() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-[#D4725C]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />

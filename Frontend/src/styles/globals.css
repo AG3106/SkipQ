@@ -5,6 +5,7 @@
   *::-webkit-scrollbar {
     display: none;
   }
+
   * {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -140,24 +141,35 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-
-  #root {
-    position: relative;
-    z-index: 1;
-  }
 }
 
-/* Doodle food pattern background — light mode only, non-auth pages */
+/* Doodle food pattern background — non-auth pages, both light & dark modes */
+body.app-page {
+  isolation: isolate;
+}
+
 :root:not(.dark) body.app-page::before {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   background-image: url('../assets/doodle_food.png');
   background-size: 600px;
   background-repeat: repeat;
   filter: invert(1) sepia(1) saturate(4) hue-rotate(350deg);
   opacity: 0.08;
+  pointer-events: none;
+}
+
+.dark body.app-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('../assets/doodle_food.png');
+  background-size: 600px;
+  background-repeat: repeat;
+  opacity: 0.06;
   pointer-events: none;
 }
 
@@ -213,4 +225,5 @@
 html {
   font-size: var(--font-size);
 }
+
 /* end of file */
