@@ -213,7 +213,7 @@ export default function CakeReservation() {
   const showStep2 = availabilityResult?.available === true;
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-pink-100/30 dark:bg-pink-950/15 rounded-full blur-3xl" />
@@ -502,7 +502,7 @@ export default function CakeReservation() {
                         <div className="border-t border-dashed border-gray-200 dark:border-gray-700 my-5" />
 
                         {/* Order Summary */}
-                        <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-2xl p-4 mb-5 border border-gray-100/50 dark:border-gray-800">
+                        <div className="bg-gray-50/80/50 rounded-2xl p-4 mb-5 border border-gray-100/50 dark:border-gray-800">
                           <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider mb-3">Order Summary</p>
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
@@ -631,7 +631,7 @@ export default function CakeReservation() {
                       </div>
 
                       {/* Details */}
-                      <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
+                      <div className="bg-gray-50/80/50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Calendar className="size-3" /> Pickup</span>
                           <span className="font-bold text-gray-900 dark:text-white">{formatDate(r.pickupDate)} at {r.pickupTime}</span>

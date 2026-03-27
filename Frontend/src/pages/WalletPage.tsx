@@ -37,7 +37,7 @@ export default function WalletPage() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[15%] right-[-10%] w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -135,7 +135,7 @@ export default function WalletPage() {
                 value={addAmount}
                 onChange={(e) => setAddAmount(e.target.value)}
                 placeholder="Enter amount"
-                className="w-full pl-10 pr-4 py-3.5 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white text-lg font-bold placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full pl-10 pr-4 py-3.5 bg-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white text-lg font-bold placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
 

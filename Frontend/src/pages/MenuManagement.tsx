@@ -221,7 +221,7 @@ export default function MenuManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="size-10 text-[#D4725C] animate-spin" />
           <p className="text-gray-500 dark:text-gray-400 font-medium">Loading menu...</p>
@@ -232,7 +232,7 @@ export default function MenuManagement() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center max-w-md">
           <div className="w-16 h-16 bg-red-50 dark:bg-red-950 rounded-full flex items-center justify-center mx-auto mb-4">
             <X className="size-8 text-red-500" />
@@ -254,7 +254,7 @@ export default function MenuManagement() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -z-10" />
@@ -304,7 +304,7 @@ export default function MenuManagement() {
                 placeholder="Search menu items..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
 
@@ -313,7 +313,7 @@ export default function MenuManagement() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="pl-12 pr-10 py-3.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] appearance-none bg-white dark:bg-gray-950 min-w-[220px] transition-all text-gray-900 dark:text-white"
+                className="pl-12 pr-10 py-3.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] appearance-none bg-white min-w-[220px] transition-all text-gray-900 dark:text-white"
               >
                 <option value="all">All Categories</option>
                 {CATEGORIES.map((cat) => (
@@ -406,14 +406,14 @@ export default function MenuManagement() {
                   <div className="flex gap-3">
                     <Button
                       onClick={() => handleEdit(item)}
-                      className="flex-1 bg-white dark:bg-gray-950 border-2 border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+                      className="flex-1 bg-white border-2 border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
                     >
                       <Edit className="size-4" />
                       Edit
                     </Button>
                     <Button
                       onClick={() => handleDelete(item.id)}
-                      className="flex-1 bg-white dark:bg-gray-950 border-2 border-gray-100 dark:border-gray-700 hover:border-red-100 dark:hover:border-red-800 text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+                      className="flex-1 bg-white border-2 border-gray-100 dark:border-gray-700 hover:border-red-100 dark:hover:border-red-800 text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
                     >
                       <Trash2 className="size-4" />
                       Delete
@@ -464,7 +464,7 @@ export default function MenuManagement() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                     placeholder="Enter dish name"
                   />
                 </div>
@@ -479,7 +479,7 @@ export default function MenuManagement() {
                     onChange={handleInputChange}
                     required
                     rows={3}
-                    className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                     placeholder="Enter description"
                   />
                 </div>
@@ -497,7 +497,7 @@ export default function MenuManagement() {
                       required
                       min="0"
                       step="0.01"
-                      className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                       placeholder="0.00"
                     />
                   </div>
@@ -527,7 +527,7 @@ export default function MenuManagement() {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all appearance-none text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all appearance-none text-gray-900 dark:text-white"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat.id} value={cat.id}>
@@ -584,7 +584,7 @@ export default function MenuManagement() {
                     type="button"
                     onClick={resetForm}
                     disabled={submitting}
-                    className="flex-1 bg-white dark:bg-gray-950 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-6 rounded-xl font-bold transition-all"
+                    className="flex-1 bg-white border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-6 rounded-xl font-bold transition-all"
                   >
                     Cancel
                   </Button>

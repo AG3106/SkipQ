@@ -324,7 +324,7 @@ export default function OwnerDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -516,7 +516,7 @@ export default function OwnerDashboard() {
                       </button>
                     </div>
 
-                    <div className="bg-gray-50 dark:bg-gray-950 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
+                    <div className="bg-gray-50 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between mb-2 text-sm">
                           <span className="font-medium text-gray-700 dark:text-gray-300">
@@ -545,7 +545,7 @@ export default function OwnerDashboard() {
                       <Button
                         onClick={() => { setRejectingOrderId(order.id); setOrderRejectReason(""); }}
                         disabled={actionLoading === order.id}
-                        className="flex-1 bg-white dark:bg-gray-950 border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-6 rounded-xl font-bold"
+                        className="flex-1 bg-white border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-6 rounded-xl font-bold"
                       >
                         <X className="size-5 mr-2" />
                         Reject
@@ -599,7 +599,7 @@ export default function OwnerDashboard() {
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 dark:bg-gray-950 rounded-xl p-4 mb-4 border border-gray-100 dark:border-gray-800">
+                    <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-100 dark:border-gray-800">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between mb-1 text-sm">
                           <span className="text-gray-700 dark:text-gray-300">
@@ -699,7 +699,7 @@ export default function OwnerDashboard() {
                     )}
 
                     {/* Items */}
-                    <div className="bg-gray-50 dark:bg-gray-950 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
+                    <div className="bg-gray-50 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between mb-2 text-sm last:mb-0">
                           <span className="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
@@ -729,7 +729,7 @@ export default function OwnerDashboard() {
                       <Button
                         onClick={() => { setRejectingCancelId(order.id); setCancelRejectReason(""); }}
                         disabled={actionLoading === order.id}
-                        className="flex-1 bg-white dark:bg-gray-950 border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-6 rounded-xl font-bold"
+                        className="flex-1 bg-white border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-6 rounded-xl font-bold"
                       >
                         <Ban className="size-5 mr-2" />
                         Reject
@@ -825,7 +825,7 @@ export default function OwnerDashboard() {
                             </div>
 
                             {/* Details */}
-                            <div className="bg-gray-50 dark:bg-gray-950 rounded-xl p-4 mb-5 border border-gray-100 dark:border-gray-800 space-y-2 text-sm">
+                            <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 dark:border-gray-800 space-y-2 text-sm">
                               <div className="flex justify-between">
                                 <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Palette className="size-3" /> Flavor</span>
                                 <span className="font-bold text-gray-900 dark:text-white">{request.flavor}</span>
@@ -860,7 +860,7 @@ export default function OwnerDashboard() {
                               <Button
                                 onClick={() => { setRejectingCakeId(request.id); setCakeRejectionReason(""); }}
                                 disabled={cakeActionLoading === request.id}
-                                className="flex-1 bg-white dark:bg-gray-950 border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-5 rounded-xl font-bold"
+                                className="flex-1 bg-white border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-5 rounded-xl font-bold"
                               >
                                 <X className="size-5 mr-2" />
                                 Reject
@@ -918,7 +918,7 @@ export default function OwnerDashboard() {
                                 </div>
 
                                 {(request.design || request.message) && (
-                                  <div className="bg-gray-50 dark:bg-gray-950 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
+                                  <div className="bg-gray-50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
                                     {request.design && (
                                       <div className="flex justify-between">
                                         <span className="text-gray-500 dark:text-gray-400">Design</span>
@@ -1024,7 +1024,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">#{selectedOrder.id}</p>
@@ -1058,7 +1058,7 @@ export default function OwnerDashboard() {
 
                 <div>
                   <p className="text-gray-900 dark:text-white font-bold mb-3">Items Ordered</p>
-                  <div className="bg-gray-50 dark:bg-gray-950 rounded-2xl p-5">
+                  <div className="bg-gray-50 rounded-2xl p-5">
                     {selectedOrder.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between mb-3 text-sm last:mb-0">
                         <span className="text-gray-700 dark:text-gray-300">
@@ -1089,7 +1089,7 @@ export default function OwnerDashboard() {
                   </Button>
                   <Button
                     onClick={() => { setRejectingOrderId(selectedOrder.id); setOrderRejectReason(""); setSelectedOrder(null); }}
-                    className="flex-1 bg-white dark:bg-gray-950 border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-6 rounded-xl font-bold"
+                    className="flex-1 bg-white border-2 border-red-100 dark:border-red-800 hover:border-red-200 dark:hover:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-6 rounded-xl font-bold"
                   >
                     Reject
                   </Button>
@@ -1116,7 +1116,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">#{rejectingOrderId}</p>
@@ -1145,7 +1145,7 @@ export default function OwnerDashboard() {
                 </Button>
                 <Button
                   onClick={() => setRejectingOrderId(null)}
-                  className="flex-1 bg-white dark:bg-gray-950 border-2 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/30 py-6 rounded-xl font-bold"
+                  className="flex-1 bg-white border-2 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/30 py-6 rounded-xl font-bold"
                 >
                   Cancel
                 </Button>
@@ -1171,7 +1171,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">#{rejectingCancelId}</p>
@@ -1200,7 +1200,7 @@ export default function OwnerDashboard() {
                 </Button>
                 <Button
                   onClick={() => setRejectingCancelId(null)}
-                  className="flex-1 bg-white dark:bg-gray-950 border-2 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/30 py-6 rounded-xl font-bold"
+                  className="flex-1 bg-white border-2 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/30 py-6 rounded-xl font-bold"
                 >
                   Cancel
                 </Button>
@@ -1226,7 +1226,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">Cake Order #{rejectingCakeId}</p>
@@ -1255,7 +1255,7 @@ export default function OwnerDashboard() {
                 </Button>
                 <Button
                   onClick={() => setRejectingCakeId(null)}
-                  className="flex-1 bg-white dark:bg-gray-950 border-2 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/30 py-6 rounded-xl font-bold"
+                  className="flex-1 bg-white border-2 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-950/30 py-6 rounded-xl font-bold"
                 >
                   Cancel
                 </Button>

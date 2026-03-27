@@ -17,11 +17,11 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 flex flex-col">
+      <div className="min-h-screen bg-transparent flex flex-col">
         <div className="flex-1 container mx-auto px-4 flex items-center justify-center py-20">
           <div className="max-w-md w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl p-10 shadow-xl border border-white/20 dark:border-gray-700/20 text-center">
             <div className="w-24 h-24 bg-orange-50 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-               <ShoppingBag className="size-10 text-[#D4725C] dark:text-orange-400 opacity-50" />
+              <ShoppingBag className="size-10 text-[#D4725C] dark:text-orange-400 opacity-50" />
             </div>
             <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Your cart is empty</h1>
             <p className="text-gray-500 dark:text-gray-400 mb-8">
@@ -39,11 +39,11 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
-         <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
-         <div className="absolute bottom-[10%] left-[-10%] w-[500px] h-[500px] bg-[#B85A4A]/5 dark:bg-[#B85A4A]/10 rounded-full blur-3xl" />
+        <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-[10%] left-[-10%] w-[500px] h-[500px] bg-[#B85A4A]/5 dark:bg-[#B85A4A]/10 rounded-full blur-3xl" />
       </div>
 
       <Header />

@@ -105,14 +105,14 @@ export default function ScheduleManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-[#D4725C]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-3xl -z-10" />
@@ -145,7 +145,7 @@ export default function ScheduleManagement() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Operating Hours</h2>
             </div>
 
-            <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-2xl p-6">
+            <div className="bg-white border border-gray-200 dark:border-gray-700 rounded-2xl p-6">
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Opening Time</label>
@@ -222,7 +222,7 @@ export default function ScheduleManagement() {
             </div>
 
             {/* Add Holiday Form */}
-            <form onSubmit={handleAddHoliday} className="mb-8 bg-gray-50/50 dark:bg-gray-950/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <form onSubmit={handleAddHoliday} className="mb-8 bg-gray-50/50/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
               <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <Plus className="size-4 text-orange-500 dark:text-orange-400" /> Add New Holiday
               </h3>
@@ -267,14 +267,14 @@ export default function ScheduleManagement() {
             <div className="space-y-3">
               <h3 className="font-bold text-gray-900 dark:text-white mb-4 pl-1">Upcoming Holidays</h3>
               {holidays.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 dark:bg-gray-950 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+                <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
                   <p className="text-gray-400 dark:text-gray-500 font-medium">No holidays marked</p>
                 </div>
               ) : (
                 holidays.map((holiday) => (
                   <div
                     key={holiday.id}
-                    className="flex items-center justify-between p-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl hover:border-orange-200 dark:hover:border-orange-900/50 hover:shadow-md transition-all group"
+                    className="flex items-center justify-between p-4 bg-white border border-gray-100 dark:border-gray-800 rounded-2xl hover:border-orange-200 dark:hover:border-orange-900/50 hover:shadow-md transition-all group"
                   >
                     <div>
                       <p className="font-bold text-gray-900 dark:text-white">{holiday.description}</p>

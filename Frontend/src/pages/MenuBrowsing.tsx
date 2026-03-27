@@ -63,7 +63,7 @@ export default function MenuBrowsing() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="size-10 animate-spin text-[#D4725C]" />
       </div>
     );
@@ -71,7 +71,7 @@ export default function MenuBrowsing() {
 
   if (notFound || !canteen) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center">
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl border border-white/20 dark:border-gray-700/20 text-center max-w-md mx-4">
           <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
             <Search className="size-10 text-[#D4725C]" />
@@ -89,7 +89,7 @@ export default function MenuBrowsing() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -207,7 +207,7 @@ export default function MenuBrowsing() {
         )}
 
         {/* Search & Filter Section */}
-        <div className="relative z-30 bg-[#FDFCFB]/80 dark:bg-gray-950/80 backdrop-blur-md py-4 -mx-4 px-4 mb-6">
+        <div className="relative z-30 bg-[#FDFCFB]/80/80 backdrop-blur-md py-4 -mx-4 px-4 mb-6">
           <div className="relative flex items-center gap-3 max-w-4xl mx-auto h-16">
             {/* Search Bar */}
             <div

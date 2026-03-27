@@ -116,7 +116,7 @@ export default function CakeManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-pink-100/30 dark:bg-pink-950/15 rounded-full blur-3xl" />
@@ -233,7 +233,7 @@ export default function CakeManagement() {
                     </div>
 
                     {/* Customer & Details */}
-                    <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-4 border border-gray-100/50 dark:border-gray-800 space-y-2 text-sm mb-4">
+                    <div className="bg-gray-50/80/50 rounded-xl p-4 border border-gray-100/50 dark:border-gray-800 space-y-2 text-sm mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Mail className="size-3" /> Customer</span>
                         <span className="font-bold text-gray-900 dark:text-white">{r.customerEmail}</span>
@@ -390,7 +390,7 @@ export default function CakeManagement() {
                                 exit={{ opacity: 0, height: 0 }}
                                 className="overflow-hidden"
                               >
-                                <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
+                                <div className="bg-gray-50/80/50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
                                   {r.design && (
                                     <div className="flex justify-between">
                                       <span className="text-gray-500 dark:text-gray-400">Design</span>

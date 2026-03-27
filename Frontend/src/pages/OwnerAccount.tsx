@@ -47,14 +47,14 @@ export default function OwnerAccount() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="size-10 animate-spin text-[#D4725C]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -z-10" />
@@ -197,7 +197,7 @@ export default function OwnerAccount() {
 
             {/* Manager ID Badge */}
             {/* {managerProfile?.managerId && (
-              <div className="mt-8 bg-gray-50/80 dark:bg-gray-950/80 rounded-xl p-4 border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-between">
+              <div className="mt-8 bg-gray-50/80/80 rounded-xl p-4 border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-between">
                 <div>
                    <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-1">Manager ID</p>
                    <p className="text-lg font-mono font-black text-gray-900 dark:text-white tracking-wider">{managerProfile.managerId}</p>
@@ -248,7 +248,7 @@ export default function OwnerAccount() {
           </div>
           <Button
             onClick={handleLogout}
-            className="bg-white dark:bg-gray-950 border-2 border-red-100 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 hover:border-red-200 dark:hover:border-red-700 px-8 py-6 rounded-xl font-bold transition-all shadow-sm w-full md:w-auto"
+            className="bg-white border-2 border-red-100 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 hover:border-red-200 dark:hover:border-red-700 px-8 py-6 rounded-xl font-bold transition-all shadow-sm w-full md:w-auto"
           >
             <LogOut className="size-5 mr-2" />
             Logout

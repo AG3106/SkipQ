@@ -83,14 +83,14 @@ export default function Statistics() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-[#D4725C]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-transparent relative overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />
@@ -225,7 +225,7 @@ export default function Statistics() {
 
               <div className="mt-8 space-y-3">
                 {topDishes.map((dish, index) => (
-                  <div key={dish.dishId} className="flex items-center justify-between p-4 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl hover:shadow-md transition-all">
+                  <div key={dish.dishId} className="flex items-center justify-between p-4 bg-white border border-gray-100 dark:border-gray-800 rounded-2xl hover:shadow-md transition-all">
                     <div className="flex items-center gap-6">
                       <div className="size-10 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center font-bold text-white dark:text-gray-900 shadow-lg shadow-gray-200 dark:shadow-black/20">
                         #{index + 1}

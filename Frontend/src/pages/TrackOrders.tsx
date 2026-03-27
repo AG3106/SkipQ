@@ -238,7 +238,7 @@ export default function TrackOrders() {
       )}
 
       {/* Items */}
-      <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
+      <div className="bg-gray-50/80/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
         <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
           Items Ordered
         </p>
@@ -330,7 +330,7 @@ export default function TrackOrders() {
   const pastOrders = orders.filter((o) => !isActiveOrder(o.status));
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[15%] right-[-10%] w-[500px] h-[500px] bg-green-100/30 dark:bg-green-950/20 rounded-full blur-3xl" />
@@ -530,7 +530,7 @@ export default function TrackOrders() {
                     <p className="text-sm font-bold text-gray-900 dark:text-white mb-4 text-center">Rate each item</p>
                     <div className="space-y-4">
                       {order.items.map((item) => (
-                        <div key={item.id} className="bg-gray-50/80 dark:bg-gray-950/50 rounded-xl p-3.5 border border-gray-100/50 dark:border-gray-800">
+                        <div key={item.id} className="bg-gray-50/80/50 rounded-xl p-3.5 border border-gray-100/50 dark:border-gray-800">
                           <p className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">{item.dishName}</p>
                           <div className="flex items-center gap-1.5">
                             {[1, 2, 3, 4, 5].map((star) => (

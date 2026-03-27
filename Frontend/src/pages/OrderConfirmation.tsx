@@ -49,7 +49,7 @@ export default function OrderConfirmation() {
   const currentStep = order ? getStepIndex(order.status) : 0;
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[20%] w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-3xl" />
@@ -119,7 +119,7 @@ export default function OrderConfirmation() {
               </p>
 
               {/* Order ID */}
-              <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 border-dashed rounded-2xl p-6 mb-8 relative group cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-200 dark:hover:border-orange-800 transition-colors">
+              <div className="bg-gray-50 border border-gray-200 dark:border-gray-700 border-dashed rounded-2xl p-6 mb-8 relative group cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-200 dark:hover:border-orange-800 transition-colors">
                 <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 group-hover:text-[#D4725C]">Order ID</div>
                 <div className="text-3xl font-black text-gray-900 dark:text-white tracking-wider group-hover:text-[#D4725C] transition-colors font-mono">{orderId}</div>
                 {order && (
@@ -131,7 +131,7 @@ export default function OrderConfirmation() {
 
               {/* Order Items */}
               {order && order.items.length > 0 && (
-                <div className="bg-gray-50/80 dark:bg-gray-950/50 rounded-2xl p-4 mb-8 border border-gray-100/50 dark:border-gray-800 text-left">
+                <div className="bg-gray-50/80/50 rounded-2xl p-4 mb-8 border border-gray-100/50 dark:border-gray-800 text-left">
                   <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
                     Items Ordered
                   </p>
@@ -167,7 +167,7 @@ export default function OrderConfirmation() {
                           }`}>
                           <Icon className={`size-6 ${isComplete ? "text-white" : "text-gray-400 dark:text-gray-600"}`} />
                         </div>
-                        <div className={isComplete ? "flex-1 bg-white dark:bg-gray-950 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
+                        <div className={isComplete ? "flex-1 bg-white p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
                           <div className={`font-bold ${isComplete ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>{step.label}</div>
                           <div className={`text-xs ${isComplete ? "text-gray-500 dark:text-gray-400" : "text-gray-400 dark:text-gray-600"}`}>{step.desc}</div>
                         </div>

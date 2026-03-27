@@ -253,7 +253,7 @@ export default function VerifyWalletPin() {
   if (mode === "cake" ? !cakeData : (items.length === 0 || !customerName)) return null;
 
   return (
-    <div className="h-[100dvh] bg-transparent dark:bg-gray-950 flex flex-col overflow-hidden">
+    <div className="min-h-[100dvh] bg-transparent flex flex-col overflow-y-auto">
       {/* Background ambience */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div
@@ -352,7 +352,7 @@ export default function VerifyWalletPin() {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="text-center mb-4 md:mb-8"
           >
-            <div className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-3 md:mb-5 border transition-all duration-500 ${locked
+            <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-5 border transition-all duration-500 ${locked
               ? "bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800"
               : hasError
                 ? "bg-red-50 dark:bg-red-950/20 border-red-200/50 dark:border-red-800/40"
@@ -363,11 +363,11 @@ export default function VerifyWalletPin() {
               <AnimatePresence mode="wait">
                 {locked ? (
                   <motion.div key="locked" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    <XCircle className="size-7 md:size-9 text-red-500 dark:text-red-400" />
+                    <XCircle className="size-6 md:size-7 text-red-500 dark:text-red-400" />
                   </motion.div>
                 ) : hasError ? (
                   <motion.div key="error" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    <AlertCircle className="size-7 md:size-9 text-red-500 dark:text-red-400" />
+                    <AlertCircle className="size-6 md:size-7 text-red-500 dark:text-red-400" />
                   </motion.div>
                 ) : processing ? (
                   <motion.div
@@ -376,11 +376,11 @@ export default function VerifyWalletPin() {
                     animate={{ scale: 1, rotate: 360 }}
                     transition={{ rotate: { duration: 1, repeat: Infinity, ease: "linear" } }}
                   >
-                    <Fingerprint className="size-7 md:size-9 text-green-500 dark:text-green-400" />
+                    <Fingerprint className="size-6 md:size-7 text-green-500 dark:text-green-400" />
                   </motion.div>
                 ) : (
                   <motion.div key="lock" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    <Lock className="size-7 md:size-9 text-[#D4725C]" />
+                    <Lock className="size-6 md:size-7 text-[#D4725C]" />
                   </motion.div>
                 )}
               </AnimatePresence>

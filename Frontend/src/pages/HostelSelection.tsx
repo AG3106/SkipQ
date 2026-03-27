@@ -65,7 +65,7 @@ export default function HostelSelection() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden">
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-orange-50 via-orange-50/50 to-transparent dark:from-orange-950/20 dark:via-orange-950/10 -z-10" />
 
       <Header />

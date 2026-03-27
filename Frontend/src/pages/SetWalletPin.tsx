@@ -174,7 +174,7 @@ export default function SetWalletPin() {
   // Success screen
   if (step === "success") {
     return (
-      <div className="min-h-screen bg-transparent dark:bg-gray-950 flex items-center justify-center px-4 overflow-x-hidden">
+      <div className="min-h-screen bg-transparent flex items-center justify-center px-4 overflow-x-hidden">
         {/* Background ambience */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
           <div className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-3xl" />
@@ -222,7 +222,7 @@ export default function SetWalletPin() {
   }
 
   return (
-    <div className="h-[100dvh] bg-transparent dark:bg-gray-950 flex flex-col overflow-hidden">
+    <div className="min-h-[100dvh] bg-transparent flex flex-col overflow-y-auto">
       {/* Background ambience */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-5%] right-[-10%] w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />

@@ -146,6 +146,12 @@
 /* Doodle food pattern background — non-auth pages, both light & dark modes */
 body.app-page {
   isolation: isolate;
+  background-color: #ffffff;
+}
+
+.dark body.app-page {
+  background-color: oklch(0.145 0 0);
+  /* gray-950 equivalent */
 }
 
 :root:not(.dark) body.app-page::before {
