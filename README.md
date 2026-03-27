@@ -134,6 +134,17 @@ Backend/files/
 - Node.js 18+
 - PostgreSQL 12+
 
+### Database details
+
+By default, the backend connects to a PostgreSQL instance with the following credentials (defined in `Backend/config/settings.py`):
+- **Database Name**: `skipq_db`
+- **User**: `postgres`
+- **Password**: `sppsql` (can be overridden via the `DB_PASSWORD` environment variable)
+- **Host**: `localhost`
+- **Port**: `5433`
+
+Note: During test runs (`python manage.py test`), Django automatically falls back to an in-memory SQLite database (`db.sqlite3`) to avoid altering production data.
+
 ### Quick start (Linux/macOS)
 
 There is a `start.sh` at the root that boots up everything in one go:
