@@ -159,7 +159,7 @@ export default function OwnerDashboard() {
     try {
       const updated = await acceptOrder(orderId);
       setPendingOrders((prev) => prev.filter((o) => o.id !== orderId));
-      setActiveOrders((prev) => [updated, ...prev]);
+      setActiveOrders((prev) => [updated, ...prev.filter((o) => o.id !== orderId)]);
       setSelectedOrder(null);
       toast.success(`Order #${orderId} accepted!`);
     } catch (err: any) {

@@ -12,8 +12,6 @@ export default function Cart() {
   const { items, removeItem, updateQuantity, getTotal, getItemCount } = useCart();
 
   const subtotal = getTotal();
-  const tax = subtotal * 0.05; // 5% tax
-  const totalAmount = subtotal + tax;
 
   if (items.length === 0) {
     return (
@@ -138,18 +136,13 @@ export default function Cart() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">₹{subtotal.toFixed(2)}</span>
-                </div>
-
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Tax (5%)</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">₹{tax.toFixed(2)}</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">₹{subtotal.toFixed(0)}</span>
                 </div>
 
                 <div className="border-t border-dashed border-gray-200 dark:border-gray-700 pt-4 mt-2">
                   <div className="flex justify-between text-xl font-black text-gray-900 dark:text-white">
                     <span>Total</span>
-                    <span className="text-[#D4725C]">₹{totalAmount.toFixed(2)}</span>
+                    <span className="text-[#D4725C]">₹{subtotal.toFixed(0)}</span>
                   </div>
                 </div>
               </div>

@@ -11,6 +11,18 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { toast } from "sonner";
 
+function useIsDark() {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const check = () => setDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return dark;
+}
+
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function formatRevenue(val: string | number) {
@@ -21,6 +33,7 @@ function formatRevenue(val: string | number) {
 }
 
 export default function Statistics() {
+  const isDark = useIsDark();
   const [canteenName, setCanteenName] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -132,7 +145,7 @@ export default function Statistics() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-100 dark:bg-opacity-20 p-3.5 rounded-2xl">
+              <div className="bg-blue-100 dark:bg-blue-500/20 p-3.5 rounded-2xl">
                 <ShoppingBag className="size-6 text-blue-600" />
               </div>
             </div>
@@ -142,7 +155,7 @@ export default function Statistics() {
 
           <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-green-100 dark:bg-opacity-20 p-3.5 rounded-2xl">
+              <div className="bg-green-100 dark:bg-green-500/20 p-3.5 rounded-2xl">
                 <DollarSign className="size-6 text-green-600" />
               </div>
             </div>
@@ -152,7 +165,7 @@ export default function Statistics() {
 
           <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-orange-100 dark:bg-opacity-20 p-3.5 rounded-2xl">
+              <div className="bg-orange-100 dark:bg-orange-500/20 p-3.5 rounded-2xl">
                 <TrendingUp className="size-6 text-orange-600" />
               </div>
             </div>
@@ -180,12 +193,12 @@ export default function Statistics() {
             <div className="w-full h-[300px]">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} dy={10} />
-                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
-                  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? "#374151" : "#E5E7EB"} />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: isDark ? "#9CA3AF" : "#6B7280", fontSize: 12 }} dy={10} />
+                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: isDark ? "#9CA3AF" : "#6B7280", fontSize: 12 }} />
+                  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: isDark ? "#9CA3AF" : "#6B7280", fontSize: 12 }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#fff", borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+                    contentStyle={{ backgroundColor: isDark ? "#1F2937" : "#fff", borderRadius: "12px", border: "none", boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.1)", color: isDark ? "#F3F4F6" : "#111827" }}
                     itemStyle={{ fontSize: "12px", fontWeight: 600 }}
                   />
                   <Line yAxisId="left" type="monotone" dataKey="orders" stroke="#D4725C" strokeWidth={3} dot={{ r: 4, fill: "#D4725C", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6 }} />
@@ -209,12 +222,12 @@ export default function Statistics() {
               <div className="w-full h-[300px]">
                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <BarChart data={topDishes.map((d) => ({ name: d.dishName, orders: d.totalOrdered, revenue: parseFloat(d.revenue) }))} barSize={40}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6B7280", fontSize: 12 }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? "#374151" : "#E5E7EB"} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: isDark ? "#9CA3AF" : "#6B7280", fontSize: 12 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: isDark ? "#9CA3AF" : "#6B7280", fontSize: 12 }} />
                     <Tooltip
-                      cursor={{ fill: "#F3F4F6" }}
-                      contentStyle={{ backgroundColor: "#fff", borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+                      cursor={{ fill: isDark ? "#1F2937" : "#F3F4F6" }}
+                      contentStyle={{ backgroundColor: isDark ? "#1F2937" : "#fff", borderRadius: "12px", border: "none", boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.1)", color: isDark ? "#F3F4F6" : "#111827" }}
                     />
                     <Bar dataKey="orders" fill="#D4725C" name="Orders" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="revenue" fill="#2E7D32" name="Revenue (₹)" radius={[4, 4, 0, 0]} />
@@ -224,7 +237,7 @@ export default function Statistics() {
 
               <div className="mt-8 space-y-3">
                 {topDishes.map((dish, index) => (
-                  <div key={dish.dishId} className="flex items-center justify-between p-4 bg-white border border-gray-100 dark:border-gray-800 rounded-2xl hover:shadow-md transition-all">
+                  <div key={dish.dishId} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700 rounded-2xl hover:shadow-md transition-all">
                     <div className="flex items-center gap-6">
                       <div className="size-10 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center font-bold text-white dark:text-gray-900 shadow-lg shadow-gray-200 dark:shadow-black/20">
                         #{index + 1}

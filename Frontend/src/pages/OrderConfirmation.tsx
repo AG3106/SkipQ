@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router";
-import { CheckCircle, Home, Package, Clock, ChefHat, Loader2, ArrowLeft } from "lucide-react";
+import { CheckCircle, Home, Package, Clock, ChefHat, Loader2, ArrowLeft, XCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { getOrderDetail } from "../api/orders";
 import type { Order } from "../types";
@@ -40,7 +40,7 @@ export default function OrderConfirmation() {
   }, [order, fetchOrder]);
 
   const stepLabels = [
-    { label: "Order Confirmed", desc: "Your order has been received", icon: CheckCircle },
+    { label: "Order Placed", desc: "Your order has been received", icon: CheckCircle },
     { label: "Preparing", desc: "Kitchen is working on it", icon: ChefHat },
     { label: "Ready for Pickup", desc: "Collect from the counter", icon: Package },
     { label: "Collected", desc: "Order complete. Enjoy!", icon: CheckCircle },
@@ -112,10 +112,10 @@ export default function OrderConfirmation() {
                 {order?.status === "COMPLETED"
                   ? "Your order has been collected. Hope you enjoyed it!"
                   : order?.status === "READY"
-                  ? "Your order is ready! Head to the counter to pick it up."
-                  : order?.status === "REJECTED" || order?.status === "CANCELLED"
-                  ? "This order was cancelled. Your wallet has been refunded."
-                  : "Your order has been confirmed and sent to the kitchen. Get ready for some delicious food!"}
+                    ? "Your order is ready! Head to the counter to pick it up."
+                    : order?.status === "REJECTED" || order?.status === "CANCELLED"
+                      ? "This order was cancelled. Your wallet has been refunded."
+                      : "Your order has been confirmed and sent to the kitchen. Get ready for some delicious food!"}
               </p>
 
               {/* Order ID */}
@@ -146,36 +146,53 @@ export default function OrderConfirmation() {
                 </div>
               )}
 
-              {/* Order Status Timeline */}
-              <div className="mb-10 text-left">
-                <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-6 flex items-center gap-2">
-                  <Clock className="size-5 text-[#D4725C]" />
-                  Live Status
-                </h3>
+              {/* Cancellation Reason Banner */}
+              {(order?.status === "REJECTED" || order?.status === "CANCELLED") && order?.rejectReason && (
+                <div className="rounded-2xl p-5 mb-8 border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40 text-left">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
+                      <XCircle className="size-5 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-red-800 dark:text-red-300">Cancellation Reason</p>
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">{order.rejectReason}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                <div className="relative space-y-8 pl-4">
-                  <div className="absolute left-[27px] top-4 bottom-4 w-0.5 bg-gray-100 dark:bg-gray-800" />
+              {/* Order Status Timeline – hidden for cancelled/rejected/refunded orders */}
+              {order && order.status !== "REJECTED" && order.status !== "CANCELLED" && order.status !== "REFUNDED" && (
+                <div className="mb-10 text-left">
+                  <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-6 flex items-center gap-2">
+                    <Clock className="size-5 text-[#D4725C]" />
+                    Live Status
+                  </h3>
 
-                  {stepLabels.map((step, idx) => {
-                    const isComplete = idx <= currentStep;
-                    const Icon = step.icon;
-                    return (
-                      <div key={idx} className={`relative flex items-center gap-4 z-10 ${!isComplete ? "opacity-50" : ""}`}>
-                        <div className={`size-12 rounded-xl flex items-center justify-center flex-shrink-0 border-4 border-white dark:border-gray-900 ${isComplete
+                  <div className="relative space-y-8 pl-4">
+                    <div className="absolute left-[27px] top-4 bottom-4 w-0.5 bg-gray-100 dark:bg-gray-800" />
+
+                    {stepLabels.map((step, idx) => {
+                      const isComplete = idx <= currentStep;
+                      const Icon = step.icon;
+                      return (
+                        <div key={idx} className={`relative flex items-center gap-4 z-10 ${!isComplete ? "opacity-50" : ""}`}>
+                          <div className={`size-12 rounded-xl flex items-center justify-center flex-shrink-0 border-4 border-white dark:border-gray-900 ${isComplete
                             ? "bg-green-500 dark:bg-green-600 shadow-lg shadow-green-200 dark:shadow-green-900/30"
                             : "bg-gray-100 dark:bg-gray-800"
-                          }`}>
-                          <Icon className={`size-6 ${isComplete ? "text-white" : "text-gray-400 dark:text-gray-600"}`} />
+                            }`}>
+                            <Icon className={`size-6 ${isComplete ? "text-white" : "text-gray-400 dark:text-gray-600"}`} />
+                          </div>
+                          <div className={isComplete ? "flex-1 bg-white p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
+                            <div className={`font-bold ${isComplete ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>{step.label}</div>
+                            <div className={`text-xs ${isComplete ? "text-gray-500 dark:text-gray-400" : "text-gray-400 dark:text-gray-600"}`}>{step.desc}</div>
+                          </div>
                         </div>
-                        <div className={isComplete ? "flex-1 bg-white p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
-                          <div className={`font-bold ${isComplete ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>{step.label}</div>
-                          <div className={`text-xs ${isComplete ? "text-gray-500 dark:text-gray-400" : "text-gray-400 dark:text-gray-600"}`}>{step.desc}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Estimated Pickup Time */}
               {order?.estimatedWaitMinutes && (

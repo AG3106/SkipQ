@@ -77,8 +77,7 @@ function getProgressWidth(status: string) {
   switch (status) {
     case "PENDING": return "15%";
     case "PENDING_APPROVAL": return "15%";
-    case "ACCEPTED": return "35%";
-    case "CONFIRMED": return "50%";
+    case "ACCEPTED": return "45%";
     case "READY": return "75%";
     case "COMPLETED": return "100%";
     default: return "0%";
@@ -214,9 +213,8 @@ export default function TrackOrders() {
       {isActiveOrder(order.status) && (
         <div className="mb-5">
           <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2 tracking-wider">
-            <span className={["PENDING", "PENDING_APPROVAL", "ACCEPTED", "CONFIRMED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Placed</span>
-            <span className={["ACCEPTED", "CONFIRMED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Accepted</span>
-            <span className={["CONFIRMED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Confirmed</span>
+            <span className={["PENDING", "PENDING_APPROVAL", "ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Placed</span>
+            <span className={["ACCEPTED", "READY"].includes(order.status) ? "text-[#D4725C]" : ""}>Accepted</span>
             <span className={order.status === "READY" ? "text-[#D4725C]" : ""}>Ready</span>
             <span>Done</span>
           </div>
@@ -454,8 +452,8 @@ export default function TrackOrders() {
                     key={reason}
                     onClick={() => setSelectedReason(reason)}
                     className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all border ${selectedReason === reason
-                        ? "border-[#D4725C] bg-[#D4725C]/10 text-[#D4725C]"
-                        : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                      ? "border-[#D4725C] bg-[#D4725C]/10 text-[#D4725C]"
+                      : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300"
                       }`}
                   >
                     {reason}
@@ -543,8 +541,8 @@ export default function TrackOrders() {
                               >
                                 <Star
                                   className={`size-7 transition-colors ${star <= (itemHovers[item.dish] || itemRatings[item.dish] || 0)
-                                      ? "text-amber-400 fill-amber-400"
-                                      : "text-gray-200 dark:text-gray-700"
+                                    ? "text-amber-400 fill-amber-400"
+                                    : "text-gray-200 dark:text-gray-700"
                                     }`}
                                 />
                               </button>
