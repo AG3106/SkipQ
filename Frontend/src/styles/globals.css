@@ -163,7 +163,7 @@ body.app-page {
   background-size: 600px;
   background-repeat: repeat;
   filter: invert(1) sepia(1) saturate(4) hue-rotate(350deg);
-  opacity: 0.08;
+  opacity: 0.12;
   pointer-events: none;
 }
 
@@ -175,7 +175,7 @@ body.app-page {
   background-image: url('../assets/doodle_food.png');
   background-size: 600px;
   background-repeat: repeat;
-  opacity: 0.06;
+  opacity: 0.10;
   pointer-events: none;
 }
 

@@ -5,7 +5,6 @@ import {
   getManagerDashboard,
   getManagerAnalytics,
   getManagerDishAnalytics,
-  getManagerMonthlyRevenue,
   type MonthlyBreakdown,
   type DishRevenue,
 } from "../api/canteens";

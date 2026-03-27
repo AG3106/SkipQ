@@ -224,7 +224,7 @@ export default function HostelSelection() {
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6 px-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                Popular Dishes Today <Flame className="w-5 h-5 fill-orange-500 text-orange-500" />
+                Popular Dishes <Flame className="w-5 h-5 fill-orange-500 text-orange-500" />
               </h2>
             </div>
             <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-2">

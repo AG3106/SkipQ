@@ -5,17 +5,18 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { useWallet } from "../context/WalletContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function WalletPage() {
   const { balance, addMoney } = useWallet();
+  const { user } = useAuth();
+  const isManager = user?.role === "MANAGER";
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [addAmount, setAddAmount] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [addError, setAddError] = useState("");
   const quickAmounts = [100, 200, 500, 1000];
-
-  const hasPin = typeof window !== "undefined" && !!localStorage.getItem("skipq_wallet_pin");
 
   const handleAddMoney = async () => {
     const amount = Number(addAmount);
@@ -49,11 +50,11 @@ export default function WalletPage() {
       <div className="relative z-10 container mx-auto px-4 py-8 pb-32 max-w-2xl">
         {/* Back */}
         <Link
-          to="/hostels"
+          to={isManager ? "/owner/dashboard" : "/hostels"}
           className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#D4725C] mb-8 transition-colors font-medium"
         >
           <ArrowLeft className="size-5" />
-          Back to Menu
+          {isManager ? "Back to Dashboard" : "Back to Menu"}
         </Link>
 
         {/* Success toast */}

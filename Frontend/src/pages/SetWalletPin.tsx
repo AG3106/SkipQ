@@ -11,7 +11,8 @@ type Step = "set" | "confirm" | "success";
 export default function SetWalletPin() {
   const navigate = useNavigate();
   const { isDark } = useTheme();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, user } = useAuth();
+  const isManager = user?.role === "MANAGER";
   const [searchParams] = useSearchParams();
   const isFromRegister = searchParams.get("from") === "register";
 
@@ -207,14 +208,14 @@ export default function SetWalletPin() {
             onClick={() => {
               if (isFromRegister) {
                 localStorage.removeItem("pendingPinSetup");
-                navigate("/hostels");
+                navigate(isManager ? "/owner/dashboard" : "/hostels");
               } else {
                 navigate("/wallet");
               }
             }}
             className="w-full py-4 bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white rounded-2xl font-bold shadow-lg shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
-            {isFromRegister ? "Continue to SkipQ" : "Go to Wallet"}
+            {isFromRegister ? (isManager ? "Go to Dashboard" : "Continue to SkipQ") : "Go to Wallet"}
           </button>
         </motion.div>
       </div>
