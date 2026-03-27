@@ -6,9 +6,8 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
-import { useAuth } from "../context/AuthContext";
 import {
-  listCanteens,
+  getManagerDashboard,
   getCanteenMenu,
   addDish,
   updateDish,
@@ -28,8 +27,6 @@ const CATEGORIES = [
 ];
 
 export default function MenuManagement() {
-  const { user } = useAuth();
-
   // Data state
   const [canteen, setCanteen] = useState<Canteen | null>(null);
   const [menuItems, setMenuItems] = useState<Dish[]>([]);
@@ -71,15 +68,8 @@ export default function MenuManagement() {
         setLoading(true);
         setError(null);
 
-        const canteensRes = await listCanteens();
-        const myCanteen = canteensRes.find(
-          (c) => c.managerEmail === user?.email,
-        );
-
-        if (!myCanteen) {
-          setError("No canteen found for your account.");
-          return;
-        }
+        const dashboard = await getManagerDashboard();
+        const myCanteen = dashboard.canteen;
 
         setCanteen(myCanteen);
         const menuRes = await getCanteenMenu(myCanteen.id);
@@ -91,10 +81,8 @@ export default function MenuManagement() {
       }
     }
 
-    if (user?.email) {
-      init();
-    }
-  }, [user?.email]);
+    init();
+  }, []);
 
   // -------------------------------------------------------------------------
   // Filtering

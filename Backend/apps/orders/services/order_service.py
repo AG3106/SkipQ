@@ -52,7 +52,7 @@ def place_order(customer_profile, canteen, items, wallet_pin, notes="", customer
     """
     # Validate canteen is accepting orders
     from apps.canteens.models import Canteen
-    if canteen.status not in (Canteen.Status.OPEN, Canteen.Status.BUSY):
+    if canteen.status not in (Canteen.Status.OPEN, Canteen.Status.BUSY, Canteen.Status.ACTIVE):
         raise ValueError(
             f"Canteen '{canteen.name}' is not currently accepting orders "
             f"(status: {canteen.get_status_display()})"
@@ -394,6 +394,6 @@ def get_active_orders(canteen):
     """
     return Order.objects.filter(
         canteen=canteen,
-        status__in=[Order.Status.PENDING, Order.Status.ACCEPTED, Order.Status.READY],
+        status__in=[Order.Status.PENDING, Order.Status.ACCEPTED, Order.Status.READY, Order.Status.CANCEL_REQUESTED],
     )
 

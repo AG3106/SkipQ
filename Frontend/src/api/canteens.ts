@@ -40,12 +40,15 @@ export async function getEstimatedWaitTime(
 
 export async function getManagerDashboard(): Promise<{
     canteen: Canteen;
-    todayEarnings: string;
-    weekEarnings: string;
-    monthEarnings: string;
-    pendingOrders: number;
-    activeOrders: number;
-    completedToday: number;
+    earnings: {
+        totalRevenue: string;
+        completedOrders: number;
+    };
+    queue: {
+        pendingOrders: number;
+        activeOrders: number;
+        estimatedWaitMinutes: string;
+    };
 }> {
     return api.get("/api/canteens/manager/dashboard/");
 }
@@ -83,6 +86,15 @@ export async function updateCanteenImage(
     const formData = new FormData();
     formData.append("image", imageFile);
     return api.upload<Canteen>(`/api/canteens/${canteenId}/image/`, formData, "PATCH");
+}
+
+// Timings update
+
+export async function updateCanteenTimings(
+    canteenId: number,
+    data: { openingTime?: string; closingTime?: string },
+): Promise<Canteen> {
+    return api.patch<Canteen>(`/api/canteens/${canteenId}/timings/`, data);
 }
 
 // Holiday management

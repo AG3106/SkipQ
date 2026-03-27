@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Clock, Calendar as CalendarIcon, Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { getManagerDashboard, getHolidays, addHoliday, deleteHoliday } from "../api/canteens";
+import { getManagerDashboard, getHolidays, addHoliday, deleteHoliday, updateCanteenTimings } from "../api/canteens";
 import { toast } from "sonner";
 
 interface Holiday {
@@ -17,6 +17,10 @@ export default function ScheduleManagement() {
   const [openingTime, setOpeningTime] = useState("");
   const [closingTime, setClosingTime] = useState("");
   const [loading, setLoading] = useState(true);
+  const [savingTimings, setSavingTimings] = useState(false);
+  const [editingTimings, setEditingTimings] = useState(false);
+  const [editOpeningTime, setEditOpeningTime] = useState("");
+  const [editClosingTime, setEditClosingTime] = useState("");
 
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [newHoliday, setNewHoliday] = useState({ date: "", name: "" });
@@ -42,6 +46,35 @@ export default function ScheduleManagement() {
     }
     fetchData();
   }, []);
+
+  const handleStartEditTimings = () => {
+    setEditOpeningTime(openingTime);
+    setEditClosingTime(closingTime);
+    setEditingTimings(true);
+  };
+
+  const handleCancelEditTimings = () => {
+    setEditingTimings(false);
+  };
+
+  const handleSaveTimings = async () => {
+    if (!canteenId) return;
+    setSavingTimings(true);
+    try {
+      const updated = await updateCanteenTimings(canteenId, {
+        openingTime: editOpeningTime,
+        closingTime: editClosingTime,
+      });
+      setOpeningTime(updated.openingTime ?? "");
+      setClosingTime(updated.closingTime ?? "");
+      setEditingTimings(false);
+      toast.success("Timings updated successfully");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update timings");
+    } finally {
+      setSavingTimings(false);
+    }
+  };
 
   const handleAddHoliday = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,24 +149,66 @@ export default function ScheduleManagement() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Opening Time</label>
-                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-900 dark:text-white text-lg">
-                    {openingTime || "Not set"}
-                  </div>
+                  {editingTimings ? (
+                    <input
+                      type="time"
+                      value={editOpeningTime}
+                      onChange={(e) => setEditOpeningTime(e.target.value)}
+                      className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] font-semibold text-gray-900 dark:text-white text-lg"
+                    />
+                  ) : (
+                    <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-900 dark:text-white text-lg">
+                      {openingTime || "Not set"}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Closing Time</label>
-                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-900 dark:text-white text-lg">
-                    {closingTime || "Not set"}
-                  </div>
+                  {editingTimings ? (
+                    <input
+                      type="time"
+                      value={editClosingTime}
+                      onChange={(e) => setEditClosingTime(e.target.value)}
+                      className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] font-semibold text-gray-900 dark:text-white text-lg"
+                    />
+                  ) : (
+                    <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-900 dark:text-white text-lg">
+                      {closingTime || "Not set"}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 bg-[#D4725C]/10 dark:bg-[#D4725C]/20 border border-[#D4725C]/20 dark:border-[#D4725C]/30 rounded-2xl p-5">
-              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                <strong className="text-[#D4725C]">Note:</strong> Operating hours are set during canteen registration.
-                Contact admin to update opening/closing times.
-              </p>
+            <div className="mt-6 flex gap-3">
+              {editingTimings ? (
+                <>
+                  <Button
+                    onClick={handleSaveTimings}
+                    disabled={savingTimings}
+                    className="flex-1 bg-[#D4725C] hover:bg-[#B85A4A] text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-200 dark:shadow-orange-900/30 transition-all hover:-translate-y-0.5"
+                  >
+                    {savingTimings ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
+                    Save Timings
+                  </Button>
+                  <Button
+                    onClick={handleCancelEditTimings}
+                    disabled={savingTimings}
+                    variant="outline"
+                    className="flex-1 py-3 rounded-xl font-bold"
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={handleStartEditTimings}
+                  variant="outline"
+                  className="w-full py-3 rounded-xl font-bold border-[#D4725C] text-[#D4725C] hover:bg-[#D4725C]/10"
+                >
+                  Edit Timings
+                </Button>
+              )}
             </div>
           </div>
 

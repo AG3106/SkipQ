@@ -140,6 +140,25 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Doodle food pattern background — light mode only, non-auth pages */
+:root:not(.dark) body.app-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: url('../assets/doodle_food.png');
+  background-size: 600px;
+  background-repeat: repeat;
+  filter: invert(1) sepia(1) saturate(4) hue-rotate(350deg);
+  opacity: 0.08;
+  pointer-events: none;
 }
 
 /**

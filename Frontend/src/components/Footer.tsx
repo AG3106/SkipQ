@@ -17,8 +17,6 @@ export default function Footer() {
               <span className="text-[#D4725C]">SkipQ</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              The smartest way to order food at your university campus.
-              <br />
               Skip the queue, enjoy the food.
             </p>
           </div>
@@ -26,7 +24,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-8 mt-8 flex items-center justify-center text-sm text-gray-500">
-          <p>© 2026 SkipQ - University Canteen Food Ordering System.</p>
+          <p>© 2026 SkipQ - IITK Canteen Food Ordering System.</p>
         </div>
       </div>
     </footer>

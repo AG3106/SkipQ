@@ -301,7 +301,7 @@ export default function TrackOrders() {
             <span className="text-sm font-bold text-green-700 dark:text-green-400">Rated</span>
           </div>
         )}
-        {order.status === "PENDING" && (
+        {(order.status === "PENDING" || order.status === "ACCEPTED") && (
           <button
             onClick={(e) => { e.stopPropagation(); setCancelModal(order.id); }}
             className="flex-1 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3 hover:shadow-md hover:border-red-300 dark:hover:border-red-700 transition-all"

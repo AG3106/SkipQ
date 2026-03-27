@@ -21,6 +21,9 @@ urlpatterns = [
     # Operational status — Canteen Operational state diagram
     path("<int:canteen_id>/status/", views.update_canteen_status, name="update-canteen-status"),
 
+    # Timings update — manager can change opening/closing times
+    path("<int:canteen_id>/timings/", views.update_canteen_timings, name="update-canteen-timings"),
+
     # Menu management — Dish class diagram methods
     path("<int:canteen_id>/menu/", views.canteen_menu, name="canteen-menu"),
     path("<int:canteen_id>/menu/popular/", views.canteen_popular_dishes, name="canteen-popular-dishes"),

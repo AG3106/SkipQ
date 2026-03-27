@@ -206,6 +206,38 @@ def update_canteen_status(request, canteen_id):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_canteen_timings(request, canteen_id):
+    """
+    PATCH /api/canteens/<canteen_id>/timings/
+
+    Update canteen opening and/or closing time. Only the canteen's manager can do this.
+
+    JSON body:
+      • opening_time  (optional) — HH:MM format
+      • closing_time  (optional) — HH:MM format
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers can update timings"}, status=status.HTTP_403_FORBIDDEN)
+    try:
+        canteen = Canteen.objects.get(pk=canteen_id, manager=request.user.manager_profile)
+    except Canteen.DoesNotExist:
+        return Response({"error": "Canteen not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    opening_time = request.data.get("opening_time")
+    closing_time = request.data.get("closing_time")
+
+    if opening_time is None and closing_time is None:
+        return Response({"error": "Provide opening_time and/or closing_time"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        canteen = canteen_service.update_canteen_timings(canteen, opening_time, closing_time)
+        return Response(CanteenSerializer(canteen).data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 # ---------------------------------------------------------------------------
 # Menu management — Canteen & Dish class diagram methods
 # ---------------------------------------------------------------------------

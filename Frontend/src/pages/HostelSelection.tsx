@@ -73,10 +73,6 @@ export default function HostelSelection() {
       <div className="container mx-auto px-4 pb-20">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center mb-12 pt-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-[#D4725C] dark:text-orange-400 text-sm font-semibold mb-6 animate-fade-in-up">
-            <Flame className="w-4 h-4 fill-orange-500" />
-            <span>Over 10,000 students fed daily</span>
-          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
             Craving something <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4725C] to-[#B85A4A]">delicious?</span>
             <br /> We've got you covered.

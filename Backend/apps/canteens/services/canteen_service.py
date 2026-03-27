@@ -179,6 +179,20 @@ def update_canteen_operational_status(canteen, new_status):
 # Schedule & Holiday Management
 # ---------------------------------------------------------------------------
 
+def update_canteen_timings(canteen, opening_time=None, closing_time=None):
+    """Update opening and/or closing time for a canteen."""
+    if opening_time is not None:
+        canteen.opening_time = opening_time
+    if closing_time is not None:
+        canteen.closing_time = closing_time
+    canteen.save(update_fields=["opening_time", "closing_time"])
+    logger.info(
+        "Canteen '%s' timings updated: open=%s, close=%s",
+        canteen.name, canteen.opening_time, canteen.closing_time,
+    )
+    return canteen
+
+
 def add_holiday(canteen, date, description=""):
     """Add a holiday for a canteen."""
     holiday, created = CanteenHoliday.objects.get_or_create(

@@ -4,10 +4,12 @@ import {
   Bell, ShoppingBag, Menu as MenuIcon, Calendar,
   User, LogOut, Clock, X, Check, Eye,
   ChefHat, Moon, Sun, XCircle, AlertTriangle, Ban, Cake,
-  Palette, MessageSquare, Scale, Package, CheckCircle, RefreshCw, Loader2
+  Palette, MessageSquare, Scale, Package, CheckCircle, RefreshCw, Loader2,
+  BarChart3
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 import type { Order, CakeReservation } from "../types";
 import {
@@ -21,7 +23,7 @@ import {
   rejectCancelOrder,
 } from "../api/orders";
 import {
-  getPendingCakes,
+  getManagerAllCakes,
   acceptCake,
   rejectCake,
   completeCake,
@@ -56,6 +58,7 @@ function orderItemsSummary(order: Order) {
 export default function OwnerDashboard() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
+  const { logout } = useAuth();
 
   // ─── Order State ────────────────────────────────────────────────────────────
   const [pendingOrders, setPendingOrders] = useState<Order[]>([]);
@@ -128,10 +131,11 @@ export default function OwnerDashboard() {
   const fetchCakes = useCallback(async () => {
     setLoadingCakes(true);
     try {
-      const res = await getPendingCakes();
+      const res = await getManagerAllCakes();
       const all = Array.isArray(res) ? res : [];
       setPendingCakesList(all.filter((c) => c.status === "PENDING_APPROVAL"));
-      // Active and history are managed locally from actions; pending endpoint only returns PENDING_APPROVAL
+      setActiveCakesList(all.filter((c) => c.status === "CONFIRMED"));
+      setHistoryCakesList(all.filter((c) => c.status === "COMPLETED" || c.status === "REJECTED"));
     } catch (err: any) {
       if (err?.message === "No canteen assigned") {
         navigate("/canteen-register");
@@ -246,10 +250,11 @@ export default function OwnerDashboard() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout();
     localStorage.removeItem("userType");
     localStorage.removeItem("canteenId");
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   // ─── Cake Handlers ──────────────────────────────────────────────────────────
@@ -376,7 +381,7 @@ export default function OwnerDashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4 mb-6 md:mb-8">
           <Link to="/owner/menu">
             <button className="w-full bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 transition-all hover:shadow-lg hover:-translate-y-1 group">
               <div className="bg-orange-50 dark:bg-orange-950/30 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-[#D4725C] transition-colors">
@@ -395,20 +400,28 @@ export default function OwnerDashboard() {
             </button>
           </Link>
 
-          <button
-            onClick={() => setActiveTab("cakes")}
-            className="w-full bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 transition-all hover:shadow-lg hover:-translate-y-1 group relative"
-          >
-            <div className="bg-pink-50 dark:bg-pink-950/30 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-[#D4725C] transition-colors">
-              <Cake className="size-6 text-[#D4725C] group-hover:text-white transition-colors" />
-            </div>
-            <p className="font-bold text-sm text-gray-700 dark:text-gray-300">Cakes</p>
+          <Link to="/owner/cakes" className="relative">
+            <button className="w-full bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 transition-all hover:shadow-lg hover:-translate-y-1 group">
+              <div className="bg-pink-50 dark:bg-pink-950/30 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-[#D4725C] transition-colors">
+                <Cake className="size-6 text-[#D4725C] group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-sm text-gray-700 dark:text-gray-300">Cakes</p>
+            </button>
             {pendingCakesList.length > 0 && (
               <span className="absolute top-3 right-3 bg-[#D4725C] text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
                 {pendingCakesList.length}
               </span>
             )}
-          </button>
+          </Link>
+
+          <Link to="/owner/stats">
+            <button className="w-full bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 transition-all hover:shadow-lg hover:-translate-y-1 group">
+              <div className="bg-orange-50 dark:bg-orange-950/30 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-[#D4725C] transition-colors">
+                <BarChart3 className="size-6 text-[#D4725C] group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-sm text-gray-700 dark:text-gray-300">Statistics</p>
+            </button>
+          </Link>
 
           <Link to="/owner/account">
             <button className="w-full bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 transition-all hover:shadow-lg hover:-translate-y-1 group">

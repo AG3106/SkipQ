@@ -100,7 +100,7 @@ def add_rating(dish, customer_profile, rating, order=None):
     return rating_obj
 
 
-def get_popular_dishes(limit=20, category=None, available_only=True):
+def get_popular_dishes(limit=10, category=None, available_only=True):
     """
     Get globally ranked popular dishes across all canteens, sorted by rating.
 
@@ -137,7 +137,7 @@ def get_popular_dishes(limit=20, category=None, available_only=True):
     return queryset
 
 
-def get_canteen_popular_dishes(canteen, limit=20, category=None, available_only=True):
+def get_canteen_popular_dishes(canteen, limit=10, category=None, available_only=True):
     """
     Get popular dishes for a specific canteen, sorted by rating.
 

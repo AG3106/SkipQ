@@ -56,7 +56,7 @@ export default function Statistics() {
         }
         setTotalOrders(orders);
         setTotalRevenue(revenue.toFixed(2));
-        setCompletedOrders(dashboard.earnings?.completedOrders ?? orders);
+        setCompletedOrders(dashboard.earnings?.completedOrders ?? 0);
       } catch {
         toast.error("Failed to load statistics");
       } finally {

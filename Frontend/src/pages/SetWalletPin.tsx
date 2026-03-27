@@ -222,7 +222,7 @@ export default function SetWalletPin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] dark:bg-gray-950 flex flex-col overflow-x-hidden">
+    <div className="h-[100dvh] bg-[#FDFCFB] dark:bg-gray-950 flex flex-col overflow-hidden">
       {/* Background ambience */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-5%] right-[-10%] w-[500px] h-[500px] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 rounded-full blur-3xl" />

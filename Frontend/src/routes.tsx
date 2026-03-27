@@ -8,7 +8,6 @@ import UnifiedLogin from "./pages/UnifiedLogin";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import OwnerAccount from "./pages/OwnerAccount";
 import MenuManagement from "./pages/MenuManagement";
-import DiscountManagement from "./pages/DiscountManagement";
 import ScheduleManagement from "./pages/ScheduleManagement";
 import Statistics from "./pages/Statistics";
 import SearchResults from "./pages/SearchResults";
@@ -110,11 +109,7 @@ export const router = createBrowserRouter([
     path: "/owner/menu",
     element: protect(MenuManagement),
   },
-  {
-    path: "/owner/discounts",
-    element: protect(DiscountManagement),
-  },
-  {
+{
     path: "/owner/schedule",
     element: protect(ScheduleManagement),
   },
