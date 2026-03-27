@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:8000/api
+
+### 1. Test Registration OTP Email
+# This will trigger initiate_signup() and send an OTP to the provided email.
+# Note: For the CUSTOMER role, the service enforces an @iitk.ac.in email address.
+# -> Change the email before running
+POST {{baseUrl}}/auth/register/
+Content-Type: application/json
+
+{
+    "email": "aaryajb24@iitk.ac.in",
+    "password": "SecurePassword123!",
+    "role": "CUSTOMER",
+    "name": "Test User"
+}
+
+### 2. Verify OTP (To complete registration)
+# Check the inbox of the email provided above, get the 6 digit OTP, and paste it here.
+POST {{baseUrl}}/auth/verify-otp/
+Content-Type: application/json
+
+{
+    "email": "harpuneets24@iitk.ac.in",
+    "otp": "123456"
+}
+
+### 3. Test Forgot Password OTP Email
+# This will trigger forgot_password_request() and send another OTP email.
+# Note: The email must belong to an already registered and verified user.
+POST {{baseUrl}}/auth/forgot-password/
+Content-Type: application/json
+
+{
+    "email": "aayushk24@iitk.ac.in"
+}

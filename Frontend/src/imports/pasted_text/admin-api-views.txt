@@ -1,0 +1,102 @@
+"""
+API views for the administration app (V1 — minimal).
+
+Core Admin functionality:
+  - approveRequest() / rejectRequest() for canteen registration
+  - suspendUser() / unsuspendUser() for user management
+"""
+
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework.response import Response
+
+from apps.users.models import User
+from apps.canteens.models import Canteen
+from apps.canteens.serializers import CanteenSerializer
+from apps.canteens.services import canteen_service
+
+
+class IsAdminUser(BasePermission):
+    """Allows access only to users with role ADMIN."""
+
+    message = "Admin access required"
+
+    def has_permission(self, request, view):
+        return (
+            request.user
+            and request.user.is_authenticated
+            and request.user.role == User.Role.ADMIN
+        )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def pending_canteen_requests(request):
+    """GET /api/admin/canteen-requests/ — list pending canteen registrations."""
+    canteens = Canteen.objects.filter(status=Canteen.Status.UNDER_REVIEW)
+    return Response(CanteenSerializer(canteens, many=True).data)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def approve_canteen(request, canteen_id):
+    """POST /api/admin/canteen-requests/<id>/approve/ — approve a pending canteen."""
+    try:
+        canteen = Canteen.objects.get(pk=canteen_id, status=Canteen.Status.UNDER_REVIEW)
+    except Canteen.DoesNotExist:
+        return Response({"error": "Canteen request not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    canteen = canteen_service.approve_canteen(canteen)
+    return Response({
+        "message": f"Canteen '{canteen.name}' approved and activated",
+        "canteen": CanteenSerializer(canteen).data,
+    })
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def reject_canteen(request, canteen_id):
+    """POST /api/admin/canteen-requests/<id>/reject/ — reject a pending canteen."""
+    try:
+        canteen = Canteen.objects.get(pk=canteen_id, status=Canteen.Status.UNDER_REVIEW)
+    except Canteen.DoesNotExist:
+        return Response({"error": "Canteen request not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    reason = request.data.get("reason", "")
+    canteen = canteen_service.reject_canteen(canteen, reason)
+    return Response({
+        "message": f"Canteen '{canteen.name}' rejected",
+        "canteen": CanteenSerializer(canteen).data,
+    })
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def suspend_user(request, user_id):
+    """POST /api/admin/users/<id>/suspend/ — suspend a user."""
+    try:
+        target_user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if target_user.role == User.Role.ADMIN:
+        return Response({"error": "Cannot suspend other admins"}, status=status.HTTP_400_BAD_REQUEST)
+
+    target_user.is_suspended = True
+    target_user.save(update_fields=["is_suspended"])
+    return Response({"message": f"User {target_user.email} suspended"})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def unsuspend_user(request, user_id):
+    """POST /api/admin/users/<id>/unsuspend/ — unsuspend a user."""
+    try:
+        target_user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    target_user.is_suspended = False
+    target_user.save(update_fields=["is_suspended"])
+    return Response({"message": f"User {target_user.email} unsuspended"})

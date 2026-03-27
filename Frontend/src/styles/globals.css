@@ -1,5 +1,17 @@
 @custom-variant dark (&:is(.dark *));
 
+/* Hide scrollbars on mobile, show on desktop */
+@media (max-width: 767px) {
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 :root {
   --font-size: 16px;
   --background: #ffffff;
@@ -131,6 +143,42 @@
   }
 }
 
+/* Doodle food pattern background — non-auth pages, both light & dark modes */
+body.app-page {
+  isolation: isolate;
+  background-color: #ffffff;
+}
+
+.dark body.app-page {
+  background-color: oklch(0.145 0 0);
+  /* gray-950 equivalent */
+}
+
+:root:not(.dark) body.app-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('../assets/doodle_food.png');
+  background-size: 600px;
+  background-repeat: repeat;
+  filter: invert(1) sepia(1) saturate(4) hue-rotate(350deg);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.dark body.app-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('../assets/doodle_food.png');
+  background-size: 600px;
+  background-repeat: repeat;
+  opacity: 0.10;
+  pointer-events: none;
+}
+
 /**
  * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
  */
@@ -183,3 +231,5 @@
 html {
   font-size: var(--font-size);
 }
+
+/* end of file */

@@ -1,47 +1,320 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Mail, Lock, Utensils, ChefHat, User, Sun, Moon } from "lucide-react";
+import { Mail, Lock, Utensils, ChefHat, User, Sun, Moon, ShieldCheck, RotateCcw, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
+import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { toast } from "sonner";
+import * as authApi from "../api/auth";
+import { motion, AnimatePresence } from "motion/react";
 import backgroundImage from "figma:asset/f55f8858fbb60a88216c2d612e3734b7b7b95056.png";
 
 export default function UnifiedLogin() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
+  const { login, register, verifyOtp, logout, isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Redirect authenticated users away from login/signup
+  useEffect(() => {
+    if (authLoading) return;
+    if (isAuthenticated && user) {
+      const role = user.role;
+      if (role === "MANAGER") {
+        navigate("/owner/dashboard", { replace: true });
+      } else {
+        navigate("/hostels", { replace: true });
+      }
+    }
+  }, [isAuthenticated, authLoading, user, navigate]);
   const [isSignup, setIsSignup] = useState(false);
+  const [signupStep, setSignupStep] = useState<"form" | "otp">("form");
   const [userType, setUserType] = useState<"customer" | "owner">("customer");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     name: "",
     phone: "",
     hostel: "",
     rememberMe: false,
   });
 
+
+  // OTP state
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otpTimer, setOtpTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Mock login/signup
-    if (userType === "owner") {
-      localStorage.setItem("userType", "owner");
-      localStorage.setItem("canteenId", "1");
-      navigate("/owner/dashboard");
-    } else {
-      localStorage.setItem("userType", "customer");
-      navigate("/hostels");
+  const startOtpTimer = () => {
+    setOtpTimer(60);
+    setCanResend(false);
+    const interval = setInterval(() => {
+      setOtpTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) value = value.slice(-1);
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    if (value && index < 5) {
+      document.getElementById(`otp-input-${index + 1}`)?.focus();
     }
   };
 
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      document.getElementById(`otp-input-${index - 1}`)?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted.length === 6) {
+      setOtp(pasted.split(""));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isSignup) {
+      // Login flow — use AuthContext
+      setIsLoading(true);
+      try {
+        const { hasWalletPin } = await login(formData.email, formData.password, formData.rememberMe);
+        // After successful login, check role matches selected user type
+        const profile = await authApi.getProfile();
+        const role = profile.user.role;
+        if (userType === "owner" && role !== "MANAGER") {
+          await logout();
+          toast.error("This account is not registered as a canteen owner.");
+          return;
+        }
+        if (userType === "customer" && role === "MANAGER") {
+          await logout();
+          toast.error("This account is registered as a canteen owner. Please login as Owner.");
+          return;
+        }
+        if (!hasWalletPin) {
+          navigate("/wallet/set-pin");
+          return;
+        }
+        if (userType === "owner") {
+          localStorage.setItem("userType", "owner");
+          navigate("/owner/dashboard");
+        } else {
+          localStorage.setItem("userType", "customer");
+          navigate("/hostels");
+        }
+      } catch (err: any) {
+        toast.error(err?.message || "Login failed");
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // Signup flow — validate then go to OTP
+    if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    // Call backend register
+    setIsLoading(true);
+    try {
+      await register(formData.email, formData.password, formData.name, "CUSTOMER", formData.phone);
+      toast.success("OTP sent to your email!");
+      setSignupStep("otp");
+      startOtpTimer();
+    } catch (err: any) {
+      toast.error(err?.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const enteredOtp = otp.join("");
+    if (enteredOtp.length !== 6) {
+      toast.error("Please enter the complete 6-digit OTP");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await verifyOtp(formData.email, enteredOtp);
+      // OTP verified — newly registered user, no PIN yet
+      localStorage.setItem("userType", "customer");
+      toast.success("Email verified! Account created successfully!");
+      navigate("/wallet/set-pin?from=register");
+    } catch (err: any) {
+      toast.error(err?.message || "Invalid OTP. Please try again.");
+      setOtp(["", "", "", "", "", ""]);
+      document.getElementById("otp-input-0")?.focus();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setOtp(["", "", "", "", "", ""]);
+    try {
+      await register(formData.email, formData.password, formData.name, "CUSTOMER", formData.phone);
+      toast.success("New OTP sent to your email!");
+      startOtpTimer();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to resend OTP");
+    }
+  };
+
+  // Show OTP verification screen
+  if (isSignup && signupStep === "otp") {
+    return (
+      <div
+        className="min-h-screen flex relative transition-colors duration-300 overflow-x-hidden"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-[2px] transition-colors duration-300" />
+
+        <div className="absolute top-4 right-4 z-50">
+          <button
+            onClick={toggleTheme}
+            className="w-10 h-10 flex items-center justify-center bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 rounded-full text-white hover:bg-white/30 transition-all duration-300 shadow-lg"
+            aria-label="Toggle theme"
+          >
+            {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
+          </button>
+        </div>
+
+        <div className="w-full flex items-center justify-center p-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md"
+          >
+            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/50 dark:border-gray-700/50 transition-colors duration-300">
+              {/* Header */}
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D4725C] to-[#B85A4A] mb-4 shadow-lg">
+                  <ShieldCheck className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Verify Email</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Enter the 6-digit OTP sent to
+                </p>
+                <p className="text-sm font-bold text-[#D4725C] mt-1">{formData.email}</p>
+              </div>
+
+              {/* Demo OTP Banner */}
+              {/* <div className="mb-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 text-center">
+                <p className="text-xs text-amber-600 dark:text-amber-400 mb-1">Demo OTP (for testing)</p>
+                <p className="text-2xl font-bold tracking-[0.3em] text-amber-700 dark:text-amber-300">{generatedOtp}</p>
+              </div> */}
+
+              {/* OTP Input */}
+              <div className="flex justify-center gap-2.5 mb-6" onPaste={handleOtpPaste}>
+                {otp.map((digit, i) => (
+                  <input
+                    key={i}
+                    id={`otp-input-${i}`}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(i, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                    className={`w-12 h-14 text-center text-xl font-bold rounded-xl border-2 transition-all focus:outline-none ${digit
+                      ? "border-[#D4725C] bg-[#D4725C]/5 dark:bg-[#D4725C]/10 text-gray-900 dark:text-white"
+                      : "border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white"
+                      } focus:border-[#D4725C] focus:ring-2 focus:ring-[#D4725C]/30`}
+                  />
+                ))}
+              </div>
+
+              {/* Timer & Resend */}
+              <div className="text-center mb-6">
+                {canResend ? (
+                  <button
+                    onClick={handleResendOtp}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#D4725C] hover:underline"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Resend OTP
+                  </button>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Resend OTP in{" "}
+                    <span className="font-bold text-[#D4725C]">{otpTimer}s</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Verify Button */}
+              <Button
+                onClick={handleVerifyOtp}
+                disabled={otp.some((d) => !d)}
+                className="w-full py-6 text-lg font-bold rounded-xl bg-gradient-to-r from-[#D4725C] to-[#B85A4A] hover:shadow-lg hover:shadow-orange-200 dark:hover:shadow-orange-900/40 hover:scale-[1.01] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ShieldCheck className="w-5 h-5 mr-2" />
+                Verify & Create Account
+              </Button>
+
+              {/* Back button */}
+              <button
+                onClick={() => {
+                  setSignupStep("form");
+                  setOtp(["", "", "", "", "", ""]);
+                }}
+                className="w-full mt-4 flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-[#D4725C] transition-colors font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to details
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div 
-      className="min-h-screen flex relative transition-colors duration-300"
+    <div
+      className="min-h-screen flex relative transition-colors duration-300 overflow-x-hidden"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -67,7 +340,7 @@ export default function UnifiedLogin() {
         {/* Decorative circles with adjusted opacity */}
         <div className="absolute top-20 left-20 w-32 h-32 bg-[#D4725C]/30 rounded-full blur-3xl"></div>
         <div className="absolute bottom-32 right-20 w-48 h-48 bg-[#B85A4A]/30 rounded-full blur-3xl"></div>
-        
+
         <div className="relative z-10 text-center max-w-md">
           {/* Logo/Icon */}
           <div className="mb-8 flex justify-center">
@@ -86,7 +359,7 @@ export default function UnifiedLogin() {
           <h1 className="text-6xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
             SkipQ
           </h1>
-          
+
           {/* Tagline */}
           <p className="text-xl text-white uppercase tracking-widest font-light drop-shadow-md">
             Your Perfect Meal, Just A Click Away!
@@ -100,11 +373,11 @@ export default function UnifiedLogin() {
             </div>
             <div className="flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-[#D4725C] rounded-full shadow-lg ring-2 ring-white/50"></div>
-              <span className="drop-shadow-md font-medium">Fresh Food Daily</span>
+              <span className="drop-shadow-md font-medium">Order from Anywhere</span>
             </div>
             <div className="flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-[#D4725C] rounded-full shadow-lg ring-2 ring-white/50"></div>
-              <span className="drop-shadow-md font-medium">Fast Delivery</span>
+              <span className="drop-shadow-md font-medium">Quick Pickup</span>
             </div>
           </div>
         </div>
@@ -144,23 +417,27 @@ export default function UnifiedLogin() {
                 <button
                   type="button"
                   onClick={() => setUserType("customer")}
-                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${
-                    userType === "customer"
-                      ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
-                      : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
+                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${userType === "customer"
+                    ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
+                    : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
                 >
                   <User className="size-4" />
                   <span>Customer</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setUserType("owner")}
-                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${
-                    userType === "owner"
-                      ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
-                      : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
+                  onClick={() => {
+                    if (isSignup) {
+                      navigate("/owner-register");
+                      return;
+                    }
+                    setUserType("owner");
+                  }}
+                  className={`flex-1 py-3 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 ${userType === "owner"
+                    ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C] font-bold shadow-sm"
+                    : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
                 >
                   <ChefHat className="size-4" />
                   <span>Owner</span>
@@ -212,10 +489,10 @@ export default function UnifiedLogin() {
                       required
                       className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white appearance-none transition-colors"
                     >
-                      <option value="" className="dark:bg-gray-900 dark:text-white">Select {userType === "owner" ? "canteen" : "hostel"}</option>
+                      <option value="" className="dark:bg-gray-900 dark:text-white">Select hostel</option>
                       {Array.from({ length: 14 }, (_, i) => (
                         <option key={i + 1} value={`Hall ${i + 1}`} className="dark:bg-gray-900 dark:text-white">
-                          Hall {i + 1} {userType === "owner" ? "Canteen" : ""}
+                          Hall {i + 1}
                         </option>
                       ))}
                     </select>
@@ -243,21 +520,63 @@ export default function UnifiedLogin() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                  Password
+                  {isSignup ? "Enter Password" : "Password"}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-11 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                    className="w-full pl-11 pr-11 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                     placeholder="••••••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
+                {isSignup && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 ml-1">
+                    Must be at least 8 characters
+                  </p>
+                )}
               </div>
+
+              {isSignup && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full pl-11 pr-11 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                      placeholder="••••••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                    <p className="text-xs text-red-500 mt-1.5 ml-1">Passwords do not match</p>
+                  )}
+                </div>
+              )}
 
               {!isSignup && (
                 <div className="flex items-center justify-between">
@@ -279,6 +598,7 @@ export default function UnifiedLogin() {
                   </div>
                   <a
                     href="#"
+                    onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }}
                     className="text-sm text-[#D4725C] hover:text-[#B85A4A] font-medium"
                   >
                     Forget Password?
@@ -298,7 +618,13 @@ export default function UnifiedLogin() {
               <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
                 {isSignup ? "Already have an account?" : "Not Registered Yet?"}{" "}
                 <button
-                  onClick={() => setIsSignup(!isSignup)}
+                  onClick={() => {
+                    if (!isSignup && userType === "owner") {
+                      navigate("/owner-register");
+                    } else {
+                      setIsSignup(!isSignup);
+                    }
+                  }}
                   className="text-[#D4725C] hover:text-[#B85A4A] font-bold hover:underline"
                 >
                   {isSignup ? "Login" : "Create an account"}

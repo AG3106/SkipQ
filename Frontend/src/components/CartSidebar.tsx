@@ -2,17 +2,14 @@ import { useRef, useEffect } from "react";
 import { router } from "../routes";
 import { useCart } from "../context/CartContext";
 import { motion, AnimatePresence } from "motion/react";
-import { X, ShoppingBag, Trash2, ChevronRight, Truck, Store, Tag, Gift, Plus, Minus } from "lucide-react";
+import { X, ShoppingBag, Trash2, ChevronRight, Tag, Gift, Plus, Minus } from "lucide-react";
 import { Button } from "./ui/button";
 
 export default function CartSidebar() {
-  const { isCartOpen, setIsCartOpen, cart, removeFromCart, updateQuantity, getTotalPrice } = useCart();
+  const { isCartOpen, setIsCartOpen, items, removeItem, updateQuantity, getTotal } = useCart();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const subTotal = getTotalPrice();
-  const discounts = 3.00; // Hardcoded as per design
-  const deliveryFee = 2.50; // Hardcoded as per design
-  const totalToPay = subTotal - discounts + deliveryFee;
+  const subTotal = getTotal();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,14 +75,14 @@ export default function CartSidebar() {
 
             {/* Cart Items - Scrollable */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {cart.length === 0 ? (
+              {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-60">
                   <div className="bg-gray-100 p-6 rounded-full">
                     <ShoppingBag className="size-10 text-gray-400" />
                   </div>
                   <p className="text-lg font-medium text-gray-900">Your basket is empty</p>
                   <p className="text-sm text-gray-500 max-w-[200px]">Looks like you haven't added any food yet.</p>
-                  <Button 
+                  <Button
                     onClick={() => setIsCartOpen(false)}
                     variant="outline"
                     className="mt-4 border-[#D4725C] text-[#D4725C] hover:bg-orange-50"
@@ -94,22 +91,22 @@ export default function CartSidebar() {
                   </Button>
                 </div>
               ) : (
-                cart.map((item) => (
-                  <motion.div 
+                items.map((item) => (
+                  <motion.div
                     layout
-                    key={item.id} 
+                    key={item.dishId}
                     className="group relative flex items-start gap-4 bg-white/60 p-4 rounded-2xl border border-gray-100 hover:border-orange-100 hover:shadow-lg hover:shadow-orange-100/50 transition-all duration-300"
                   >
                     <div className="flex flex-col items-center gap-1 bg-gray-50 rounded-xl p-1 shrink-0 border border-gray-100">
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      <button
+                        onClick={() => updateQuantity(item.dishId, item.quantity + 1)}
                         className="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-gray-600 hover:text-[#D4725C] hover:bg-orange-50 transition-colors"
                       >
                         <Plus className="size-3" />
                       </button>
                       <span className="font-bold text-sm text-gray-900 w-6 text-center">{item.quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      <button
+                        onClick={() => updateQuantity(item.dishId, item.quantity - 1)}
                         className="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-gray-600 hover:text-[#D4725C] hover:bg-orange-50 transition-colors"
                       >
                         <Minus className="size-3" />
@@ -118,14 +115,14 @@ export default function CartSidebar() {
                     <div className="flex-1">
                       <div className="flex justify-between items-start">
                         <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.name}</h3>
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
+                        <button
+                          onClick={() => removeItem(item.dishId)}
                           className="text-gray-400 hover:text-red-500 transition-colors p-1"
                         >
                           <Trash2 className="size-4" />
                         </button>
                       </div>
-                      <p className="text-sm text-gray-500 mt-1 line-clamp-1">{item.description || "Delicious food item"}</p>
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-1">{item.category || "Food item"}</p>
                       <p className="text-[#D4725C] font-bold text-lg mt-2">₹{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </motion.div>
@@ -134,26 +131,18 @@ export default function CartSidebar() {
             </div>
 
             {/* Footer / Summary */}
-            {cart.length > 0 && (
+            {items.length > 0 && (
               <div className="bg-white/80 backdrop-blur-md p-6 border-t border-gray-100 shrink-0 space-y-4 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] rounded-t-3xl">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-gray-600 text-sm">
                     <span>Sub Total</span>
                     <span className="font-medium text-gray-900">₹{subTotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-gray-600 text-sm">
-                    <span>Discounts</span>
-                    <span className="font-medium text-green-600">-₹{discounts.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-gray-600 text-sm">
-                    <span>Delivery Fee</span>
-                    <span className="font-medium text-gray-900">₹{deliveryFee.toFixed(2)}</span>
-                  </div>
                 </div>
 
                 <div className="flex items-center justify-between py-4 border-t border-dashed border-gray-200">
                    <span className="text-lg font-bold text-gray-900">Total</span>
-                   <span className="text-2xl font-black text-[#D4725C]">₹{Math.max(0, totalToPay).toFixed(2)}</span>
+                   <span className="text-2xl font-black text-[#D4725C]">₹{subTotal.toFixed(2)}</span>
                 </div>
 
                 {/* Promo Codes */}
@@ -165,18 +154,6 @@ export default function CartSidebar() {
                   <button className="flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 p-3 rounded-xl text-xs font-medium text-gray-600 transition-colors border border-gray-200">
                     <Tag className="size-4 text-[#D4725C]" />
                     <span>Apply Coupon</span>
-                  </button>
-                </div>
-
-                {/* Delivery / Collection Toggle */}
-                <div className="bg-gray-100/50 p-1 rounded-xl flex">
-                  <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-white shadow-sm text-sm font-bold text-gray-900 border border-gray-200">
-                    <Truck className="size-4" />
-                    Delivery
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900">
-                    <Store className="size-4" />
-                    Pickup
                   </button>
                 </div>
 

@@ -1,0 +1,56 @@
+nohup: ignoring input
+[2026-03-26 14:18:09,285] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-03-26 14:18:10,499] INFO django.server basehttp.log_message:212 — "GET /api/ HTTP/1.1" 200 190
+[2026-03-26 14:18:26,461] WARNING django.request log.log_response:246 — Not Found: /
+[2026-03-26 14:18:26,461] WARNING django.server basehttp.log_message:212 — "GET / HTTP/1.1" 404 3259
+[2026-03-26 14:18:26,547] WARNING django.request log.log_response:246 — Not Found: /favicon.ico
+[2026-03-26 14:18:26,547] WARNING django.server basehttp.log_message:212 — "GET /favicon.ico HTTP/1.1" 404 3310
+[2026-03-26 14:18:26,833] INFO django.server basehttp.log_message:212 — "GET /api/ HTTP/1.1" 200 190
+[2026-03-26 14:18:43,587] WARNING django.request log.log_response:246 — Forbidden: /api/users/profile/
+[2026-03-26 14:18:43,588] WARNING django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 403 58
+[2026-03-26 14:18:56,546] INFO django.server basehttp.log_message:212 — "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+[2026-03-26 14:18:58,367] INFO apps.users.services.auth_service auth_service.authenticate_user:217 — Standard session (browser close) for aayushk24@iitk.ac.in
+[2026-03-26 14:18:58,385] INFO django.server basehttp.log_message:212 — "POST /api/auth/login/ HTTP/1.1" 200 197
+[2026-03-26 14:18:58,419] INFO django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 200 229
+[2026-03-26 14:18:58,423] INFO django.server basehttp.log_message:212 — "GET /api/users/wallet/ HTTP/1.1" 200 21
+[2026-03-26 14:18:58,511] INFO django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 200 229
+[2026-03-26 14:18:58,757] INFO django.server basehttp.log_message:212 — "GET /api/canteens/dishes/popular/ HTTP/1.1" 200 1231
+[2026-03-26 14:18:58,769] INFO django.server basehttp.log_message:212 — "GET /api/orders/previous-order/ HTTP/1.1" 200 431
+[2026-03-26 14:18:58,775] INFO django.server basehttp.log_message:212 — "GET /api/canteens/ HTTP/1.1" 200 701
+[2026-03-26 14:19:06,373] INFO django.server basehttp.log_message:212 — "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+[2026-03-26 14:19:07,150] WARNING django.request log.log_response:246 — Bad Request: /api/auth/login/
+[2026-03-26 14:19:07,150] WARNING django.server basehttp.log_message:212 — "POST /api/auth/login/ HTTP/1.1" 400 31
+[2026-03-26 14:20:08,980] WARNING django.request log.log_response:246 — Forbidden: /api/users/profile/
+[2026-03-26 14:20:08,981] WARNING django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 403 58
+[2026-03-26 14:20:25,740] INFO django.server basehttp.log_message:212 — "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+[2026-03-26 14:20:26,454] INFO apps.users.services.auth_service auth_service.authenticate_user:217 — Standard session (browser close) for aayushk24@iitk.ac.in
+[2026-03-26 14:20:26,462] INFO django.server basehttp.log_message:212 — "POST /api/auth/login/ HTTP/1.1" 200 197
+[2026-03-26 14:20:26,616] INFO django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 200 229
+[2026-03-26 14:20:26,631] INFO django.server basehttp.log_message:212 — "GET /api/users/wallet/ HTTP/1.1" 200 21
+[2026-03-26 14:20:26,691] INFO django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 200 229
+[2026-03-26 14:20:26,844] INFO django.server basehttp.log_message:212 — "GET /api/canteens/dishes/popular/ HTTP/1.1" 200 1231
+[2026-03-26 14:20:26,860] INFO django.server basehttp.log_message:212 — "GET /api/orders/previous-order/ HTTP/1.1" 200 431
+[2026-03-26 14:20:26,862] INFO django.server basehttp.log_message:212 — "GET /api/canteens/ HTTP/1.1" 200 701
+[2026-03-26 14:20:30,482] INFO django.server basehttp.log_message:212 — "GET /api/orders/history/detailed/ HTTP/1.1" 200 2255
+[2026-03-26 14:24:08,489] INFO django.server basehttp.log_message:212 — "GET /api/ HTTP/1.1" 200 190
+[2026-03-26 14:24:21,494] INFO django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 200 229
+[2026-03-26 14:24:21,503] INFO django.server basehttp.log_message:212 — "GET /api/orders/history/detailed/ HTTP/1.1" 200 2255
+[2026-03-26 14:24:21,533] INFO django.server basehttp.log_message:212 — "GET /api/users/wallet/ HTTP/1.1" 200 21
+[2026-03-26 14:24:22,574] INFO django.server basehttp.log_message:212 — "GET /api/canteens/dishes/popular/ HTTP/1.1" 200 1231
+[2026-03-26 14:24:22,593] INFO django.server basehttp.log_message:212 — "GET /api/orders/previous-order/ HTTP/1.1" 200 431
+[2026-03-26 14:24:22,597] INFO django.server basehttp.log_message:212 — "GET /api/canteens/ HTTP/1.1" 200 701
+[2026-03-26 14:24:34,954] INFO apps.users.services.auth_service auth_service.authenticate_user:217 — Standard session (browser close) for aayushk24@iitk.ac.in
+[2026-03-26 14:24:34,963] INFO django.server basehttp.log_message:212 — "POST /api/auth/login/ HTTP/1.1" 200 197
+[2026-03-26 14:24:35,035] INFO django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 200 229
+[2026-03-26 14:24:35,120] INFO django.server basehttp.log_message:212 — "GET /api/users/profile/ HTTP/1.1" 200 229
+[2026-03-26 14:24:35,249] INFO django.server basehttp.log_message:212 — "GET /api/canteens/dishes/popular/ HTTP/1.1" 200 1231
+[2026-03-26 14:24:35,266] INFO django.server basehttp.log_message:212 — "GET /api/orders/previous-order/ HTTP/1.1" 200 431
+[2026-03-26 14:24:35,272] INFO django.server basehttp.log_message:212 — "GET /api/canteens/ HTTP/1.1" 200 701
+[2026-03-26 14:24:46,052] WARNING django.request log.log_response:246 — Bad Request: /api/auth/login/
+[2026-03-26 14:24:46,053] WARNING django.server basehttp.log_message:212 — "POST /api/auth/login/ HTTP/1.1" 400 31
+[2026-03-26 14:25:02,920] INFO django.server basehttp.handle_error:81 — - Broken pipe from ('172.23.18.6', 48866)
+[2026-03-26 14:25:02,921] INFO django.server basehttp.handle_error:81 — - Broken pipe from ('172.23.18.6', 48868)
+[2026-03-26 14:25:02,921] INFO django.server basehttp.handle_error:81 — - Broken pipe from ('172.23.18.6', 49672)
+[2026-03-26 14:25:02,922] INFO django.server basehttp.handle_error:81 — - Broken pipe from ('172.23.18.6', 48870)
