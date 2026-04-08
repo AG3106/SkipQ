@@ -363,8 +363,15 @@ def manager_flavors(request):
     # POST
     serializer = CakeFlavorSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    serializer.save(canteen=canteen)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    flavor = serializer.save(canteen=canteen)
+
+    # Handle optional photo upload → files/cake_images/<canteen_id>/<id>.jpg
+    photo = request.FILES.get("photo")
+    if photo:
+        from apps.canteens.utils.file_handlers import save_cake_image
+        save_cake_image(canteen.pk, flavor.pk, photo)
+
+    return Response(CakeFlavorSerializer(flavor).data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["PUT", "PATCH", "DELETE"])
@@ -385,6 +392,8 @@ def manager_flavor_detail(request, pk):
         return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "DELETE":
+        from apps.canteens.utils.file_handlers import delete_cake_image
+        delete_cake_image(entry.canteen_id, entry.pk)
         entry.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -393,4 +402,12 @@ def manager_flavor_detail(request, pk):
     serializer = CakeFlavorSerializer(entry, data=request.data, partial=partial)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    return Response(serializer.data)
+
+    # Handle optional photo upload → files/cake_images/<canteen_id>/<id>.jpg
+    photo = request.FILES.get("photo")
+    if photo:
+        from apps.canteens.utils.file_handlers import save_cake_image
+        save_cake_image(entry.canteen_id, entry.pk, photo)
+
+    return Response(CakeFlavorSerializer(entry).data)
+

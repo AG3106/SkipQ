@@ -157,6 +157,7 @@ class CakeFlavor(models.Model):
     """
     Defines available cake flavors (with optional photo) for a canteen.
     Managers configure these; the reservation flow validates against them.
+    Photo is stored on disk at files/cake_images/<canteen_id>/<id>.jpg (managed by file_handlers).
     """
 
     canteen = models.ForeignKey(
@@ -165,12 +166,6 @@ class CakeFlavor(models.Model):
         related_name="cake_flavors",
     )
     name = models.CharField(max_length=100)
-    photo = models.ImageField(
-        upload_to="cake_flavors/",
-        blank=True,
-        null=True,
-        help_text="Photo of this cake flavor.",
-    )
     is_available = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

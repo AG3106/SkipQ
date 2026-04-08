@@ -217,7 +217,7 @@ export interface CakeSizePrice {
 export interface CakeFlavor {
     id: number;
     name: string;
-    photo: string | null;
+    photoUrl: string | null;
     isAvailable: boolean;
     createdAt: string;
     updatedAt: string;

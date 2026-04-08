@@ -69,5 +69,9 @@ if settings.DEBUG:
         "/files/dish_images/",
         document_root=settings.FILES_ROOT / "dish_images",
     )
+    urlpatterns += static(
+        "/files/cake_images/",
+        document_root=settings.FILES_ROOT / "cake_images",
+    )
     # NOTE: files/documents/ is NOT served publicly — accessed via authenticated view
 

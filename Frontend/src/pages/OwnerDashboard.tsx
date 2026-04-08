@@ -426,6 +426,15 @@ export default function OwnerDashboard() {
               <p className="font-bold text-sm text-gray-700 dark:text-gray-300">Account</p>
             </button>
           </Link>
+
+          <Link to="/owner/cakes">
+            <button className="w-full bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 transition-all hover:shadow-lg hover:-translate-y-1 group">
+              <div className="bg-pink-50 dark:bg-pink-950/30 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-[#D4725C] transition-colors">
+                <Cake className="size-6 text-[#D4725C] group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-sm text-gray-700 dark:text-gray-300">Cake Settings</p>
+            </button>
+          </Link>
         </div>
 
         {/* Tabs */}

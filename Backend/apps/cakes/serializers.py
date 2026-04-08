@@ -78,9 +78,17 @@ class CakeSizePriceSerializer(serializers.ModelSerializer):
 
 class CakeFlavorSerializer(serializers.ModelSerializer):
     """Read/write serializer for cake flavors."""
+    photo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = CakeFlavor
-        fields = ["id", "name", "photo", "is_available", "created_at", "updated_at"]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        fields = ["id", "name", "photo_url", "is_available", "created_at", "updated_at"]
+        read_only_fields = ["id", "photo_url", "created_at", "updated_at"]
+
+    def get_photo_url(self, obj):
+        """Return /files/cake_images/<canteen_id>/<id>.jpg if the file exists."""
+        from apps.canteens.utils.file_handlers import cake_image_exists
+        if cake_image_exists(obj.canteen_id, obj.pk):
+            return f"/files/cake_images/{obj.canteen_id}/{obj.pk}.jpg"
+        return None
 
