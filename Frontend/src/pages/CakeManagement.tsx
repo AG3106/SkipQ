@@ -14,6 +14,7 @@ import {
   getManagerSizePrices, createSizePrice, updateSizePrice, deleteSizePrice,
   getManagerFlavors, createFlavor, updateFlavor, deleteFlavor,
 } from "../api/cakes";
+import { buildFileUrl } from "../api/client";
 import type { CakeReservation, CakeSizePrice, CakeFlavor } from "../types";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
@@ -765,7 +766,7 @@ export default function CakeManagement() {
                         {flavors.map((f) => (
                           <div key={f.id} className="relative rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 group">
                             {f.photoUrl ? (
-                              <img src={f.photoUrl} alt={f.name} className="w-full h-28 object-cover" />
+                              <img src={buildFileUrl(f.photoUrl) ?? ""} alt={f.name} className="w-full h-28 object-cover" />
                             ) : (
                               <div className="w-full h-28 bg-gradient-to-br from-pink-100 to-orange-100 dark:from-pink-950/40 dark:to-orange-950/40 flex items-center justify-center">
                                 <Cake className="size-10 text-[#D4725C]/30" />

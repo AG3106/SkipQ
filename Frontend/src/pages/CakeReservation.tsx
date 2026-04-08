@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { listCanteens } from "../api/canteens";
 import { checkCakeAvailability, getMyReservations, getCakeOptions } from "../api/cakes";
+import { buildFileUrl } from "../api/client";
 import { useWallet } from "../context/WalletContext";
 import type { Canteen, CakeReservation as CakeReservationType, CakeSizePrice, CakeFlavor } from "../types";
 
@@ -442,8 +443,8 @@ export default function CakeReservation() {
                                   : "border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700"
                               }`}
                             >
-                              {f.photo ? (
-                                <img src={f.photo} alt={f.name} className="w-full h-24 object-cover" />
+                              {f.photoUrl ? (
+                                <img src={buildFileUrl(f.photoUrl) ?? ""} alt={f.name} className="w-full h-24 object-cover" />
                               ) : (
                                 <div className="w-full h-24 bg-gradient-to-br from-pink-100 to-orange-100 dark:from-pink-950/40 dark:to-orange-950/40 flex items-center justify-center">
                                   <Cake className="size-8 text-[#D4725C]/40" />
