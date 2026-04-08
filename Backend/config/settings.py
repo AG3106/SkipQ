@@ -8,6 +8,10 @@ and all custom apps defined in the system design.
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # ---------------------------------------------------------------------------
 # Base directory — points to Backend/
@@ -97,11 +101,11 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": "skipq_db",
-            "USER": "postgres",
+            "NAME": os.environ.get("DB_NAME", "skipq_db"),
+            "USER": os.environ.get("DB_USER", "postgres"),
             "PASSWORD": os.environ.get("DB_PASSWORD", "sppsql"),
-            "HOST": "localhost",
-            "PORT": "5433",
+            "HOST": os.environ.get("DB_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT", "5433"),
         }
     }
 
@@ -151,10 +155,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ---------------------------------------------------------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # Use custom CSRF-exempt session auth for API endpoints.
-        # CORS middleware already validates origins; CSRF is redundant for
-        # DRF APIs consumed via AJAX / programmatic clients.
-        "config.authentication.CsrfExemptSessionAuthentication",
+        # Session auth with CSRF enforcement.
+        # Frontend must send X-CSRFToken header on unsafe requests.
+        "config.authentication.CsrfSessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -182,6 +185,11 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 31          # 31 days max (extended session)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False          # Overridden per-login
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
+
+# CSRF — frontend reads the csrftoken cookie and sends it as X-CSRFToken header
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = False                      # JS must read the cookie
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS[:]    # Trust same origins as CORS
 
 # ---------------------------------------------------------------------------
 # Logging — structured logging for debugging (Section 9 of Instructions)
@@ -223,7 +231,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "skipqiitk@gmail.com"
-EMAIL_HOST_PASSWORD = "pyax qxcr ituw yice"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "skipqiitk@gmail.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

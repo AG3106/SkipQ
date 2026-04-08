@@ -114,3 +114,72 @@ class CakeReservation(models.Model):
             "CakeReservation #%s transitioned: %s → %s",
             self.pk, old_status, new_status,
         )
+
+
+# ---------------------------------------------------------------------------
+# CakeSizePrice — per-canteen size/price configuration (managed by manager)
+# ---------------------------------------------------------------------------
+class CakeSizePrice(models.Model):
+    """
+    Defines available cake sizes and their advance prices for a canteen.
+    Managers configure these; the reservation flow validates against them.
+    """
+
+    canteen = models.ForeignKey(
+        "canteens.Canteen",
+        on_delete=models.CASCADE,
+        related_name="cake_size_prices",
+    )
+    size = models.CharField(max_length=50, help_text="e.g., 0.5 kg, 1 kg, 2 kg")
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text="Advance amount for this size.",
+    )
+    is_available = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "cakes"
+        unique_together = ("canteen", "size")
+        ordering = ["price"]
+
+    def __str__(self):
+        return f"{self.canteen.name} — {self.size} @ ₹{self.price}"
+
+
+# ---------------------------------------------------------------------------
+# CakeFlavor — per-canteen flavor catalog (managed by manager)
+# ---------------------------------------------------------------------------
+class CakeFlavor(models.Model):
+    """
+    Defines available cake flavors (with optional photo) for a canteen.
+    Managers configure these; the reservation flow validates against them.
+    """
+
+    canteen = models.ForeignKey(
+        "canteens.Canteen",
+        on_delete=models.CASCADE,
+        related_name="cake_flavors",
+    )
+    name = models.CharField(max_length=100)
+    photo = models.ImageField(
+        upload_to="cake_flavors/",
+        blank=True,
+        null=True,
+        help_text="Photo of this cake flavor.",
+    )
+    is_available = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "cakes"
+        unique_together = ("canteen", "name")
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.canteen.name} — {self.name}"

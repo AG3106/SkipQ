@@ -114,9 +114,9 @@ export default function MenuBrowsing() {
 
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">{canteen.name}</h1>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold border ${canteen.isCurrentlyOpen ? "bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"}`}>
+                <div className="flex items-center gap-3 mb-2 flex-wrap">
+                  <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight min-w-0">{canteen.name}</h1>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold border shrink-0 ${canteen.isCurrentlyOpen ? "bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"}`}>
                     {canteen.isCurrentlyOpen ? "Open Now" : "Closed"}
                   </span>
                 </div>

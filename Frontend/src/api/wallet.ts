@@ -16,3 +16,7 @@ export async function addFunds(amount: number): Promise<{ balance: string; messa
 export async function setWalletPin(pin: string): Promise<{ message: string }> {
     return api.post("/api/users/wallet/set-pin/", { pin });
 }
+
+export async function changeWalletPin(currentPin: string, newPin: string): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/change-pin/", { currentPin, newPin });
+}

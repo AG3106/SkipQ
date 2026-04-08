@@ -131,9 +131,9 @@ export default function Checkout() {
                   <motion.div
                     key={item.dishId}
                     layout
-                    className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 gap-3"
                   >
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 dark:text-white">
                         {item.name}
                       </h3>
@@ -141,7 +141,7 @@ export default function Checkout() {
                         ₹{item.price} each
                       </p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 self-end sm:self-auto">
                       <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 px-1">
                         <button
                           onClick={() =>

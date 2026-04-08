@@ -119,7 +119,7 @@ export default function OrderConfirmation() {
               </p>
 
               {/* Order ID */}
-              <div className="bg-gray-50 border border-gray-200 dark:border-gray-700 border-dashed rounded-2xl p-6 mb-8 relative group cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-200 dark:hover:border-orange-800 transition-colors">
+              <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 border-dashed rounded-2xl p-6 mb-8 relative group cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-200 dark:hover:border-orange-800 transition-colors">
                 <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 group-hover:text-[#D4725C]">Order ID</div>
                 <div className="text-3xl font-black text-gray-900 dark:text-white tracking-wider group-hover:text-[#D4725C] transition-colors font-mono">{orderId}</div>
                 {order && (
@@ -131,7 +131,7 @@ export default function OrderConfirmation() {
 
               {/* Order Items */}
               {order && order.items.length > 0 && (
-                <div className="bg-gray-50/80/50 rounded-2xl p-4 mb-8 border border-gray-100/50 dark:border-gray-800 text-left">
+                <div className="bg-gray-50/80 dark:bg-gray-800/50 rounded-2xl p-4 mb-8 border border-gray-100/50 dark:border-gray-800 text-left">
                   <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
                     Items Ordered
                   </p>
@@ -183,7 +183,7 @@ export default function OrderConfirmation() {
                             }`}>
                             <Icon className={`size-6 ${isComplete ? "text-white" : "text-gray-400 dark:text-gray-600"}`} />
                           </div>
-                          <div className={isComplete ? "flex-1 bg-white p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
+                          <div className={isComplete ? "flex-1 bg-white dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
                             <div className={`font-bold ${isComplete ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>{step.label}</div>
                             <div className={`text-xs ${isComplete ? "text-gray-500 dark:text-gray-400" : "text-gray-400 dark:text-gray-600"}`}>{step.desc}</div>
                           </div>
@@ -195,7 +195,7 @@ export default function OrderConfirmation() {
               )}
 
               {/* Estimated Pickup Time */}
-              {order?.estimatedWaitMinutes && (
+              {order && order.estimatedWaitMinutes > 0 && (
                 <div className="bg-gradient-to-r from-[#D4725C] to-[#B85A4A] rounded-2xl p-6 text-white mb-8 shadow-lg shadow-orange-200 dark:shadow-orange-900/30 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:scale-110 transition-transform" />
                   <div className="relative z-10 flex items-center justify-between">

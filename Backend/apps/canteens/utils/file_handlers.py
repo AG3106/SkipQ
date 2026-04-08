@@ -193,4 +193,8 @@ def get_canteen_documents(canteen_id):
 
 def get_document_path(canteen_id, filename):
     """Return the absolute filesystem path for a specific document file."""
-    return os.path.join(settings.FILES_ROOT, "documents", str(canteen_id), filename)
+    # Prevent path traversal — only allow the basename (no slashes or '..')
+    safe_filename = os.path.basename(filename)
+    if not safe_filename or safe_filename != filename:
+        raise ValueError("Invalid filename")
+    return os.path.join(settings.FILES_ROOT, "documents", str(canteen_id), safe_filename)

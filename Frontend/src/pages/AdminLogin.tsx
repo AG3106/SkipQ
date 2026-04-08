@@ -29,7 +29,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950 flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
       {/* Background decorations */}
       <div className="absolute top-20 left-20 w-72 h-72 bg-[#D4725C]/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#D4725C]/5 rounded-full blur-3xl" />
@@ -38,7 +38,7 @@ export default function AdminLogin() {
       <div className="absolute top-4 right-4 z-50">
         <button
           onClick={toggleTheme}
-          className="w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all"
+          className="w-10 h-10 flex items-center justify-center bg-gray-200/60 dark:bg-white/10 backdrop-blur-md border border-gray-300 dark:border-white/20 rounded-full text-gray-600 dark:text-white hover:bg-gray-300/60 dark:hover:bg-white/20 transition-all"
         >
           {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
         </button>
@@ -48,7 +48,7 @@ export default function AdminLogin() {
       <div className="absolute top-4 left-4 z-50">
         <button
           onClick={() => navigate("/login")}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+          className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
         >
           <ArrowLeft className="size-4" />
           Back to Login
@@ -64,38 +64,38 @@ export default function AdminLogin() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-white text-2xl mb-1">Admin Portal</h1>
-          <p className="text-gray-400 text-sm">SkipQ Administration Access</p>
+          <h1 className="text-gray-900 dark:text-white text-2xl mb-1">Admin Portal</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">SkipQ Administration Access</p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-lg dark:shadow-none transition-colors duration-300">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm text-gray-300 mb-2">Email</label>
+              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   required
                   placeholder="admin@skipq.com"
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 focus:border-[#D4725C]/50 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 focus:border-[#D4725C]/50 transition-all text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-300 mb-2">Password</label>
+              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   required
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 focus:border-[#D4725C]/50 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50 focus:border-[#D4725C]/50 transition-all text-sm"
                 />
               </div>
             </div>
@@ -121,7 +121,7 @@ export default function AdminLogin() {
           </form>
         </div>
 
-        <p className="text-center text-gray-500 text-xs mt-6">
+        <p className="text-center text-gray-400 dark:text-gray-500 text-xs mt-6">
           This portal is restricted to authorized administrators only.
         </p>
       </div>

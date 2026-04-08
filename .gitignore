@@ -16,3 +16,6 @@ Frontend/build/
 Frontend/tests/
 .claude/
 Context/
+.env
+*.env
+BUG_REPORT.md

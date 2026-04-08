@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router";
-import { Wallet, Plus, ArrowLeft, Sparkles, TrendingUp, Clock, Lock } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { Wallet, Plus, ArrowLeft, Sparkles, TrendingUp, Clock, Lock, KeyRound } from "lucide-react";
 import Header from "../components/Header";
 import OwnerHeader from "../components/OwnerHeader";
 import Footer from "../components/Footer";
@@ -9,6 +9,7 @@ import { useWallet } from "../context/WalletContext";
 import { useAuth } from "../context/AuthContext";
 
 export default function WalletPage() {
+  const navigate = useNavigate();
   const { balance, addMoney } = useWallet();
   const { user } = useAuth();
   const isManager = user?.role === "MANAGER";
@@ -99,13 +100,22 @@ export default function WalletPage() {
               </div>
             </div>
 
-            <Button
-              onClick={() => setShowAddMoney(true)}
-              className="bg-white text-[#D4725C] hover:bg-white/90 rounded-xl px-6 py-5 font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
-            >
-              <Plus className="size-5" />
-              Add Money
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setShowAddMoney(true)}
+                className="bg-white text-[#D4725C] hover:bg-white/90 rounded-xl px-6 py-5 font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
+              >
+                <Plus className="size-5" />
+                Add Money
+              </Button>
+              <Button
+                onClick={() => navigate("/wallet/change-pin")}
+                className="bg-white/20 text-white hover:bg-white/30 rounded-xl px-5 py-5 font-bold backdrop-blur-sm transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 border border-white/20"
+              >
+                <KeyRound className="size-5" />
+                Change PIN
+              </Button>
+            </div>
 
           </div>
         </div>
@@ -143,7 +153,7 @@ export default function WalletPage() {
                 value={addAmount}
                 onChange={(e) => setAddAmount(e.target.value)}
                 placeholder="Enter amount"
-                className="w-full pl-10 pr-4 py-3.5 bg-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white text-lg font-bold placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full pl-10 pr-4 py-3.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] transition-all text-gray-900 dark:text-white text-lg font-bold placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
 

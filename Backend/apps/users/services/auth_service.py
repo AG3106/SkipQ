@@ -8,7 +8,6 @@ Implements workflows from:
 """
 
 import random
-import hashlib
 import logging
 
 from django.contrib.auth import login, logout
@@ -162,6 +161,10 @@ def complete_registration(email, password=None, password_hash=None, role="CUSTOM
 
     Accepts either a plaintext password or a pre-hashed password_hash.
     """
+    # Prevent privilege escalation — only CUSTOMER and MANAGER allowed via signup
+    if role not in (User.Role.CUSTOMER, User.Role.MANAGER):
+        raise ValueError("Invalid role for registration")
+
     # --- Manager flow: pending admin approval ---
     if role == User.Role.MANAGER:
         if not password_hash and password:
@@ -320,8 +323,9 @@ def reset_password(email, otp, new_password):
 # ---------------------------------------------------------------------------
 
 def hash_wallet_pin(pin):
-    """Hash a wallet PIN using SHA-256."""
-    return hashlib.sha256(pin.encode()).hexdigest()
+    """Hash a wallet PIN using Django's password hashing (PBKDF2/bcrypt with salt)."""
+    from django.contrib.auth.hashers import make_password
+    return make_password(pin)
 
 
 def verify_wallet_pin(stored_hash, pin):
@@ -329,7 +333,8 @@ def verify_wallet_pin(stored_hash, pin):
     Sequence diagram (Order/phase2, step 16):
       BE → verifyWalletPIN(userID, pinHash)
     """
-    return stored_hash == hash_wallet_pin(pin)
+    from django.contrib.auth.hashers import check_password
+    return check_password(pin, stored_hash)
 
 
 # ---------------------------------------------------------------------------

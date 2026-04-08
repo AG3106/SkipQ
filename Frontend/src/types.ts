@@ -205,6 +205,29 @@ export interface CakeReservation {
     createdAt: string;
 }
 
+export interface CakeSizePrice {
+    id: number;
+    size: string;
+    price: string;
+    isAvailable: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CakeFlavor {
+    id: number;
+    name: string;
+    photo: string | null;
+    isAvailable: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CakeOptions {
+    sizes: CakeSizePrice[];
+    flavors: CakeFlavor[];
+}
+
 // ---------------------------------------------------------------------------
 // Wallet
 // ---------------------------------------------------------------------------

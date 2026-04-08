@@ -20,7 +20,10 @@ class InitiateSignupSerializer(serializers.Serializer):
     """
     email = serializers.EmailField()
     password = serializers.CharField(min_length=8, write_only=True)
-    role = serializers.ChoiceField(choices=User.Role.choices, default=User.Role.CUSTOMER)
+    role = serializers.ChoiceField(
+        choices=[(User.Role.CUSTOMER, "Customer"), (User.Role.MANAGER, "Manager")],
+        default=User.Role.CUSTOMER,
+    )
     name = serializers.CharField(max_length=255, required=False, default="")
     phone = serializers.CharField(max_length=20, required=False, default="")
 
@@ -100,6 +103,11 @@ class AddFundsSerializer(serializers.Serializer):
 
 class SetWalletPINSerializer(serializers.Serializer):
     pin = serializers.CharField(min_length=4, max_length=6)
+
+
+class ChangeWalletPINSerializer(serializers.Serializer):
+    current_pin = serializers.CharField(min_length=4, max_length=6)
+    new_pin = serializers.CharField(min_length=4, max_length=6)
 
 
 # ---------------------------------------------------------------------------

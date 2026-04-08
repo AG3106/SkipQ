@@ -15,12 +15,45 @@ from datetime import datetime, timedelta
 from django.db import transaction
 from django.utils import timezone
 
-from apps.cakes.models import CakeReservation
+from apps.cakes.models import CakeReservation, CakeSizePrice, CakeFlavor
 from apps.orders.models import Payment, Order
 from apps.users.services.auth_service import verify_wallet_pin
 from apps.users.services.profile_service import deduct_funds, refund_to_wallet
 
 logger = logging.getLogger(__name__)
+
+
+def get_expected_advance(canteen, size: str) -> Decimal:
+    """
+    Return the expected advance for a given cake size at a specific canteen.
+    Prices are stored in CakeSizePrice (managed by the canteen manager).
+    Raises ValueError if the size is not configured or unavailable.
+    """
+    try:
+        entry = CakeSizePrice.objects.get(canteen=canteen, size=size, is_available=True)
+    except CakeSizePrice.DoesNotExist:
+        available = list(
+            CakeSizePrice.objects.filter(canteen=canteen, is_available=True)
+            .values_list("size", flat=True)
+        )
+        raise ValueError(
+            f"Size '{size}' is not available at {canteen.name}. "
+            f"Available sizes: {', '.join(sorted(available)) or 'none configured'}"
+        )
+    return entry.price
+
+
+def validate_flavor(canteen, flavor: str) -> None:
+    """Raise ValueError if the flavor is not available at this canteen."""
+    if not CakeFlavor.objects.filter(canteen=canteen, name=flavor, is_available=True).exists():
+        available = list(
+            CakeFlavor.objects.filter(canteen=canteen, is_available=True)
+            .values_list("name", flat=True)
+        )
+        raise ValueError(
+            f"Flavor '{flavor}' is not available at {canteen.name}. "
+            f"Available flavors: {', '.join(sorted(available)) or 'none configured'}"
+        )
 
 
 def check_availability(canteen, date, time=None):
@@ -64,10 +97,26 @@ def submit_reservation(customer_profile, canteen, flavor, size, design, message,
     if not verify_wallet_pin(customer_profile.wallet_pin_hash, wallet_pin):
         raise ValueError("Incorrect wallet PIN")
 
-    advance = Decimal(str(advance_amount))
+    # ── Server-side validation (prevents payload tampering) ───────────────
+    # Validate flavor exists at this canteen
+    validate_flavor(canteen, flavor)
 
-    # Deduct advance payment
-    deduct_funds(customer_profile, advance)
+    # Validate size and look up the canteen's configured price
+    expected_advance = get_expected_advance(canteen, size)
+    client_advance = Decimal(str(advance_amount))
+
+    if client_advance != expected_advance:
+        logger.warning(
+            "Advance amount mismatch for %s: client sent ₹%s, expected ₹%s for size '%s' at %s",
+            customer_profile.user.email, client_advance, expected_advance, size, canteen.name,
+        )
+        raise ValueError(
+            f"Invalid advance amount. Expected ₹{expected_advance} for size '{size}', "
+            f"but received ₹{client_advance}."
+        )
+
+    # Deduct the *server-computed* advance — never trust the client value
+    deduct_funds(customer_profile, expected_advance)
 
     # Create cake reservation
     reservation = CakeReservation.objects.create(
@@ -79,7 +128,7 @@ def submit_reservation(customer_profile, canteen, flavor, size, design, message,
         message=message,
         pickup_date=pickup_date,
         pickup_time=pickup_time,
-        advance_amount=advance,
+        advance_amount=expected_advance,
         status=CakeReservation.Status.PENDING_APPROVAL,
     )
 

@@ -13,10 +13,19 @@ urlpatterns = [
     # Customer's reservations
     path("my-reservations/", views.my_reservations, name="my-reservations"),
 
+    # Public cake options per canteen (sizes + flavors)
+    path("options/<int:canteen_id>/", views.canteen_cake_options, name="canteen-cake-options"),
+
     # Manager views and actions — Cake/phase3 sequence diagram
     path("pending/", views.pending_reservations, name="pending-reservations"),
     path("manager-all/", views.manager_all_reservations, name="manager-all-reservations"),
     path("<int:reservation_id>/accept/", views.accept_reservation, name="accept-reservation"),
     path("<int:reservation_id>/reject/", views.reject_reservation, name="reject-reservation"),
     path("<int:reservation_id>/complete/", views.complete_reservation, name="complete-reservation"),
+
+    # Manager CRUD — cake size/price and flavor management
+    path("manage/sizes/", views.manager_size_prices, name="manager-size-prices"),
+    path("manage/sizes/<int:pk>/", views.manager_size_price_detail, name="manager-size-price-detail"),
+    path("manage/flavors/", views.manager_flavors, name="manager-flavors"),
+    path("manage/flavors/<int:pk>/", views.manager_flavor_detail, name="manager-flavor-detail"),
 ]
