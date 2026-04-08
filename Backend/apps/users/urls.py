@@ -21,4 +21,5 @@ user_urlpatterns = [
     path("wallet/add-funds/", views.add_funds, name="add-funds"),
     path("wallet/set-pin/", views.set_wallet_pin, name="set-wallet-pin"),
     path("wallet/change-pin/", views.change_wallet_pin, name="change-wallet-pin"),
+    path("wallet/verify-pin/", views.verify_wallet_pin, name="verify-wallet-pin"),
 ]

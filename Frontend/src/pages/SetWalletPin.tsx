@@ -4,7 +4,7 @@ import { ArrowLeft, ShieldCheck, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, D
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { setWalletPin as setWalletPinApi } from "../api/auth";
-import { changeWalletPin as changeWalletPinApi } from "../api/wallet";
+import { changeWalletPin as changeWalletPinApi, verifyWalletPin as verifyWalletPinApi } from "../api/wallet";
 import { motion, AnimatePresence } from "motion/react";
 
 type Step = "current" | "set" | "confirm" | "success";
@@ -26,6 +26,7 @@ export default function SetWalletPin() {
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   const currentPinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -135,10 +136,23 @@ export default function SetWalletPin() {
     if (!isFilled) return;
 
     if (step === "current") {
-      // In change mode: verify current PIN by moving to "set new" step
-      // Actual verification happens on submit — store the current PIN for now
-      setStep("set");
-      setShowPin(false);
+      // Verify the current PIN via the backend before proceeding
+      setVerifying(true);
+      setError("");
+      try {
+        await verifyWalletPinApi(currentPinInput.join(""));
+        // PIN is correct — proceed to set new PIN
+        setStep("set");
+        setShowPin(false);
+      } catch (err: any) {
+        // PIN is wrong — stay on this step and show error
+        const msg = err?.message || "Current PIN is incorrect";
+        setError(msg);
+        triggerShake();
+        setCurrentPinInput(["", "", "", ""]);
+      } finally {
+        setVerifying(false);
+      }
     } else if (step === "set") {
       // Check for weak PINs
       const pinStr = pin.join("");
@@ -170,16 +184,7 @@ export default function SetWalletPin() {
         setStep("success");
       } catch (err: any) {
         const msg = err?.message || "Failed to save PIN. Please try again.";
-        // If current PIN is wrong, go back to current step
-        if (isChangeMode && (msg.toLowerCase().includes("incorrect") || err?.status === 403)) {
-          setStep("current");
-          setCurrentPinInput(["", "", "", ""]);
-          setPin(["", "", "", ""]);
-          setConfirmPin(["", "", "", ""]);
-          setError("Current PIN is incorrect. Please try again.");
-        } else {
-          setError(msg);
-        }
+        setError(msg);
         triggerShake();
       }
     }
@@ -477,14 +482,14 @@ export default function SetWalletPin() {
           {/* Continue button */}
           <motion.button
             onClick={handleContinue}
-            disabled={!isFilled}
-            whileTap={isFilled ? { scale: 0.97 } : {}}
+            disabled={!isFilled || verifying}
+            whileTap={isFilled && !verifying ? { scale: 0.97 } : {}}
             className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg transition-all duration-300 shadow-lg ${isFilled
               ? "bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.01]"
               : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none"
               }`}
           >
-            {step === "current" ? "Verify" : step === "set" ? "Continue" : (isChangeMode ? "Change PIN" : "Set PIN")}
+            {step === "current" ? (verifying ? "Verifying..." : "Verify") : step === "set" ? "Continue" : (isChangeMode ? "Change PIN" : "Set PIN")}
           </motion.button>
 
           {/* Security note */}

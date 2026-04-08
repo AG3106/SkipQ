@@ -25,6 +25,7 @@ from apps.users.serializers import (
     AddFundsSerializer,
     SetWalletPINSerializer,
     ChangeWalletPINSerializer,
+    VerifyWalletPINSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
 )
@@ -351,5 +352,36 @@ def change_wallet_pin(request):
         # Set new PIN
         profile_service.set_wallet_pin(profile, data["new_pin"])
         return Response({"message": "Wallet PIN changed successfully"})
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def verify_wallet_pin(request):
+    """
+    POST /api/users/wallet/verify-pin/
+
+    Verify the current wallet PIN without changing it.
+    Used by the change-pin flow to validate the current PIN upfront.
+    """
+    serializer = VerifyWalletPINSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        if request.user.role == User.Role.CUSTOMER:
+            profile = request.user.customer_profile
+        elif request.user.role == User.Role.MANAGER:
+            profile = request.user.manager_profile
+        else:
+            return Response({"error": "No wallet for this role"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not profile.wallet_pin_hash:
+            return Response({"error": "No PIN set."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not auth_service.verify_wallet_pin(profile.wallet_pin_hash, serializer.validated_data["pin"]):
+            return Response({"error": "Current PIN is incorrect"}, status=status.HTTP_403_FORBIDDEN)
+
+        return Response({"message": "PIN verified successfully"})
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

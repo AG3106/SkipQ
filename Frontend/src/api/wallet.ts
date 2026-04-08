@@ -20,3 +20,7 @@ export async function setWalletPin(pin: string): Promise<{ message: string }> {
 export async function changeWalletPin(currentPin: string, newPin: string): Promise<{ message: string }> {
     return api.post("/api/users/wallet/change-pin/", { currentPin, newPin });
 }
+
+export async function verifyWalletPin(pin: string): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/verify-pin/", { pin });
+}

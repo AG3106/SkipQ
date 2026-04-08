@@ -110,6 +110,10 @@ class ChangeWalletPINSerializer(serializers.Serializer):
     new_pin = serializers.CharField(min_length=4, max_length=6)
 
 
+class VerifyWalletPINSerializer(serializers.Serializer):
+    pin = serializers.CharField(min_length=4, max_length=6)
+
+
 # ---------------------------------------------------------------------------
 # Forgot Password
 # ---------------------------------------------------------------------------
