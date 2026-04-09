@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import {
   ShoppingBag,
@@ -17,10 +17,11 @@ import { useCart } from "../context/CartContext";
 import { useWallet } from "../context/WalletContext";
 import { useAuth } from "../context/AuthContext";
 import { addFunds } from "../api/wallet";
+import { getCanteenDetail } from "../api/canteens";
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { items, canteenName, getTotal, updateQuantity, removeItem } = useCart();
+  const { items, canteenId, canteenName, getTotal, updateQuantity, removeItem } = useCart();
   const { balance } = useWallet();
   const { profile } = useAuth();
 
@@ -28,6 +29,15 @@ export default function Checkout() {
     profile && "name" in profile ? profile.name || "" : "",
   );
   const [rollNo, setRollNo] = useState("");
+  const [canteenOpen, setCanteenOpen] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (canteenId) {
+      getCanteenDetail(canteenId)
+        .then((c) => setCanteenOpen(c.isCurrentlyOpen))
+        .catch(() => setCanteenOpen(null));
+    }
+  }, [canteenId]);
 
   const total = getTotal();
   const [topUpAmount, setTopUpAmount] = useState("");
@@ -77,6 +87,10 @@ export default function Checkout() {
   }
 
   const handleProceedToPin = () => {
+    if (canteenOpen === false) {
+      toast.error("This canteen is currently closed");
+      return;
+    }
     if (!customerName.trim()) {
       toast.error("Please enter your name");
       return;
@@ -280,10 +294,19 @@ export default function Checkout() {
                 )}
               </div>
 
+              {/* Canteen Closed Warning */}
+              {canteenOpen === false && (
+                <div className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                  <p className="text-sm text-red-600 dark:text-red-400 font-medium text-center">
+                    This canteen is currently closed
+                  </p>
+                </div>
+              )}
+
               {/* Place Order Button */}
               <button
                 onClick={handleProceedToPin}
-                disabled={balance < total}
+                disabled={balance < total || canteenOpen === false}
                 className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#D4725C] to-orange-600 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-[#D4725C]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingBag className="w-5 h-5" />

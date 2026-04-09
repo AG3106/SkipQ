@@ -1370,3 +1370,26 @@
 8:18:09 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
 8:18:14 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
 8:18:20 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+2:33:41 AM [vite] (client) hmr update /src/pages/MenuBrowsing.tsx, /src/index.css
+2:33:43 AM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+2:33:52 AM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+2:34:04 AM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+2:34:06 AM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+2:34:18 AM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+2:34:29 AM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+2:42:41 AM [vite] (client) hmr update /src/pages/MenuBrowsing.tsx, /src/index.css
+2:44:42 AM [vite] (client) page reload src/types.ts
+2:44:53 AM [vite] (client) hmr update /src/pages/HostelSelection.tsx, /src/index.css
+2:47:59 AM [vite] (client) page reload src/types.ts
+2:48:06 AM [vite] (client) hmr update /src/pages/HostelSelection.tsx, /src/index.css
+2:48:17 AM [vite] (client) hmr update /src/pages/MenuBrowsing.tsx, /src/index.css
+2:51:36 AM [vite] (client) page reload src/types.ts
+2:51:41 AM [vite] (client) hmr update /src/pages/HostelSelection.tsx, /src/index.css
+2:52:22 AM [vite] (client) hmr update /src/pages/HostelSelection.tsx, /src/index.css
+2:52:23 AM [vite] (client) hmr update /src/pages/SearchResults.tsx, /src/index.css
+2:58:40 AM [vite] (client) hmr update /src/context/AuthContext.tsx, /src/index.css
+2:58:41 AM [vite] (client) hmr invalidate /src/context/AuthContext.tsx Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+2:58:41 AM [vite] (client) hmr update /src/App.tsx, /src/index.css, /src/context/WalletContext.tsx, /src/pages/Checkout.tsx, /src/pages/OwnerAccount.tsx, /src/pages/SetWalletPin.tsx, /src/pages/AdminLogin.tsx, /src/pages/OwnerRegistration.tsx, /src/pages/HostelSelection.tsx, /src/pages/UserProfile.tsx, /src/pages/UnifiedLogin.tsx, /src/pages/AdminPanel.tsx, /src/components/ProtectedRoute.tsx, /src/pages/OwnerDashboard.tsx, /src/pages/WalletPage.tsx, /src/components/Header.tsx, /src/components/OwnerHeader.tsx
+2:58:41 AM [vite] (client) hmr invalidate /src/context/WalletContext.tsx Could not Fast Refresh ("useWallet" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+2:58:41 AM [vite] (client) hmr update /src/App.tsx, /src/index.css, /src/pages/Checkout.tsx, /src/pages/WalletPage.tsx, /src/pages/PaymentResult.tsx, /src/pages/UserProfile.tsx, /src/pages/VerifyWalletPin.tsx, /src/pages/CakeReservation.tsx, /src/components/Header.tsx
+2:58:45 AM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css

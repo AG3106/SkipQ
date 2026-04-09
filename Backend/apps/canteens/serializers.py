@@ -4,6 +4,8 @@ DRF serializers for the canteens app.
 Maps Canteen and Dish entities to API representations.
 """
 
+import statistics
+
 from rest_framework import serializers
 from apps.canteens.models import Canteen, Dish, DishRating, CanteenHoliday
 from apps.canteens.utils.file_handlers import canteen_image_exists, dish_image_exists
@@ -58,6 +60,7 @@ class CanteenSerializer(serializers.ModelSerializer):
     is_currently_open = serializers.SerializerMethodField()
     estimated_wait_time = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
+    median_rating = serializers.SerializerMethodField()
     manager_email = serializers.CharField(source="manager.user.email", read_only=True)
     holidays = CanteenHolidaySerializer(many=True, read_only=True)
 
@@ -66,8 +69,8 @@ class CanteenSerializer(serializers.ModelSerializer):
         fields = [
             "id", "name", "location", "opening_time", "closing_time",
             "lead_time_config", "status", "manager_email", "image_url",
-            "is_currently_open", "estimated_wait_time", "holidays",
-            "created_at",
+            "is_currently_open", "estimated_wait_time", "median_rating",
+            "holidays", "created_at",
         ]
         read_only_fields = ["id", "status", "created_at"]
 
@@ -76,6 +79,13 @@ class CanteenSerializer(serializers.ModelSerializer):
 
     def get_estimated_wait_time(self, obj):
         return f"{obj.get_estimated_wait_time()} mins"
+
+    def get_median_rating(self, obj):
+        """Return the median rating across all dishes in this canteen."""
+        ratings = list(obj.dishes.exclude(rating=0).values_list("rating", flat=True))
+        if not ratings:
+            return 0
+        return round(float(statistics.median(ratings)), 2)
 
     def get_image_url(self, obj):
         """Return /files/canteen_images/<canteen_id>.jpg if the file exists."""
@@ -105,6 +115,7 @@ class PopularDishSerializer(serializers.ModelSerializer):
     canteen_id = serializers.IntegerField(source="canteen.id", read_only=True)
     canteen_name = serializers.CharField(source="canteen.name", read_only=True)
     canteen_location = serializers.CharField(source="canteen.location", read_only=True)
+    is_canteen_open = serializers.SerializerMethodField()
     rating_count = serializers.IntegerField(read_only=True)
     photo_url = serializers.SerializerMethodField()
 
@@ -114,9 +125,12 @@ class PopularDishSerializer(serializers.ModelSerializer):
             "id", "name", "price", "description",
             "is_available", "photo", "photo_url", "rating", "category",
             "is_veg", "canteen_id", "canteen_name", "canteen_location",
-            "rating_count",
+            "is_canteen_open", "rating_count",
         ]
         read_only_fields = fields
+
+    def get_is_canteen_open(self, obj):
+        return obj.canteen.is_open()
 
     def get_photo_url(self, obj):
         """Return /files/dish_images/<dish_id>.jpg if the file exists."""

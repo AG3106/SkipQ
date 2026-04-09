@@ -155,7 +155,7 @@ export default function UserProfile() {
                 <h1 className="text-2xl font-extrabold text-white tracking-tight">
                   {profile.name}
                 </h1>
-                <p className="text-white/70">{profile.rollNumber} &middot; {profile.hostel}</p>
+                <p className="text-white/70">{profile.rollNumber}{profile.hostel ? ` \u00B7 ${profile.hostel}` : ""}</p>
               </div>
             </div>
           </div>

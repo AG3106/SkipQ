@@ -86,6 +86,7 @@ export interface Canteen {
     imageUrl: string | null;
     isCurrentlyOpen: boolean;
     estimatedWaitTime: string;
+    medianRating: number;
     holidays: CanteenHoliday[];
     createdAt: string;
 }
@@ -122,6 +123,7 @@ export interface PopularDish {
     canteenId: number;
     canteenName: string;
     canteenLocation: string;
+    isCanteenOpen: boolean;
     ratingCount: number;
 }
 

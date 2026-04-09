@@ -112,6 +112,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             isAuthenticated: true,
             hasWalletPin: false, // freshly registered, no PIN yet
         });
+        // Fetch full profile (includes name, phone, etc.)
+        try {
+            const profile = await authApi.getProfile();
+            setState(prev => ({ ...prev, profile }));
+        } catch {
+            // Non-critical — profile info will load on next navigation
+        }
     };
 
     const logout = async () => {

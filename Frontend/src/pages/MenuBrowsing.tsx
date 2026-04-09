@@ -181,24 +181,33 @@ export default function MenuBrowsing() {
                       </div>
                     </div>
 
-                    <AddToCartButton
-                      dish={{
-                        id: dish.id,
-                        name: dish.name,
-                        price: dish.price,
-                        description: dish.description,
-                        isAvailable: dish.isAvailable,
-                        photo: dish.photo,
-                        photoUrl: null,
-                        rating: dish.rating,
-                        category: dish.category,
-                        isVeg: dish.isVeg,
-                        createdAt: "",
-                      }}
-                      canteenId={canteen.id}
-                      canteenName={canteen.name}
-                      size="sm"
-                    />
+                    {canteen.isCurrentlyOpen ? (
+                      <AddToCartButton
+                        dish={{
+                          id: dish.id,
+                          name: dish.name,
+                          price: dish.price,
+                          description: dish.description,
+                          isAvailable: dish.isAvailable,
+                          photo: dish.photo,
+                          photoUrl: dish.photoUrl,
+                          rating: dish.rating,
+                          category: dish.category,
+                          isVeg: dish.isVeg,
+                          createdAt: "",
+                        }}
+                        canteenId={canteen.id}
+                        canteenName={canteen.name}
+                        size="sm"
+                      />
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full py-2 rounded-xl font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      >
+                        Canteen Closed
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -315,12 +324,21 @@ export default function MenuBrowsing() {
                   </div>
 
                   <div className="mt-auto">
-                    <AddToCartButton
-                      dish={item}
-                      canteenId={canteen.id}
-                      canteenName={canteen.name}
-                      size="lg"
-                    />
+                    {canteen.isCurrentlyOpen ? (
+                      <AddToCartButton
+                        dish={item}
+                        canteenId={canteen.id}
+                        canteenName={canteen.name}
+                        size="lg"
+                      />
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full py-3 rounded-xl font-semibold text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      >
+                        Canteen Closed
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -134,7 +134,7 @@ export default function SearchResults() {
                     description: dish.description,
                     isAvailable: dish.isAvailable,
                     photo: dish.photo,
-                    photoUrl: null,
+                    photoUrl: dish.photoUrl,
                     rating: dish.rating,
                     category: dish.category,
                     isVeg: dish.isVeg,

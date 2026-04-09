@@ -200,7 +200,7 @@ export default function HostelSelection() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 px-2 py-1 rounded-lg">
                           <Star className="w-4 h-4 fill-current text-green-600 dark:text-green-400" />
-                          <span className="font-bold text-sm text-green-700 dark:text-green-400">4.5</span>
+                          <span className="font-bold text-sm text-green-700 dark:text-green-400">{canteen.medianRating.toFixed(1)}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                           <Clock className="w-4 h-4" />
@@ -329,25 +329,34 @@ function PopularDishCard({ dish }: { dish: PopularDish }) {
             <Star className="w-3 h-3 fill-current" />
             <span className="text-xs font-bold">{parseFloat(dish.rating).toFixed(1)}</span>
           </div>
-          <AddToCartButton
-            dish={{
-              id: dish.id,
-              name: dish.name,
-              price: dish.price,
-              description: dish.description,
-              isAvailable: dish.isAvailable,
-              photo: dish.photo,
-              photoUrl: null,
-              rating: dish.rating,
-              category: dish.category,
-              isVeg: dish.isVeg,
-              createdAt: "",
-            }}
-            canteenId={dish.canteenId}
-            canteenName={dish.canteenName}
-            size="md"
-            stopPropagation
-          />
+          {dish.isCanteenOpen !== false ? (
+            <AddToCartButton
+              dish={{
+                id: dish.id,
+                name: dish.name,
+                price: dish.price,
+                description: dish.description,
+                isAvailable: dish.isAvailable,
+                photo: dish.photo,
+                photoUrl: dish.photoUrl,
+                rating: dish.rating,
+                category: dish.category,
+                isVeg: dish.isVeg,
+                createdAt: "",
+              }}
+              canteenId={dish.canteenId}
+              canteenName={dish.canteenName}
+              size="md"
+              stopPropagation
+            />
+          ) : (
+            <button
+              disabled
+              className="w-full py-2 rounded-xl font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+            >
+              Canteen Closed
+            </button>
+          )}
         </div>
       </div>
     </div>
