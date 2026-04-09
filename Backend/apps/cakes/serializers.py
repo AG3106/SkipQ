@@ -65,6 +65,7 @@ class ReservationActionSerializer(serializers.Serializer):
 
 class CakeSizePriceSerializer(serializers.ModelSerializer):
     """Read/write serializer for cake size-price entries."""
+    is_available = serializers.BooleanField(default=True)
 
     class Meta:
         model = CakeSizePrice
@@ -79,6 +80,7 @@ class CakeSizePriceSerializer(serializers.ModelSerializer):
 class CakeFlavorSerializer(serializers.ModelSerializer):
     """Read/write serializer for cake flavors."""
     photo_url = serializers.SerializerMethodField()
+    is_available = serializers.BooleanField(default=True)
 
     class Meta:
         model = CakeFlavor

@@ -62,7 +62,7 @@ export async function getProfile(): Promise<CustomerProfile | ManagerProfile> {
  * Update user profile.
  */
 export async function updateProfile(
-    data: Partial<{ name: string; phone: string; contactDetails: string }>,
+    data: Partial<{ name: string; phone: string; rollNumber: string; contactDetails: string }>,
 ): Promise<unknown> {
     return api.patch("/api/users/profile/", data);
 }

@@ -17,7 +17,7 @@ from rest_framework.test import APIClient
 from apps.users.models import User, CustomerProfile, CanteenManagerProfile
 from apps.users.services.auth_service import hash_wallet_pin
 from apps.canteens.models import Canteen, CanteenHoliday
-from apps.cakes.models import CakeReservation
+from apps.cakes.models import CakeReservation, CakeFlavor, CakeSizePrice
 from apps.cakes.services import cake_service
 
 
@@ -179,6 +179,8 @@ class CakeServiceTest(TestCase):
         _, cls.mgr = make_manager("cs_mgr@test.com")
         cls.canteen = make_canteen(cls.mgr)
         _, cls.customer = make_customer("cs_cust@test.com", balance=Decimal("2000"), pin="4321")
+        CakeFlavor.objects.create(canteen=cls.canteen, name="Vanilla")
+        CakeSizePrice.objects.create(canteen=cls.canteen, size="2kg", price=Decimal("500"))
 
     # --- check_availability ---
 
@@ -226,9 +228,9 @@ class CakeServiceTest(TestCase):
 
     def test_submit_reservation_deducts_wallet(self):
         initial_balance = self.customer.wallet_balance
-        self._submit(amount=Decimal("300"))
+        self._submit(amount=Decimal("500"))
         self.customer.refresh_from_db()
-        self.assertEqual(self.customer.wallet_balance, initial_balance - Decimal("300"))
+        self.assertEqual(self.customer.wallet_balance, initial_balance - Decimal("500"))
 
     def test_submit_reservation_wrong_pin(self):
         with self.assertRaises(ValueError) as ctx:
@@ -250,7 +252,7 @@ class CakeServiceTest(TestCase):
 
     def test_reject_reservation_refunds_and_stores_reason(self):
         initial_balance = self.customer.wallet_balance
-        reservation = self._submit(amount=Decimal("400"))
+        reservation = self._submit(amount=Decimal("500"))
         self.customer.refresh_from_db()
         after_submit = self.customer.wallet_balance
 
@@ -259,7 +261,7 @@ class CakeServiceTest(TestCase):
         self.assertEqual(result.rejection_reason, "Capacity full")
 
         self.customer.refresh_from_db()
-        self.assertEqual(self.customer.wallet_balance, after_submit + Decimal("400"))
+        self.assertEqual(self.customer.wallet_balance, after_submit + Decimal("500"))
 
     # --- complete_reservation ---
 
@@ -287,6 +289,8 @@ class CakeAPITest(TestCase):
         cls.cust_user, cls.cust = make_customer("api_cust@test.com", balance=Decimal("5000"), pin="1234")
         cls.mgr_user, cls.mgr = make_manager("api_mgr@test.com")
         cls.canteen = make_canteen(cls.mgr, name="API Cake Canteen")
+        CakeFlavor.objects.create(canteen=cls.canteen, name="Red Velvet")
+        CakeSizePrice.objects.create(canteen=cls.canteen, size="1kg", price=Decimal("500"))
 
         # Second manager for cross-canteen checks
         cls.mgr2_user, cls.mgr2 = make_manager("api_mgr2@test.com")

@@ -23,6 +23,7 @@ export interface CustomerProfile {
     user: User;
     name: string;
     phone: string;
+    rollNumber: string;
     walletBalance: string; // Decimal string from backend
 }
 

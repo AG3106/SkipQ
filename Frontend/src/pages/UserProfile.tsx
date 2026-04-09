@@ -62,7 +62,7 @@ export default function UserProfile() {
       phone: authProfile?.phone || cached.phone || "",
       hostel: cached.hostel || "",
       room: cached.room || "",
-      rollNumber: cached.rollNumber || "",
+      rollNumber: authProfile?.rollNumber || cached.rollNumber || "",
     };
   });
 
@@ -74,6 +74,7 @@ export default function UserProfile() {
         name: authProfile?.name || prev.name,
         email: user?.email || prev.email,
         phone: authProfile?.phone || prev.phone,
+        rollNumber: authProfile?.rollNumber || prev.rollNumber,
       }));
     }
   }, [user, authProfile]);
@@ -83,7 +84,7 @@ export default function UserProfile() {
     setProfile(updated);
     localStorage.setItem("skipq_profile", JSON.stringify(updated));
     // Persist backend-supported fields to the server
-    if (key === "name" || key === "phone") {
+    if (key === "name" || key === "phone" || key === "rollNumber") {
       try {
         await updateProfile({ [key]: value });
       } catch {

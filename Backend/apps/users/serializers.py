@@ -69,7 +69,7 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomerProfile
-        fields = ["id", "user", "name", "phone", "wallet_balance"]
+        fields = ["id", "user", "name", "phone", "roll_number", "wallet_balance"]
         read_only_fields = ["id", "wallet_balance"]
 
 

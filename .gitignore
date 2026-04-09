@@ -19,3 +19,5 @@ Context/
 .env
 *.env
 BUG_REPORT.md
+Backend/server.log
+Frontend/frontend.log
