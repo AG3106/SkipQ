@@ -286,6 +286,24 @@ class ProfileAPITest(TestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.name, "NEW NAME")
 
+    def test_patch_roll_number_snake_case_persists(self):
+        resp = self.client.patch("/api/users/profile/", {"roll_number": "240999"}, format="json")
+        self.assertEqual(resp.status_code, 200)
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.roll_number, "240999")
+
+        fresh_client = APIClient()
+        fresh_client.force_authenticate(user=self.user)
+        fresh_resp = fresh_client.get("/api/users/profile/")
+        self.assertEqual(fresh_resp.status_code, 200)
+        self.assertEqual(fresh_resp.data["roll_number"], "240999")
+
+    def test_patch_roll_number_camel_case_alias(self):
+        resp = self.client.patch("/api/users/profile/", {"rollNumber": "240888"}, format="json")
+        self.assertEqual(resp.status_code, 200)
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.roll_number, "240888")
+
     def test_wallet_balance(self):
         resp = self.client.get("/api/users/wallet/")
         self.assertEqual(resp.status_code, 200)

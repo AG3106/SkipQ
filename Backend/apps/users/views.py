@@ -233,7 +233,11 @@ def profile_view(request):
     if user.role == User.Role.CUSTOMER:
         profile = user.customer_profile
         if request.method == "PATCH":
-            serializer = CustomerProfileSerializer(profile, data=request.data, partial=True)
+            payload = request.data.copy()
+            # Accept both camelCase and snake_case for roll number updates.
+            if "rollNumber" in payload and "roll_number" not in payload:
+                payload["roll_number"] = payload["rollNumber"]
+            serializer = CustomerProfileSerializer(profile, data=payload, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
         data = CustomerProfileSerializer(profile).data
