@@ -32,8 +32,8 @@ class InitiateSignupSerializer(serializers.Serializer):
         default="",
         validators=[
             RegexValidator(
-                r'^(\+91\d{10})?$',
-                message="Phone number must be in +91XXXXXXXXXX format or left blank.",
+                r'^((\+91)?\d{10})?$',
+                message="Enter a valid 10-digit phone number (with optional +91 prefix).",
             )
         ],
     )
@@ -82,8 +82,8 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
         allow_blank=True,
         validators=[
             RegexValidator(
-                r'^(\+91\d{10})?$',
-                message="Phone number must be in +91XXXXXXXXXX format or left blank.",
+                r'^((\+91)?\d{10})?$',
+                message="Enter a valid 10-digit phone number (with optional +91 prefix).",
             )
         ],
     )

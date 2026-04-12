@@ -141,7 +141,7 @@ export default function UnifiedLogin() {
       return;
     }
 
-    if (formData.phone.length !== 10) {
+    if (!/^\d{10}$/.test(formData.phone)) {
       toast.error("Please enter a valid 10-digit phone number");
       return;
     }
