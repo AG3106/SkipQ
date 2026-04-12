@@ -525,7 +525,7 @@ export default function OwnerDashboard() {
                       </button>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between mb-2 text-sm">
                           <span className="font-medium text-gray-700 dark:text-gray-300">
@@ -608,7 +608,7 @@ export default function OwnerDashboard() {
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-100 dark:border-gray-800">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-100 dark:border-gray-800">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between mb-1 text-sm">
                           <span className="text-gray-700 dark:text-gray-300">
@@ -708,7 +708,7 @@ export default function OwnerDashboard() {
                     )}
 
                     {/* Items */}
-                    <div className="bg-gray-50 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 mb-5 border border-gray-100 dark:border-gray-800">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between mb-2 text-sm last:mb-0">
                           <span className="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
@@ -834,7 +834,7 @@ export default function OwnerDashboard() {
                             </div>
 
                             {/* Details */}
-                            <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 dark:border-gray-800 space-y-2 text-sm">
+                            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 mb-5 border border-gray-100 dark:border-gray-800 space-y-2 text-sm">
                               <div className="flex justify-between">
                                 <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Palette className="size-3" /> Flavor</span>
                                 <span className="font-bold text-gray-900 dark:text-white">{request.flavor}</span>
@@ -927,7 +927,7 @@ export default function OwnerDashboard() {
                                 </div>
 
                                 {(request.design || request.message) && (
-                                  <div className="bg-gray-50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
+                                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 border border-gray-100/50 dark:border-gray-800 space-y-1.5 text-sm mb-3">
                                     {request.design && (
                                       <div className="flex justify-between">
                                         <span className="text-gray-500 dark:text-gray-400">Design</span>
@@ -1033,7 +1033,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">#{selectedOrder.id}</p>
@@ -1067,7 +1067,7 @@ export default function OwnerDashboard() {
 
                 <div>
                   <p className="text-gray-900 dark:text-white font-bold mb-3">Items Ordered</p>
-                  <div className="bg-gray-50 rounded-2xl p-5">
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5">
                     {selectedOrder.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between mb-3 text-sm last:mb-0">
                         <span className="text-gray-700 dark:text-gray-300">
@@ -1125,7 +1125,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">#{rejectingOrderId}</p>
@@ -1180,7 +1180,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">#{rejectingCancelId}</p>
@@ -1235,7 +1235,7 @@ export default function OwnerDashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Order ID</p>
                     <p className="font-black text-xl text-gray-900 dark:text-white">Cake Order #{rejectingCakeId}</p>
