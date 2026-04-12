@@ -1402,3 +1402,246 @@
 6:27:52 PM [vite] (client) hmr update /src/index.css, /src/App.tsx
 6:27:52 PM [vite] (client) hmr invalidate /src/context/WalletContext.tsx Could not Fast Refresh ("useWallet" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
 6:27:52 PM [vite] (client) hmr update /src/App.tsx, /src/index.css, /src/pages/Checkout.tsx, /src/pages/WalletPage.tsx, /src/pages/PaymentResult.tsx, /src/pages/UserProfile.tsx, /src/pages/VerifyWalletPin.tsx, /src/pages/CakeReservation.tsx, /src/components/Header.tsx
+6:32:18 PM [vite] (client) hmr update /src/index.css, /src/pages/OwnerDashboard.tsx
+6:32:18 PM [vite] (client) Pre-transform error: Transform failed with 4 errors:
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9: ERROR: The symbol "toCamelCase" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:170:9: ERROR: The symbol "transformKeys" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: Multiple exports with the same name "useOrderWebSocket"
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: The symbol "useOrderWebSocket" has already been declared
+  Plugin: vite:esbuild
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9
+  
+  The symbol "toCamelCase" has already been declared
+  164|  
+  165|  // snake_case → camelCase transformer (mirrors api/client.ts)
+  166|  function toCamelCase(str: string): string {
+     |           ^
+  167|      return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  168|  }
+  
+  The symbol "transformKeys" has already been declared
+  168|  }
+  169|  
+  170|  function transformKeys(obj: unknown): unknown {
+     |           ^
+  171|      if (Array.isArray(obj)) return obj.map(transformKeys);
+  172|      if (obj !== null && typeof obj === "object") {
+  
+  Multiple exports with the same name "useOrderWebSocket"
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+  The symbol "useOrderWebSocket" has already been declared
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+6:32:18 PM [vite] Internal server error: Transform failed with 4 errors:
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9: ERROR: The symbol "toCamelCase" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:170:9: ERROR: The symbol "transformKeys" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: Multiple exports with the same name "useOrderWebSocket"
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: The symbol "useOrderWebSocket" has already been declared
+  Plugin: vite:esbuild
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9
+  
+  The symbol "toCamelCase" has already been declared
+  164|  
+  165|  // snake_case → camelCase transformer (mirrors api/client.ts)
+  166|  function toCamelCase(str: string): string {
+     |           ^
+  167|      return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  168|  }
+  
+  The symbol "transformKeys" has already been declared
+  168|  }
+  169|  
+  170|  function transformKeys(obj: unknown): unknown {
+     |           ^
+  171|      if (Array.isArray(obj)) return obj.map(transformKeys);
+  172|      if (obj !== null && typeof obj === "object") {
+  
+  Multiple exports with the same name "useOrderWebSocket"
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+  The symbol "useOrderWebSocket" has already been declared
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+      at failureErrorWithLog (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:1467:15)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:736:50
+      at responseCallbacks.<computed> (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:603:9)
+      at handleIncomingPacket (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:658:12)
+      at Socket.readFromStdout (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:581:7)
+      at Socket.emit (node:events:518:28)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+      at Readable.push (node:internal/streams/readable:392:5)
+      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+6:32:18 PM [vite] Internal server error: Transform failed with 4 errors:
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9: ERROR: The symbol "toCamelCase" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:170:9: ERROR: The symbol "transformKeys" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: Multiple exports with the same name "useOrderWebSocket"
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: The symbol "useOrderWebSocket" has already been declared
+  Plugin: vite:esbuild
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9
+  
+  The symbol "toCamelCase" has already been declared
+  164|  
+  165|  // snake_case → camelCase transformer (mirrors api/client.ts)
+  166|  function toCamelCase(str: string): string {
+     |           ^
+  167|      return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  168|  }
+  
+  The symbol "transformKeys" has already been declared
+  168|  }
+  169|  
+  170|  function transformKeys(obj: unknown): unknown {
+     |           ^
+  171|      if (Array.isArray(obj)) return obj.map(transformKeys);
+  172|      if (obj !== null && typeof obj === "object") {
+  
+  Multiple exports with the same name "useOrderWebSocket"
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+  The symbol "useOrderWebSocket" has already been declared
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+      at failureErrorWithLog (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:1467:15)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:736:50
+      at responseCallbacks.<computed> (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:603:9)
+      at handleIncomingPacket (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:658:12)
+      at Socket.readFromStdout (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:581:7)
+      at Socket.emit (node:events:518:28)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+      at Readable.push (node:internal/streams/readable:392:5)
+      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+6:32:18 PM [vite] Internal server error: Transform failed with 4 errors:
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9: ERROR: The symbol "toCamelCase" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:170:9: ERROR: The symbol "transformKeys" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: Multiple exports with the same name "useOrderWebSocket"
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: The symbol "useOrderWebSocket" has already been declared
+  Plugin: vite:esbuild
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9
+  
+  The symbol "toCamelCase" has already been declared
+  164|  
+  165|  // snake_case → camelCase transformer (mirrors api/client.ts)
+  166|  function toCamelCase(str: string): string {
+     |           ^
+  167|      return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  168|  }
+  
+  The symbol "transformKeys" has already been declared
+  168|  }
+  169|  
+  170|  function transformKeys(obj: unknown): unknown {
+     |           ^
+  171|      if (Array.isArray(obj)) return obj.map(transformKeys);
+  172|      if (obj !== null && typeof obj === "object") {
+  
+  Multiple exports with the same name "useOrderWebSocket"
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+  The symbol "useOrderWebSocket" has already been declared
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+      at failureErrorWithLog (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:1467:15)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:736:50
+      at responseCallbacks.<computed> (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:603:9)
+      at handleIncomingPacket (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:658:12)
+      at Socket.readFromStdout (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:581:7)
+      at Socket.emit (node:events:518:28)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+      at Readable.push (node:internal/streams/readable:392:5)
+      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+6:32:18 PM [vite] Internal server error: Transform failed with 4 errors:
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9: ERROR: The symbol "toCamelCase" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:170:9: ERROR: The symbol "transformKeys" has already been declared
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: Multiple exports with the same name "useOrderWebSocket"
+/home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:182:16: ERROR: The symbol "useOrderWebSocket" has already been declared
+  Plugin: vite:esbuild
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/utils/useOrderWebSocket.ts:166:9
+  
+  The symbol "toCamelCase" has already been declared
+  164|  
+  165|  // snake_case → camelCase transformer (mirrors api/client.ts)
+  166|  function toCamelCase(str: string): string {
+     |           ^
+  167|      return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  168|  }
+  
+  The symbol "transformKeys" has already been declared
+  168|  }
+  169|  
+  170|  function transformKeys(obj: unknown): unknown {
+     |           ^
+  171|      if (Array.isArray(obj)) return obj.map(transformKeys);
+  172|      if (obj !== null && typeof obj === "object") {
+  
+  Multiple exports with the same name "useOrderWebSocket"
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+  The symbol "useOrderWebSocket" has already been declared
+  180|  }
+  181|  
+  182|  export function useOrderWebSocket({
+     |                  ^
+  183|      onNewOrder,
+  184|      onOrderUpdate,
+  
+      at failureErrorWithLog (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:1467:15)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:736:50
+      at responseCallbacks.<computed> (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:603:9)
+      at handleIncomingPacket (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:658:12)
+      at Socket.readFromStdout (/home/commit_and_conquer/SkipQ/Frontend/node_modules/esbuild/lib/main.js:581:7)
+      at Socket.emit (node:events:518:28)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+      at Readable.push (node:internal/streams/readable:392:5)
+      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+6:32:48 PM [vite] (client) hmr update /src/index.css, /src/pages/OwnerDashboard.tsx
+6:37:35 PM [vite] (client) hmr update /src/index.css, /src/pages/OwnerDashboard.tsx

@@ -1,107 +1,217 @@
 nohup: ignoring input
-[2026-04-12 18:26:24,892] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+[2026-04-12 18:33:03,913] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
 /home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
   warnings.warn("min_value should be a Decimal instance.")
-[2026-04-12 18:26:25,202] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
-[2026-04-12 18:26:25,203] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
-[2026-04-12 18:26:25,203] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
-[2026-04-12 18:26:34,952] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/login/ 200 [0.00, 172.23.22.155:39660]
-[2026-04-12 18:26:35,692] INFO apps.users.services.auth_service auth_service.authenticate_user:262 — Standard session (browser close) for sourabhsankhala72@gmail.com
-[2026-04-12 18:26:35,711] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/login/ 200 [0.75, 172.23.22.155:39662]
-[2026-04-12 18:26:35,794] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:39726]
-[2026-04-12 18:26:35,836] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.06, 172.23.22.155:39662]
-[2026-04-12 18:26:35,854] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:26:35,854] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:39726]
-[2026-04-12 18:26:35,859] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:39726]
-[2026-04-12 18:26:35,927] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.14, 172.23.22.155:39678]
-[2026-04-12 18:26:35,949] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.16, 172.23.22.155:39692]
-[2026-04-12 18:26:36,017] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.12, 172.23.22.155:39662]
-[2026-04-12 18:26:36,023] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.23, 172.23.22.155:39712]
-[2026-04-12 18:26:36,063] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.27, 172.23.22.155:39696]
-[2026-04-12 18:26:36,897] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:39738]
-[2026-04-12 18:26:36,921] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:26:36,921] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:39738]
-[2026-04-12 18:26:36,922] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:39738]
-[2026-04-12 18:26:39,018] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:39754]
-[2026-04-12 18:26:39,041] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:26:39,042] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:39754]
-[2026-04-12 18:26:39,043] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:39754]
-[2026-04-12 18:26:40,046] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/ 200 [0.01, 127.0.0.1:43680]
-[2026-04-12 18:26:43,142] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:39134]
-[2026-04-12 18:26:43,167] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:26:43,167] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:39134]
-[2026-04-12 18:26:43,168] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:39134]
-[2026-04-12 18:26:52,133] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:37400]
-[2026-04-12 18:26:52,157] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:26:52,158] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:37400]
-[2026-04-12 18:26:52,159] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:37400]
-[2026-04-12 18:27:08,267] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:58768]
-[2026-04-12 18:27:08,290] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:27:08,290] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:58768]
-[2026-04-12 18:27:08,291] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:58768]
-[2026-04-12 18:27:18,431] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/login/ 200 [0.00, 172.23.17.111:37412]
-[2026-04-12 18:27:19,156] INFO apps.users.services.auth_service auth_service.authenticate_user:262 — Standard session (browser close) for aayushk24@iitk.ac.in
-[2026-04-12 18:27:19,174] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/login/ 200 [0.73, 172.23.17.111:37420]
-[2026-04-12 18:27:19,299] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.04, 172.23.17.111:37420]
-[2026-04-12 18:27:19,403] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.12, 172.23.17.111:37426]
-[2026-04-12 18:27:19,404] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.11, 172.23.17.111:37456]
-[2026-04-12 18:27:19,417] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.13, 172.23.17.111:37446]
-[2026-04-12 18:27:19,422] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.11, 172.23.17.111:37420]
-[2026-04-12 18:27:19,467] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.18, 172.23.17.111:37434]
-[2026-04-12 18:27:19,601] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/12.jpg 200 [0.05, 172.23.17.111:37456]
-[2026-04-12 18:27:19,606] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/3.jpg 200 [0.05, 172.23.17.111:37464]
-[2026-04-12 18:27:19,607] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/4.jpg 200 [0.05, 172.23.17.111:37434]
-[2026-04-12 18:27:19,610] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/2.jpg 200 [0.06, 172.23.17.111:37420]
-[2026-04-12 18:27:19,611] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/1.jpg 200 [0.06, 172.23.17.111:37446]
-[2026-04-12 18:27:19,614] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/26.jpg 200 [0.06, 172.23.17.111:37426]
-[2026-04-12 18:27:19,693] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/canteen_images/3.jpg 200 [0.03, 172.23.17.111:37464]
-[2026-04-12 18:27:19,704] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/24.jpg 200 [0.04, 172.23.17.111:37434]
-[2026-04-12 18:27:19,705] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/canteen_images/4.jpg 200 [0.04, 172.23.17.111:37420]
-[2026-04-12 18:27:19,712] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/23.jpg 200 [0.03, 172.23.17.111:37456]
-[2026-04-12 18:27:19,716] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/canteen_images/6.jpg 200 [0.05, 172.23.17.111:37446]
-[2026-04-12 18:27:19,740] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/35.jpg 200 [0.02, 172.23.17.111:37426]
-[2026-04-12 18:27:19,750] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/31.jpg 200 [0.02, 172.23.17.111:37456]
-[2026-04-12 18:27:19,751] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/14.jpg 200 [0.02, 172.23.17.111:37434]
-[2026-04-12 18:27:19,761] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/28.jpg 200 [0.01, 172.23.17.111:37464]
-[2026-04-12 18:27:19,797] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/25.jpg 200 [0.01, 172.23.17.111:37426]
-[2026-04-12 18:27:19,840] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/19.jpg 200 [0.02, 172.23.17.111:37434]
-[2026-04-12 18:27:19,842] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/29.jpg 200 [0.02, 172.23.17.111:37456]
-[2026-04-12 18:27:19,858] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/canteen_images/1.jpg 200 [0.01, 172.23.17.111:37464]
-[2026-04-12 18:27:38,334] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:47884]
-[2026-04-12 18:27:38,363] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:27:38,363] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:47884]
-[2026-04-12 18:27:38,364] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:47884]
-[2026-04-12 18:27:52,360] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/users/services/auth_service.py changed, reloading.
+[2026-04-12 18:33:04,325] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-12 18:33:04,326] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-12 18:33:04,327] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-12 18:33:08,466] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:54200]
+[2026-04-12 18:33:08,492] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
+[2026-04-12 18:33:08,493] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:54200]
+[2026-04-12 18:33:08,493] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:54200]
+[2026-04-12 18:33:12,606] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/ws-token/ 200 [0.03, 172.23.22.155:49714]
+[2026-04-12 18:33:56,233] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/82/ 200 [0.05, 172.23.23.118:44678]
+[2026-04-12 18:34:08,680] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:45734]
+[2026-04-12 18:34:08,705] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
+[2026-04-12 18:34:08,705] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:45734]
+[2026-04-12 18:34:08,706] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:45734]
+[2026-04-12 18:34:09,808] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/orders/consumers.py changed, reloading.
 Performing system checks...
 
 System check identified no issues (0 silenced).
-April 12, 2026 - 18:26:25
+April 12, 2026 - 18:33:04
 Django version 4.2.29, using settings 'config.settings'
 Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
 Quit the server with CONTROL-C.
-[2026-04-12 18:27:53,360] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+[2026-04-12 18:34:10,749] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
 /home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
   warnings.warn("min_value should be a Decimal instance.")
-[2026-04-12 18:27:53,694] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
-[2026-04-12 18:27:53,694] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
-[2026-04-12 18:27:53,695] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
-[2026-04-12 18:27:54,262] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:49294]
-[2026-04-12 18:27:54,334] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:27:54,335] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:49294]
-[2026-04-12 18:27:54,344] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:49294]
-[2026-04-12 18:27:54,408] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/menu/popular/ 200 [0.17, 172.23.39.162:55463]
-[2026-04-12 18:27:54,416] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.18, 172.23.39.162:55462]
-[2026-04-12 18:27:54,417] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/ 200 [0.18, 172.23.39.162:55460]
-[2026-04-12 18:27:54,418] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/menu/ 200 [0.18, 172.23.39.162:55461]
-[2026-04-12 18:27:54,461] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.20, 172.23.22.155:49332]
-[2026-04-12 18:27:54,476] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.21, 172.23.22.155:49302]
-[2026-04-12 18:27:54,494] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.23, 172.23.22.155:49316]
-[2026-04-12 18:27:54,547] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.28, 172.23.22.155:49310]
-[2026-04-12 18:27:58,710] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:49338]
-[2026-04-12 18:27:58,732] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:27:58,733] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:49338]
-[2026-04-12 18:27:58,733] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:49338]
-[2026-04-12 18:28:05,059] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:51838]
-[2026-04-12 18:28:05,081] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user sourabhsankhala72@gmail.com is not a manager or has no canteen
-[2026-04-12 18:28:05,082] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.22.155:51838]
-[2026-04-12 18:28:05,082] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:51838]
+[2026-04-12 18:34:11,071] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-12 18:34:11,071] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-12 18:34:11,072] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-12 18:34:16,818] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/ws-token/ 200 [0.03, 172.23.22.155:37404]
+[2026-04-12 18:34:26,938] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.14, 172.23.22.155:43656]
+[2026-04-12 18:34:26,942] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.15, 172.23.22.155:37404]
+[2026-04-12 18:34:27,005] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.21, 172.23.22.155:43640]
+[2026-04-12 18:34:42,114] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.22.155:43640]
+[2026-04-12 18:34:42,210] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/ws-token/ 200 [0.07, 172.23.22.155:39356]
+[2026-04-12 18:34:42,280] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.14, 172.23.22.155:39360]
+[2026-04-12 18:34:42,299] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.17, 172.23.22.155:43640]
+[2026-04-12 18:34:42,306] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.17, 172.23.22.155:37404]
+[2026-04-12 18:34:42,361] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.23, 172.23.22.155:43656]
+[2026-04-12 18:34:56,333] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/82/ 200 [0.04, 172.23.23.118:34552]
+[2026-04-12 18:35:08,888] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:56006]
+[2026-04-12 18:35:08,913] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.22.155:56006]
+[2026-04-12 18:35:08,913] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager sourabhsankhala72@gmail.com joined group orders_canteen_4
+[2026-04-12 18:35:35,562] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.06, 172.23.23.118:34552]
+[2026-04-12 18:35:36,232] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/orders/82/accept/ 200 [0.00, 172.23.22.155:46426]
+[2026-04-12 18:35:36,283] INFO apps.orders.models models.update_order_status:150 — Order #82 transitioned: PENDING → ACCEPTED
+[2026-04-12 18:35:36,283] INFO apps.orders.services.order_service order_service.accept_order:130 — Order #82 accepted by manager
+[2026-04-12 18:35:36,302] INFO apps.orders.signals signals.broadcast_order_event:44 — Broadcast order_update for Order #82 to group orders_canteen_4
+[2026-04-12 18:35:36,316] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/orders/82/accept/ 200 [0.08, 172.23.22.155:43640]
+[2026-04-12 18:35:36,522] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.23.118:42240]
+[2026-04-12 18:35:36,530] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.09, 172.23.23.118:42252]
+[2026-04-12 18:35:36,577] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.14, 172.23.23.118:34552]
+[2026-04-12 18:35:39,977] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/4/menu/ 200 [0.07, 172.23.23.118:42240]
+[2026-04-12 18:35:39,978] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/4/menu/popular/ 200 [0.07, 172.23.23.118:42252]
+[2026-04-12 18:35:39,981] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/4/ 200 [0.07, 172.23.23.118:34552]
+[2026-04-12 18:35:47,802] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/orders/38/reject/ 200 [0.00, 172.23.22.155:46426]
+[2026-04-12 18:35:48,419] INFO apps.orders.models models.update_order_status:150 — Order #38 transitioned: PENDING → REJECTED
+[2026-04-12 18:35:48,469] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/4/ 200 [0.06, 172.23.23.118:34552]
+[2026-04-12 18:35:48,541] ERROR django.request log.log_response:246 — Internal Server Error: /api/orders/38/reject/
+Traceback (most recent call last):
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/asgiref/sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/asgiref/sync.py", line 468, in __call__
+    ret = await asyncio.shield(exec_coro)
+  File "/usr/lib/python3.8/concurrent/futures/thread.py", line 57, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/asgiref/sync.py", line 522, in thread_handler
+    return func(*args, **kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/orders/views.py", line 227, in reject_order
+    order = order_service.reject_order(order, serializer.validated_data.get("reason", ""))
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/orders/services/order_service.py", line 150, in reject_order
+    payment_service.process_refund(order.payment)
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/orders/services/payment_service.py", line 66, in process_refund
+    refund_to_wallet(customer_profile, payment.amount)
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/users/services/profile_service.py", line 106, in refund_to_wallet
+    locked_profile = _lock_profile(customer_profile)
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/users/services/profile_service.py", line 24, in _lock_profile
+    return type(profile).objects.select_for_update().get(pk=profile.pk)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/db/models/query.py", line 635, in get
+    num = len(clone)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/db/models/query.py", line 382, in __len__
+    self._fetch_all()
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/db/models/query.py", line 1886, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/db/models/sql/compiler.py", line 1549, in execute_sql
+    sql, params = self.as_sql()
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/db/models/sql/compiler.py", line 816, in as_sql
+    raise TransactionManagementError(
+django.db.transaction.TransactionManagementError: select_for_update cannot be used outside of a transaction.
+[2026-04-12 18:35:48,549] ERROR django.channels.server runserver.log_action:181 — HTTP POST /api/orders/38/reject/ 500 [0.19, 172.23.22.155:43640]
+[2026-04-12 18:36:02,337] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/orders/38/accept/ 200 [0.00, 172.23.22.155:46426]
+[2026-04-12 18:36:02,369] WARNING django.request log.log_response:246 — Bad Request: /api/orders/38/accept/
+[2026-04-12 18:36:02,370] WARNING django.channels.server runserver.log_action:178 — HTTP POST /api/orders/38/accept/ 400 [0.03, 172.23.22.155:43640]
+[2026-04-12 18:36:05,520] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/users/wallet/add-funds/ 200 [0.00, 172.23.23.118:39688]
+[2026-04-12 18:36:05,570] INFO apps.users.services.profile_service profile_service.add_funds:57 — Added ₹6000.00 to wallet of aayushk24@iitk.ac.in. New balance: ₹6000.00
+[2026-04-12 18:36:05,575] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/users/wallet/add-funds/ 200 [0.05, 172.23.23.118:34552]
+[2026-04-12 18:36:05,650] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.02, 172.23.23.118:34552]
+[2026-04-12 18:36:16,366] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/orders/place/ 200 [0.00, 172.23.23.118:39688]
+[2026-04-12 18:36:17,066] INFO apps.orders.services.payment_service payment_service.authorize_payment:35 — Payment authorized for aayushk24@iitk.ac.in — ₹150.00
+[2026-04-12 18:36:17,069] INFO apps.users.services.profile_service profile_service.deduct_funds:89 — Deducted ₹150.00 from wallet of aayushk24@iitk.ac.in. New balance: ₹5850.00
+[2026-04-12 18:36:17,069] INFO apps.orders.services.payment_service payment_service.validate_and_deduct_funds:84 — Funds validated and deducted: ₹150.00 from aayushk24@iitk.ac.in
+[2026-04-12 18:36:17,074] INFO apps.orders.services.order_service order_service.place_order:110 — Order #83 placed by aayushk24@iitk.ac.in at 'Hall 3 Canteen' — total ₹150.00
+[2026-04-12 18:36:17,085] INFO apps.orders.signals signals.broadcast_order_event:44 — Broadcast new_order for Order #83 to group orders_canteen_4
+[2026-04-12 18:36:17,121] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/orders/place/ 201 [0.75, 172.23.23.118:34552]
+[2026-04-12 18:36:17,218] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.02, 172.23.23.118:34552]
+[2026-04-12 18:36:17,279] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/83/ 200 [0.04, 172.23.23.118:34552]
+[2026-04-12 18:36:20,115] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.06, 172.23.23.118:34552]
+[2026-04-12 18:36:21,964] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.07, 172.23.23.118:42252]
+[2026-04-12 18:36:21,973] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.23.118:42240]
+[2026-04-12 18:36:22,024] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.13, 172.23.23.118:34552]
+[2026-04-12 18:36:39,867] WARNING django.request log.log_response:246 — Bad Request: /api/orders/38/reject/
+[2026-04-12 18:36:39,868] WARNING django.channels.server runserver.log_action:178 — HTTP POST /api/orders/38/reject/ 400 [0.06, 172.23.22.155:43640]
+[2026-04-12 18:36:41,501] WARNING django.request log.log_response:246 — Bad Request: /api/orders/38/reject/
+[2026-04-12 18:36:41,502] WARNING django.channels.server runserver.log_action:178 — HTTP POST /api/orders/38/reject/ 400 [0.05, 172.23.22.155:43640]
+[2026-04-12 18:37:08,813] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/config/asgi.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 12, 2026 - 18:34:11
+Django version 4.2.29, using settings 'config.settings'
+Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[2026-04-12 18:37:09,795] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-04-12 18:37:10,134] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-12 18:37:10,134] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-12 18:37:10,135] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-12 18:37:12,201] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/ws-token/ 200 [0.03, 172.23.22.155:34366]
+[2026-04-12 18:37:12,286] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:34370]
+[2026-04-12 18:37:12,311] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.22.155:34370]
+[2026-04-12 18:37:12,311] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager sourabhsankhala72@gmail.com joined group orders_canteen_4
+[2026-04-12 18:37:35,620] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:34370]
+[2026-04-12 18:37:35,627] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:45630]
+[2026-04-12 18:37:35,635] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_4
+[2026-04-12 18:37:35,667] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.22.155:45630]
+[2026-04-12 18:37:35,671] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager sourabhsankhala72@gmail.com joined group orders_canteen_4
+[2026-04-12 18:37:35,753] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.13, 172.23.22.155:34366]
+[2026-04-12 18:37:35,768] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.14, 172.23.22.155:45622]
+[2026-04-12 18:37:35,837] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.21, 172.23.22.155:45612]
+[2026-04-12 18:37:53,755] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.11, 172.23.22.155:45612]
+[2026-04-12 18:37:53,766] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.12, 172.23.22.155:34366]
+[2026-04-12 18:37:53,825] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.18, 172.23.22.155:45622]
+[2026-04-12 18:37:55,492] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.22.155:45630]
+[2026-04-12 18:37:55,493] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_4
+[2026-04-12 18:37:55,717] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.22.155:45612]
+[2026-04-12 18:37:55,743] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:48494]
+[2026-04-12 18:37:55,820] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.22.155:48494]
+[2026-04-12 18:37:55,820] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager sourabhsankhala72@gmail.com joined group orders_canteen_4
+[2026-04-12 18:37:55,851] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.11, 172.23.22.155:48484]
+[2026-04-12 18:37:55,876] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.14, 172.23.22.155:34366]
+[2026-04-12 18:37:55,884] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.15, 172.23.22.155:45622]
+[2026-04-12 18:37:55,944] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/orders/urls.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 12, 2026 - 18:37:10
+Django version 4.2.29, using settings 'config.settings'
+Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[2026-04-12 18:37:56,846] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-04-12 18:37:57,190] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-12 18:37:57,191] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-12 18:37:57,191] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-12 18:37:59,384] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:48558]
+[2026-04-12 18:37:59,432] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.22.155:48558]
+[2026-04-12 18:37:59,432] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager sourabhsankhala72@gmail.com joined group orders_canteen_4
+[2026-04-12 18:37:59,516] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.13, 172.23.22.155:48520]
+[2026-04-12 18:37:59,539] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.15, 172.23.22.155:48542]
+[2026-04-12 18:37:59,614] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.23, 172.23.22.155:48536]
+[2026-04-12 18:38:00,702] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.10, 172.23.22.155:48536]
+[2026-04-12 18:38:00,729] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.12, 172.23.22.155:48520]
+[2026-04-12 18:38:00,792] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.19, 172.23.22.155:48542]
+[2026-04-12 18:38:07,992] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/orders/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 12, 2026 - 18:37:57
+Django version 4.2.29, using settings 'config.settings'
+Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[2026-04-12 18:38:08,881] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-04-12 18:38:09,200] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-12 18:38:09,202] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-12 18:38:09,203] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-12 18:38:11,260] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.22.155:40420]
+[2026-04-12 18:38:11,286] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.22.155:40420]
+[2026-04-12 18:38:11,286] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager sourabhsankhala72@gmail.com joined group orders_canteen_4
+[2026-04-12 18:38:50,936] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.15, 172.23.22.155:32934]
+[2026-04-12 18:38:50,946] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.16, 172.23.22.155:32940]
+[2026-04-12 18:38:51,018] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.23, 172.23.22.155:32938]
