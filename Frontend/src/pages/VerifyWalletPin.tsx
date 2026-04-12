@@ -5,7 +5,6 @@ import {
   Delete, ArrowLeft, Wallet, XCircle,
   RotateCcw, Fingerprint,
 } from "lucide-react";
-import { Link } from "react-router";
 import { useTheme } from "../context/ThemeContext";
 import { useCart } from "../context/CartContext";
 import { useWallet } from "../context/WalletContext";
@@ -621,12 +620,12 @@ export default function VerifyWalletPin() {
           {/* Forgot PIN link */}
           {!processing && (
             <div className="mt-5 text-center">
-              <Link
-                to="/wallet/forgot-pin"
+              <button
+                onClick={() => navigate("/wallet/forgot-pin")}
                 className="text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] transition-colors"
               >
                 Forgot PIN? Reset it
-              </Link>
+              </button>
             </div>
           )}
 

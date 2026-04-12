@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { KeyRound, Lock, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import * as walletApi from '../api/wallet';
 import { ApiError } from '../api/client';
