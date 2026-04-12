@@ -102,6 +102,12 @@ class Order(models.Model):
         default=False,
         help_text="Whether the customer has rated this order after completion.",
     )
+    pre_cancel_status = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        help_text="Stores the status of the order before a cancellation was requested.",
+    )
 
     class Meta:
         app_label = "orders"
@@ -127,6 +133,7 @@ class Order(models.Model):
             self.Status.CANCEL_REQUESTED: [
                 self.Status.CANCELLED,   # Manager approves cancellation
                 self.Status.PENDING,     # Manager rejects cancellation → back to PENDING
+                self.Status.ACCEPTED,    # Manager rejects cancellation → back to ACCEPTED
             ],
             self.Status.PENDING_APPROVAL: [self.Status.CONFIRMED, self.Status.REJECTED],
             self.Status.ACCEPTED: [self.Status.READY, self.Status.CANCEL_REQUESTED],
