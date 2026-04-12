@@ -132,6 +132,7 @@ def accept_order(order):
     return order
 
 
+@transaction.atomic
 def reject_order(order, reason=""):
     """
     Manager rejects an order — triggers refund.
