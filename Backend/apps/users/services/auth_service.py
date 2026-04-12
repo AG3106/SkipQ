@@ -341,6 +341,50 @@ def reset_password(email, otp, new_password):
 
 
 # ---------------------------------------------------------------------------
+# Forgot Wallet PIN — mirrors the Forgot Password flow
+# ---------------------------------------------------------------------------
+
+def forgot_wallet_pin_request(user):
+    """
+    Step 1 of Forgot Wallet PIN flow.
+    Sends an OTP to the authenticated user's email so they can reset
+    their wallet PIN without knowing the current one.
+    """
+    email = user.email
+
+    # Determine the user's name for the email greeting
+    name = ""
+    if user.role == "CUSTOMER" and hasattr(user, "customer_profile"):
+        name = user.customer_profile.name
+    elif user.role == "MANAGER" and hasattr(user, "manager_profile"):
+        name = user.manager_profile.contact_details
+
+    generate_and_send_otp(email, name=name or "User")
+    logger.info("Forgot-wallet-PIN OTP requested for %s", email)
+
+
+def reset_wallet_pin(user, otp, new_pin):
+    """
+    Step 2 of Forgot Wallet PIN flow.
+    Verifies the OTP, then resets the wallet PIN (bypassing the
+    current-PIN requirement).
+    """
+    from apps.users.services import profile_service
+
+    verify_otp(user.email, otp)
+
+    if user.role == "CUSTOMER" and hasattr(user, "customer_profile"):
+        profile = user.customer_profile
+    elif user.role == "MANAGER" and hasattr(user, "manager_profile"):
+        profile = user.manager_profile
+    else:
+        raise ValueError("No wallet for this role")
+
+    profile_service.set_wallet_pin(profile, new_pin)
+    logger.info("Wallet PIN reset successfully for %s", user.email)
+
+
+# ---------------------------------------------------------------------------
 # Wallet PIN hashing
 # ---------------------------------------------------------------------------
 

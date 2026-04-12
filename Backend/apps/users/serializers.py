@@ -120,6 +120,12 @@ class VerifyWalletPINSerializer(serializers.Serializer):
     pin = serializers.CharField(min_length=4, max_length=6)
 
 
+class ResetWalletPINSerializer(serializers.Serializer):
+    """Validates OTP + new PIN for the forgot-wallet-pin flow."""
+    otp = serializers.CharField(max_length=6)
+    new_pin = serializers.CharField(min_length=4, max_length=6)
+
+
 # ---------------------------------------------------------------------------
 # Forgot Password
 # ---------------------------------------------------------------------------

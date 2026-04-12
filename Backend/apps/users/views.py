@@ -26,6 +26,7 @@ from apps.users.serializers import (
     SetWalletPINSerializer,
     ChangeWalletPINSerializer,
     VerifyWalletPINSerializer,
+    ResetWalletPINSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
 )
@@ -387,5 +388,40 @@ def verify_wallet_pin(request):
             return Response({"error": "Current PIN is incorrect"}, status=status.HTTP_403_FORBIDDEN)
 
         return Response({"message": "PIN verified successfully"})
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def forgot_wallet_pin(request):
+    """
+    POST /api/users/wallet/forgot-pin/
+
+    Step 1 of Forgot Wallet PIN flow.
+    Sends an OTP to the authenticated user's email.
+    """
+    try:
+        auth_service.forgot_wallet_pin_request(request.user)
+        return Response({"message": "OTP sent to your email"}, status=status.HTTP_200_OK)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def reset_wallet_pin_view(request):
+    """
+    POST /api/users/wallet/reset-pin/
+
+    Step 2 of Forgot Wallet PIN flow.
+    Verifies OTP and sets a new wallet PIN.
+    """
+    serializer = ResetWalletPINSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+    try:
+        auth_service.reset_wallet_pin(request.user, data["otp"], data["new_pin"])
+        return Response({"message": "Wallet PIN reset successfully"}, status=status.HTTP_200_OK)
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

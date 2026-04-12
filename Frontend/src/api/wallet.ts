@@ -24,3 +24,11 @@ export async function changeWalletPin(currentPin: string, newPin: string): Promi
 export async function verifyWalletPin(pin: string): Promise<{ message: string }> {
     return api.post("/api/users/wallet/verify-pin/", { pin });
 }
+
+export async function forgotWalletPin(): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/forgot-pin/", {});
+}
+
+export async function resetWalletPin(otp: string, newPin: string): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/reset-pin/", { otp, new_pin: newPin });
+}

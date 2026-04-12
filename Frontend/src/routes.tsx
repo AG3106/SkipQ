@@ -15,6 +15,7 @@ import PaymentResult from "./pages/PaymentResult";
 import WalletPage from "./pages/WalletPage";
 import SetWalletPin from "./pages/SetWalletPin";
 import VerifyWalletPin from "./pages/VerifyWalletPin";
+import ForgotWalletPin from "./pages/ForgotWalletPin";
 import UserProfile from "./pages/UserProfile";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import AdminPanel from "./pages/AdminPanel";
@@ -107,6 +108,10 @@ export const router = createBrowserRouter([
   {
     path: "/wallet/verify-pin",
     element: protect(VerifyWalletPin, ["CUSTOMER", "MANAGER"]),
+  },
+  {
+    path: "/wallet/forgot-pin",
+    element: protect(ForgotWalletPin, ["CUSTOMER", "MANAGER"]),
   },
   {
     path: "/profile",
