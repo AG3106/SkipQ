@@ -132,6 +132,7 @@ def accept_order(order):
     return order
 
 
+@transaction.atomic
 def reject_order(order, reason=""):
     """
     Manager rejects an order — triggers refund.
@@ -171,6 +172,8 @@ def request_cancel(order, customer_profile):
             f"(current: {order.get_status_display()})"
         )
 
+    order.pre_cancel_status = order.status
+    order.save(update_fields=["pre_cancel_status"])
     order.update_order_status(Order.Status.CANCEL_REQUESTED)
     logger.info("Order #%s cancel requested by customer", order.pk)
     broadcast_order_event(order)
@@ -217,7 +220,8 @@ def reject_cancel(order, reason=""):
     order.cancel_rejection_reason = reason
     order.save(update_fields=["cancel_rejection_reason"])
 
-    order.update_order_status(Order.Status.PENDING)
+    restore_status = order.pre_cancel_status or Order.Status.PENDING
+    order.update_order_status(restore_status)
 
     logger.info(
         "Order #%s cancel request denied by manager. Reason: %s",

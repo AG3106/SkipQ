@@ -104,6 +104,6 @@ class OrderConsumer(AsyncWebsocketConsumer):
             return None
 
         try:
-            return user.manager_profile.canteen_id
+            return user.manager_profile.canteen.pk
         except Exception:
             return None

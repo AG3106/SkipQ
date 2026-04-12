@@ -165,11 +165,14 @@ export interface Payment {
 export interface Order {
     id: number;
     customerEmail: string;
+    canteenId: number;
     canteenName: string;
     status: string;
     bookTime: string;
     receiveTime: string | null;
     notes: string;
+    customerName: string;
+    rollNo: string;
     rejectReason: string;
     cancelRejectionReason: string;
     items: OrderItem[];

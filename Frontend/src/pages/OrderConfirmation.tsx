@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { CheckCircle, Home, Package, Clock, ChefHat, Loader2, ArrowLeft, XCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { getOrderDetail } from "../api/orders";
-import type { Order } from "../types";
+import { useCart } from "../context/CartContext";
+import type { Order, CartItem } from "../types";
 
 const STATUS_STEPS = ["PENDING", "ACCEPTED", "READY", "COMPLETED"] as const;
 
@@ -14,8 +15,35 @@ function getStepIndex(status: string): number {
 
 export default function OrderConfirmation() {
   const { orderId } = useParams();
+  const navigate = useNavigate();
+  const { setCartItems } = useCart();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleOrderAgain = () => {
+    if (!order) return;
+
+    const cartItems: CartItem[] = order.items.map((item) => ({
+      dishId: item.dish,
+      name: item.dishName,
+      price: parseFloat(item.priceAtOrder),
+      quantity: item.quantity,
+      photoUrl: null,
+      category: "",
+      isVeg: true,
+      canteenId: order.canteenId,
+      canteenName: order.canteenName,
+    }));
+
+    setCartItems(cartItems);
+
+    navigate("/wallet/verify-pin", {
+      state: {
+        customerName: order.customerName,
+        rollNo: order.rollNo,
+      },
+    });
+  };
 
   const isActive = (status: string) =>
     ["PENDING", "ACCEPTED", "READY", "CANCEL_REQUESTED"].includes(status);
@@ -218,11 +246,11 @@ export default function OrderConfirmation() {
                     Back to Home
                   </Button>
                 </Link>
-                <Link to="/hostels" className="w-full sm:w-auto">
-                  <Button variant="outline" className="w-full h-14 border-2 border-gray-200 dark:border-gray-700 hover:border-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 text-gray-700 dark:text-gray-300 hover:text-[#D4725C] rounded-xl text-lg font-bold transition-all">
+                <div className="w-full sm:w-auto">
+                  <Button onClick={handleOrderAgain} variant="outline" className="w-full h-14 border-2 border-gray-200 dark:border-gray-700 hover:border-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 text-gray-700 dark:text-gray-300 hover:text-[#D4725C] rounded-xl text-lg font-bold transition-all">
                     Order Again
                   </Button>
-                </Link>
+                </div>
               </div>
             </div>
           )}
