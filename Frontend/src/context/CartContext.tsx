@@ -17,6 +17,7 @@ interface CartContextType {
   removeItem: (dishId: number) => void;
   updateQuantity: (dishId: number, quantity: number) => void;
   clearCart: () => void;
+  setCartItems: (items: CartItem[]) => void;
   getTotal: () => number;
   getItemCount: () => number;
   // Legacy compat for old pages during migration
@@ -129,6 +130,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
+        setCartItems: setItems,
         getTotal,
         getItemCount,
         // Legacy compat

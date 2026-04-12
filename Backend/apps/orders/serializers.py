@@ -34,11 +34,12 @@ class OrderSerializer(serializers.ModelSerializer):
     estimated_wait_minutes = serializers.SerializerMethodField()
     customer_email = serializers.CharField(source="customer.user.email", read_only=True)
     canteen_name = serializers.CharField(source="canteen.name", read_only=True)
+    canteen_id = serializers.IntegerField(source="canteen.pk", read_only=True)
 
     class Meta:
         model = Order
         fields = [
-            "id", "customer_email", "canteen_name", "status",
+            "id", "customer_email", "canteen_id", "canteen_name", "status",
             "book_time", "receive_time", "notes",
             "customer_name", "roll_no",
             "reject_reason", "cancel_rejection_reason",
