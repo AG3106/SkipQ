@@ -35,6 +35,7 @@ interface ProfileField {
   type?: string;
   placeholder?: string;
   options?: string[];
+  editable?: boolean;
 }
 
 export default function UserProfile() {
@@ -87,6 +88,12 @@ export default function UserProfile() {
         return;
       }
     }
+    if (key === "phone") {
+      if (!/^\d{10}$/.test(value.replace(/\s/g, ""))) {
+        toast.error("Enter a valid 10-digit phone number");
+        return;
+      }
+    }
     const updated = { ...profile, [key]: value };
     setProfile(updated);
     localStorage.setItem("skipq_profile", JSON.stringify(updated));
@@ -117,7 +124,7 @@ export default function UserProfile() {
 
   const fields: ProfileField[] = [
     { key: "name", label: "Full Name", value: profile.name, icon: <User className="size-5" />, placeholder: "Enter your name" },
-    { key: "email", label: "Email Address", value: profile.email, icon: <Mail className="size-5" />, type: "email", placeholder: "Enter your email" },
+    { key: "email", label: "Email Address", value: profile.email, icon: <Mail className="size-5" />, editable: false },
     { key: "phone", label: "Phone Number", value: profile.phone, icon: <Phone className="size-5" />, type: "tel", placeholder: "+91 XXXXX XXXXX" },
     { key: "rollNumber", label: "Roll Number", value: profile.rollNumber, icon: <Shield className="size-5" />, placeholder: "e.g. 240000" },
   ];
@@ -242,28 +249,30 @@ export default function UserProfile() {
                     </div>
 
                     {/* Action buttons */}
-                    {isEditing ? (
-                      <div className="flex items-center gap-1.5 shrink-0">
+                    {field.editable !== false && (
+                      isEditing ? (
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => saveProfile(field.key, editValue)}
+                            className="w-9 h-9 rounded-xl bg-[#D4725C] text-white flex items-center justify-center hover:bg-[#B85A4A] transition-colors shadow-sm"
+                          >
+                            <Check className="size-4" />
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <X className="size-4" />
+                          </button>
+                        </div>
+                      ) : (
                         <button
-                          onClick={() => saveProfile(field.key, editValue)}
-                          className="w-9 h-9 rounded-xl bg-[#D4725C] text-white flex items-center justify-center hover:bg-[#B85A4A] transition-colors shadow-sm"
+                          onClick={() => startEdit(field.key, field.value)}
+                          className="w-9 h-9 rounded-xl text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center justify-center transition-all shrink-0"
                         >
-                          <Check className="size-4" />
+                          <Pencil className="size-4" />
                         </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                        >
-                          <X className="size-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => startEdit(field.key, field.value)}
-                        className="w-9 h-9 rounded-xl text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center justify-center transition-all shrink-0"
-                      >
-                        <Pencil className="size-4" />
-                      </button>
+                      )
                     )}
                   </div>
                 </div>

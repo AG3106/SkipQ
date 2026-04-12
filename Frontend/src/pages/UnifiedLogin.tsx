@@ -140,6 +140,11 @@ export default function UnifiedLogin() {
       return;
     }
 
+    if (!/^\d{10}$/.test(formData.phone.replace(/\s/g, ""))) {
+      toast.error("Enter a valid 10-digit phone number");
+      return;
+    }
+
     if (formData.password.length < 8) {
       toast.error("Password must be at least 8 characters");
       return;

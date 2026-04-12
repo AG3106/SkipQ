@@ -26,7 +26,10 @@ class InitiateSignupSerializer(serializers.Serializer):
         default=User.Role.CUSTOMER,
     )
     name = serializers.CharField(max_length=255, required=False, default="")
-    phone = serializers.CharField(max_length=20, required=False, default="")
+    phone = serializers.CharField(
+        max_length=20, required=False, default="",
+        validators=[RegexValidator(r'^(\d{10})?$', message="Enter a valid 10-digit phone number.")],
+    )
 
 
 class VerifyOTPSerializer(serializers.Serializer):
