@@ -2,22 +2,21 @@ references/
 Backend/.venv/
 Instructions.md
 .agent/
-Backend/files/
-*.pyc
-*.py[cod]
-__pycache__/
-fe2/
-.playwright/
-.playwright-cli/
-Backend/Database/
-# Cache, Build & Logs
-Frontend/node_modules/
-Frontend/build/
-Frontend/tests/
-.claude/
-Context/
-.env
-*.env
-BUG_REPORT.md
-Backend/server.log
+# Ignore everything by default
+/*
+
+# Allow specific files in root
+!/README.md
+!/SECRET.md
+!/.gitignore
+!/skipq_db_backup.sql
+!/start.sh
+
+# Allow core project directories
+!/Backend/
+!/Frontend/
+
+# Note: .git is ignored by default
+# general_bug_fix_guide.md and unresolved_issues.md are now ignored
+/server.log
 Frontend/frontend.log

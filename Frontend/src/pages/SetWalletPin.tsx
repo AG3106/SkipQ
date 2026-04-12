@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router";
 import { ArrowLeft, ShieldCheck, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Delete, KeyRound } from "lucide-react";
+import { Link } from "react-router";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { setWalletPin as setWalletPinApi } from "../api/auth";
@@ -491,6 +492,18 @@ export default function SetWalletPin() {
           >
             {step === "current" ? (verifying ? "Verifying..." : "Verify") : step === "set" ? "Continue" : (isChangeMode ? "Change PIN" : "Set PIN")}
           </motion.button>
+
+          {/* Forgot PIN link (only during current PIN verification) */}
+          {step === "current" && (
+            <div className="mt-4 text-center">
+              <Link
+                to="/wallet/forgot-pin"
+                className="text-xs font-medium text-gray-500 hover:text-[#D4725C] transition-colors"
+              >
+                Forgot current PIN? Reset it
+              </Link>
+            </div>
+          )}
 
           {/* Security note */}
           <div className="mt-3 md:mt-6 flex items-start gap-2 md:gap-2.5 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-xl p-2.5 md:p-3.5 border border-gray-100 dark:border-gray-800">
