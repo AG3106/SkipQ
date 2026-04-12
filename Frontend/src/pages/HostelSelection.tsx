@@ -16,6 +16,13 @@ type DietaryFilter = "all" | "veg" | "non-veg";
 const CANTEEN_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1552933440-440952890413?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600";
 const DISH_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
 
+/** Convert "HH:MM:SS" or "HH:MM" to "h:mm AM/PM" */
+function formatTime(t: string): string {
+  const [h, m] = t.split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
 export default function HostelSelection() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -202,9 +209,16 @@ export default function HostelSelection() {
                           <Star className="w-4 h-4 fill-current text-green-600 dark:text-green-400" />
                           <span className="font-bold text-sm text-green-700 dark:text-green-400">{canteen.medianRating.toFixed(1)}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
-                          <Clock className="w-4 h-4" />
-                          <span className="text-sm font-medium">{canteen.estimatedWaitTime || "15-20 min"}</span>
+                        <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
+                          {canteen.openingTime && canteen.closingTime && (
+                            <span className="text-xs font-medium">
+                              {formatTime(canteen.openingTime)} – {formatTime(canteen.closingTime)}
+                            </span>
+                          )}
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-4 h-4" />
+                            <span className="text-sm font-medium">{canteen.estimatedWaitTime || "15-20 min"}</span>
+                          </div>
                         </div>
                       </div>
                     </div>

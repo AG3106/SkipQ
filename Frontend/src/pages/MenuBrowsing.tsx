@@ -12,6 +12,13 @@ import type { Canteen, Dish, PopularDish } from "../types";
 
 const DISH_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
 
+/** Convert "HH:MM:SS" or "HH:MM" to "h:mm AM/PM" */
+function formatTime(t: string): string {
+  const [h, m] = t.split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
 export default function MenuBrowsing() {
   const { hostelId } = useParams();
   const [searchParams] = useSearchParams();
@@ -127,6 +134,14 @@ export default function MenuBrowsing() {
               </div>
 
               <div className="flex items-center gap-8">
+                {canteen.openingTime && canteen.closingTime && (
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      {formatTime(canteen.openingTime)} – {formatTime(canteen.closingTime)}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">timings</p>
+                  </div>
+                )}
                 <div className="text-center">
                   <p className="text-2xl font-bold text-[#D4725C]">{canteen.estimatedWaitTime || "~20"}</p>
                   <p className="text-xs text-gray-400 mt-1">min wait</p>
