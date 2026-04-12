@@ -62,9 +62,16 @@ export async function getProfile(): Promise<CustomerProfile | ManagerProfile> {
  * Update user profile.
  */
 export async function updateProfile(
-    data: Partial<{ name: string; phone: string; contactDetails: string }>,
-): Promise<unknown> {
-    return api.patch("/api/users/profile/", data);
+    data: Partial<{ name: string; phone: string; rollNumber: string; contactDetails: string }>,
+): Promise<CustomerProfile | ManagerProfile> {
+    const payload: Record<string, string> = {};
+
+    if (typeof data.name === "string") payload.name = data.name;
+    if (typeof data.phone === "string") payload.phone = data.phone;
+    if (typeof data.rollNumber === "string") payload.roll_number = data.rollNumber;
+    if (typeof data.contactDetails === "string") payload.contact_details = data.contactDetails;
+
+    return api.patch("/api/users/profile/", payload);
 }
 
 /**

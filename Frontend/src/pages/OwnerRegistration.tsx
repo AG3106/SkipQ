@@ -76,7 +76,8 @@ export default function OwnerRegistration() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const coerced = name === "phone" ? value.replace(/\D/g, "").slice(0, 10) : value;
+    setFormData((prev) => ({ ...prev, [name]: coerced }));
     if (errors[name]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -95,9 +96,9 @@ export default function OwnerRegistration() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Enter a valid email";
     }
-    if (!formData.phone.trim()) {
+    if (!formData.phone) {
       newErrors.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(formData.phone.replace(/\s/g, ""))) {
+    } else if (formData.phone.length !== 10) {
       newErrors.phone = "Enter a valid 10-digit phone number";
     }
     if (!formData.password) {
@@ -121,7 +122,7 @@ export default function OwnerRegistration() {
 
     setIsLoading(true);
     try {
-      await register(formData.email, formData.password, formData.fullName, "MANAGER", formData.phone);
+      await register(formData.email, formData.password, formData.fullName, "MANAGER", "+91" + formData.phone);
       toast.success("OTP sent to your email! Please check your inbox.");
       setSignupStep("otp");
       startOtpTimer();
@@ -156,7 +157,7 @@ export default function OwnerRegistration() {
   const handleResendOtp = async () => {
     setOtp(["", "", "", "", "", ""]);
     try {
-      await register(formData.email, formData.password, formData.fullName, "MANAGER", formData.phone);
+      await register(formData.email, formData.password, formData.fullName, "MANAGER", "+91" + formData.phone);
       toast.success("New OTP sent to your email!");
       startOtpTimer();
     } catch (err: any) {
@@ -371,15 +372,16 @@ export default function OwnerRegistration() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Phone Number
                 </label>
-                <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 dark:text-gray-500" />
+                <div className={`flex items-center overflow-hidden rounded-xl ${errors.phone ? "border border-red-400 dark:border-red-500 ring-1 ring-red-400/30" : "border border-gray-200 dark:border-gray-700"} bg-white/50 dark:bg-gray-800/50 focus-within:ring-2 focus-within:ring-[#D4725C] focus-within:border-transparent`}>
+                  <span className="px-3.5 py-3.5 text-gray-500 dark:text-gray-400 font-medium border-r border-gray-200 dark:border-gray-700 shrink-0 select-none">+91</span>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className={inputClass("phone")}
-                    placeholder="10-digit phone number"
+                    maxLength={10}
+                    className="flex-1 px-3 py-3.5 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                    placeholder="XXXXXXXXXX"
                   />
                 </div>
                 {errors.phone && <p className="text-xs text-red-500 mt-1.5 ml-1">{errors.phone}</p>}

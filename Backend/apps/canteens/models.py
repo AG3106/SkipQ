@@ -130,7 +130,7 @@ class Canteen(models.Model):
             canteen=self,
             status__in=[Order.Status.PENDING, Order.Status.ACCEPTED],
         ).count()
-        return active_count * 30  # minutes
+        return active_count * Order.WAIT_TIME_PER_ORDER  # minutes
 
     def check_availability(self, date):
         """

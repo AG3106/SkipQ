@@ -224,39 +224,35 @@ export default function AdminPanel() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         {/* Tabs */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-2 sm:gap-4 mb-6 flex-wrap">
           <button
             onClick={() => setActiveTab('canteens')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-              activeTab === 'canteens'
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'canteens'
                 ? 'bg-[#D4725C] text-white shadow-sm'
                 : 'bg-white/60 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <Store className="w-4 h-4" />
             Canteen Requests
             {pendingCount > 0 && (
-              <span className={`w-5 h-5 flex items-center justify-center rounded-full text-xs ${
-                activeTab === 'canteens' ? 'bg-white/20 text-white' : 'bg-[#D4725C] text-white'
-              }`}>
+              <span className={`w-5 h-5 flex items-center justify-center rounded-full text-xs ${activeTab === 'canteens' ? 'bg-white/20 text-white' : 'bg-[#D4725C] text-white'
+                }`}>
                 {pendingCount}
               </span>
             )}
           </button>
           <button
             onClick={() => setActiveTab('managers')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-              activeTab === 'managers'
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'managers'
                 ? 'bg-[#D4725C] text-white shadow-sm'
                 : 'bg-white/60 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <Users className="w-4 h-4" />
             Manager Registrations
             {pendingManagerCount > 0 && (
-              <span className={`w-5 h-5 flex items-center justify-center rounded-full text-xs ${
-                activeTab === 'managers' ? 'bg-white/20 text-white' : 'bg-[#D4725C] text-white'
-              }`}>
+              <span className={`w-5 h-5 flex items-center justify-center rounded-full text-xs ${activeTab === 'managers' ? 'bg-white/20 text-white' : 'bg-[#D4725C] text-white'
+                }`}>
                 {pendingManagerCount}
               </span>
             )}
@@ -350,7 +346,7 @@ export default function AdminPanel() {
                           exit={{ height: 0, opacity: 0 }}
                           className="overflow-hidden"
                         >
-                          <div className="mt-3 flex gap-2">
+                          <div className="mt-3 flex flex-col sm:flex-row gap-2">
                             <input
                               type="text"
                               placeholder="Reason for rejection (optional)"
@@ -360,10 +356,11 @@ export default function AdminPanel() {
                               autoFocus
                               onKeyDown={(e) => e.key === 'Enter' && handleReject(canteen.id)}
                             />
+                            <div className="flex gap-2">
                             <button
                               onClick={() => handleReject(canteen.id)}
                               disabled={actionLoadingId === canteen.id}
-                              className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 disabled:opacity-50 transition-colors"
+                              className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 disabled:opacity-50 transition-colors"
                             >
                               {actionLoadingId === canteen.id ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -373,10 +370,11 @@ export default function AdminPanel() {
                             </button>
                             <button
                               onClick={() => { setRejectingId(null); setRejectReason(''); }}
-                              className="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                              className="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                             >
                               Cancel
                             </button>
+                            </div>
                           </div>
                         </motion.div>
                       )}
@@ -511,7 +509,7 @@ export default function AdminPanel() {
                           exit={{ height: 0, opacity: 0 }}
                           className="overflow-hidden"
                         >
-                          <div className="mt-3 flex gap-2">
+                          <div className="mt-3 flex flex-col sm:flex-row gap-2">
                             <input
                               type="text"
                               placeholder="Reason for rejection (optional)"
@@ -521,10 +519,11 @@ export default function AdminPanel() {
                               autoFocus
                               onKeyDown={(e) => e.key === 'Enter' && handleRejectManager(reg.id)}
                             />
+                            <div className="flex gap-2">
                             <button
                               onClick={() => handleRejectManager(reg.id)}
                               disabled={managerActionLoadingId === reg.id}
-                              className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 disabled:opacity-50 transition-colors"
+                              className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 disabled:opacity-50 transition-colors"
                             >
                               {managerActionLoadingId === reg.id ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -534,10 +533,11 @@ export default function AdminPanel() {
                             </button>
                             <button
                               onClick={() => { setManagerRejectingId(null); setManagerRejectReason(''); }}
-                              className="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                              className="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                             >
                               Cancel
                             </button>
+                            </div>
                           </div>
                         </motion.div>
                       )}

@@ -6,6 +6,7 @@ API representations.
 """
 
 from rest_framework import serializers
+from django.core.validators import RegexValidator
 from apps.users.models import User, CustomerProfile, CanteenManagerProfile, AdminProfile
 
 
@@ -20,9 +21,31 @@ class InitiateSignupSerializer(serializers.Serializer):
     """
     email = serializers.EmailField()
     password = serializers.CharField(min_length=8, write_only=True)
-    role = serializers.ChoiceField(choices=User.Role.choices, default=User.Role.CUSTOMER)
+    role = serializers.ChoiceField(
+        choices=[(User.Role.CUSTOMER, "Customer"), (User.Role.MANAGER, "Manager")],
+        default=User.Role.CUSTOMER,
+    )
     name = serializers.CharField(max_length=255, required=False, default="")
-    phone = serializers.CharField(max_length=20, required=False, default="")
+    phone = serializers.CharField(
+        max_length=20,
+        required=False,
+        default="",
+        validators=[
+            RegexValidator(
+                r'^((\+91)?\d{10})?$',
+                message="Enter a valid 10-digit phone number (with optional +91 prefix).",
+            )
+        ],
+    )
+
+    def validate(self, attrs):
+        role = attrs.get("role", User.Role.CUSTOMER)
+        phone = (attrs.get("phone") or "").strip()
+        if role == User.Role.MANAGER and not phone:
+            raise serializers.ValidationError({
+                "phone": "Phone number is required for managers.",
+            })
+        return attrs
 
 
 class VerifyOTPSerializer(serializers.Serializer):
@@ -63,10 +86,25 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomerProfileSerializer(serializers.ModelSerializer):
     """Customer profile with wallet info."""
     user = UserSerializer(read_only=True)
+    phone = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        validators=[
+            RegexValidator(
+                r'^((\+91)?\d{10})?$',
+                message="Enter a valid 10-digit phone number (with optional +91 prefix).",
+            )
+        ],
+    )
+    roll_number = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        validators=[RegexValidator(r'^\d{6,10}$', message="Enter a valid campus roll number (6-10 digits).")]
+    )
 
     class Meta:
         model = CustomerProfile
-        fields = ["id", "user", "name", "phone", "wallet_balance"]
+        fields = ["id", "user", "name", "phone", "roll_number", "wallet_balance"]
         read_only_fields = ["id", "wallet_balance"]
 
 
@@ -100,6 +138,21 @@ class AddFundsSerializer(serializers.Serializer):
 
 class SetWalletPINSerializer(serializers.Serializer):
     pin = serializers.CharField(min_length=4, max_length=6)
+
+
+class ChangeWalletPINSerializer(serializers.Serializer):
+    current_pin = serializers.CharField(min_length=4, max_length=6)
+    new_pin = serializers.CharField(min_length=4, max_length=6)
+
+
+class VerifyWalletPINSerializer(serializers.Serializer):
+    pin = serializers.CharField(min_length=4, max_length=6)
+
+
+class ResetWalletPINSerializer(serializers.Serializer):
+    """Validates OTP + new PIN for the forgot-wallet-pin flow."""
+    otp = serializers.CharField(max_length=6)
+    new_pin = serializers.CharField(min_length=4, max_length=6)
 
 
 # ---------------------------------------------------------------------------

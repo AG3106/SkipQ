@@ -14,12 +14,14 @@ from rest_framework.response import Response
 
 from apps.users.models import User
 from apps.canteens.models import Canteen
-from apps.cakes.models import CakeReservation
+from apps.cakes.models import CakeReservation, CakeSizePrice, CakeFlavor
 from apps.cakes.serializers import (
     CakeReservationSerializer,
     CheckAvailabilitySerializer,
     SubmitReservationSerializer,
     ReservationActionSerializer,
+    CakeSizePriceSerializer,
+    CakeFlavorSerializer,
 )
 from apps.cakes.services import cake_service
 
@@ -247,3 +249,165 @@ def complete_reservation(request, reservation_id):
         return Response(CakeReservationSerializer(reservation).data)
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# Public cake options — available sizes/prices and flavors for a canteen
+# ---------------------------------------------------------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def canteen_cake_options(request, canteen_id):
+    """
+    GET /api/cakes/options/<canteen_id>/
+
+    Returns available cake sizes/prices and flavors for a canteen.
+    Used by the customer reservation form.
+    """
+    try:
+        canteen = Canteen.objects.get(pk=canteen_id)
+    except Canteen.DoesNotExist:
+        return Response({"error": "Canteen not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    sizes = CakeSizePrice.objects.filter(canteen=canteen, is_available=True)
+    flavors = CakeFlavor.objects.filter(canteen=canteen, is_available=True)
+
+    return Response({
+        "sizes": CakeSizePriceSerializer(sizes, many=True).data,
+        "flavors": CakeFlavorSerializer(flavors, many=True).data,
+    })
+
+
+# ---------------------------------------------------------------------------
+# Manager CRUD — CakeSizePrice
+# ---------------------------------------------------------------------------
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def manager_size_prices(request):
+    """
+    GET  /api/cakes/manage/sizes/   — list all size-prices for manager's canteen
+    POST /api/cakes/manage/sizes/   — create a new size-price entry
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        canteen = request.user.manager_profile.canteen
+    except Exception:
+        return Response({"error": "No canteen assigned"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        entries = CakeSizePrice.objects.filter(canteen=canteen)
+        return Response(CakeSizePriceSerializer(entries, many=True).data)
+
+    # POST
+    serializer = CakeSizePriceSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(canteen=canteen)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["PUT", "PATCH", "DELETE"])
+@permission_classes([IsAuthenticated])
+def manager_size_price_detail(request, pk):
+    """
+    PUT/PATCH /api/cakes/manage/sizes/<pk>/  — update a size-price entry
+    DELETE    /api/cakes/manage/sizes/<pk>/  — delete a size-price entry
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        entry = CakeSizePrice.objects.get(
+            pk=pk, canteen__manager=request.user.manager_profile,
+        )
+    except CakeSizePrice.DoesNotExist:
+        return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "DELETE":
+        entry.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # PUT / PATCH
+    partial = request.method == "PATCH"
+    serializer = CakeSizePriceSerializer(entry, data=request.data, partial=partial)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data)
+
+
+# ---------------------------------------------------------------------------
+# Manager CRUD — CakeFlavor
+# ---------------------------------------------------------------------------
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def manager_flavors(request):
+    """
+    GET  /api/cakes/manage/flavors/   — list all flavors for manager's canteen
+    POST /api/cakes/manage/flavors/   — create a new flavor
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        canteen = request.user.manager_profile.canteen
+    except Exception:
+        return Response({"error": "No canteen assigned"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        entries = CakeFlavor.objects.filter(canteen=canteen)
+        return Response(CakeFlavorSerializer(entries, many=True).data)
+
+    # POST
+    serializer = CakeFlavorSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    flavor = serializer.save(canteen=canteen)
+
+    # Handle optional photo upload → files/cake_images/<canteen_id>/<id>.jpg
+    photo = request.FILES.get("photo")
+    if photo:
+        from apps.canteens.utils.file_handlers import save_cake_image
+        save_cake_image(canteen.pk, flavor.pk, photo)
+
+    return Response(CakeFlavorSerializer(flavor).data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["PUT", "PATCH", "DELETE"])
+@permission_classes([IsAuthenticated])
+def manager_flavor_detail(request, pk):
+    """
+    PUT/PATCH /api/cakes/manage/flavors/<pk>/  — update a flavor
+    DELETE    /api/cakes/manage/flavors/<pk>/  — delete a flavor
+    """
+    if request.user.role != User.Role.MANAGER:
+        return Response({"error": "Only managers"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        entry = CakeFlavor.objects.get(
+            pk=pk, canteen__manager=request.user.manager_profile,
+        )
+    except CakeFlavor.DoesNotExist:
+        return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "DELETE":
+        from apps.canteens.utils.file_handlers import delete_cake_image
+        delete_cake_image(entry.canteen_id, entry.pk)
+        entry.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # PUT / PATCH
+    partial = request.method == "PATCH"
+    serializer = CakeFlavorSerializer(entry, data=request.data, partial=partial)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    # Handle optional photo upload → files/cake_images/<canteen_id>/<id>.jpg
+    photo = request.FILES.get("photo")
+    if photo:
+        from apps.canteens.utils.file_handlers import save_cake_image
+        save_cake_image(entry.canteen_id, entry.pk, photo)
+
+    return Response(CakeFlavorSerializer(entry).data)
+

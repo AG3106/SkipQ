@@ -15,6 +15,7 @@ import PaymentResult from "./pages/PaymentResult";
 import WalletPage from "./pages/WalletPage";
 import SetWalletPin from "./pages/SetWalletPin";
 import VerifyWalletPin from "./pages/VerifyWalletPin";
+import ForgotWalletPin from "./pages/ForgotWalletPin";
 import UserProfile from "./pages/UserProfile";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import AdminPanel from "./pages/AdminPanel";
@@ -24,10 +25,12 @@ import OwnerRegistration from "./pages/OwnerRegistration";
 import TrackOrders from "./pages/TrackOrders";
 import CakeReservation from "./pages/CakeReservation";
 import CakeManagement from "./pages/CakeManagement";
+import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-function protect(Component: React.ComponentType) {
-  return <ProtectedRoute><Component /></ProtectedRoute>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function protect(Component: any, allowedRoles?: string[]) {
+  return <ProtectedRoute allowedRoles={allowedRoles}><Component /></ProtectedRoute>;
 }
 
 export const router = createBrowserRouter([
@@ -52,89 +55,105 @@ export const router = createBrowserRouter([
     path: "/forgot-password",
     Component: ForgotPassword,
   },
-  // Protected routes
-  {
-    path: "/search",
-    element: protect(SearchResults),
-  },
-  {
-    path: "/payment-result",
-    element: protect(PaymentResult),
-  },
-  {
-    path: "/wallet",
-    element: protect(WalletPage),
-  },
-  {
-    path: "/wallet/set-pin",
-    element: protect(SetWalletPin),
-  },
-  {
-    path: "/wallet/verify-pin",
-    element: protect(VerifyWalletPin),
-  },
-  {
-    path: "/profile",
-    element: protect(UserProfile),
-  },
+  // Protected routes — Customer only
   {
     path: "/hostels",
-    element: protect(HostelSelection),
+    element: protect(HostelSelection, ["CUSTOMER"]),
   },
   {
     path: "/menu/:hostelId",
-    element: protect(MenuBrowsing),
+    element: protect(MenuBrowsing, ["CUSTOMER"]),
   },
   {
     path: "/cart",
-    element: protect(Cart),
+    element: protect(Cart, ["CUSTOMER"]),
   },
   {
     path: "/checkout",
-    element: protect(Checkout),
+    element: protect(Checkout, ["CUSTOMER"]),
   },
   {
     path: "/order-confirmation/:orderId",
-    element: protect(OrderConfirmation),
-  },
-  {
-    path: "/owner/dashboard",
-    element: protect(OwnerDashboard),
-  },
-  {
-    path: "/owner/account",
-    element: protect(OwnerAccount),
-  },
-  {
-    path: "/owner/menu",
-    element: protect(MenuManagement),
-  },
-{
-    path: "/owner/schedule",
-    element: protect(ScheduleManagement),
-  },
-  {
-    path: "/owner/stats",
-    element: protect(Statistics),
-  },
-  {
-    path: "/admin",
-    element: protect(AdminPanel),
-  },
-  {
-    path: "/canteen-register",
-    element: protect(CanteenRegistration),
+    element: protect(OrderConfirmation, ["CUSTOMER"]),
   },
   {
     path: "/track-orders",
-    element: protect(TrackOrders),
+    element: protect(TrackOrders, ["CUSTOMER"]),
   },
   {
     path: "/cake-reservation",
-    element: protect(CakeReservation),
+    element: protect(CakeReservation, ["CUSTOMER"]),
+  },
+  {
+    path: "/search",
+    element: protect(SearchResults, ["CUSTOMER"]),
+  },
+  {
+    path: "/payment-result",
+    element: protect(PaymentResult, ["CUSTOMER"]),
+  },
+  // Protected routes — Customer & Manager (shared)
+  {
+    path: "/wallet",
+    element: protect(WalletPage, ["CUSTOMER", "MANAGER"]),
+  },
+  {
+    path: "/wallet/set-pin",
+    element: protect(SetWalletPin, ["CUSTOMER", "MANAGER"]),
+  },
+  {
+    path: "/wallet/change-pin",
+    element: protect(SetWalletPin, ["CUSTOMER", "MANAGER"]),
+  },
+  {
+    path: "/wallet/verify-pin",
+    element: protect(VerifyWalletPin, ["CUSTOMER", "MANAGER"]),
+  },
+  {
+    path: "/wallet/forgot-pin",
+    element: protect(ForgotWalletPin, ["CUSTOMER", "MANAGER"]),
+  },
+  {
+    path: "/profile",
+    element: protect(UserProfile, ["CUSTOMER", "MANAGER"]),
+  },
+  // Protected routes — Manager only
+  {
+    path: "/owner/dashboard",
+    element: protect(OwnerDashboard, ["MANAGER"]),
+  },
+  {
+    path: "/owner/account",
+    element: protect(OwnerAccount, ["MANAGER"]),
+  },
+  {
+    path: "/owner/menu",
+    element: protect(MenuManagement, ["MANAGER"]),
+  },
+  {
+    path: "/owner/schedule",
+    element: protect(ScheduleManagement, ["MANAGER"]),
+  },
+  {
+    path: "/owner/stats",
+    element: protect(Statistics, ["MANAGER"]),
   },
   {
     path: "/owner/cakes",
-    element: protect(CakeManagement),
+    element: protect(CakeManagement, ["MANAGER"]),
+  },
+  {
+    path: "/canteen-register",
+    element: protect(CanteenRegistration, ["MANAGER"]),
+  },
+  // Protected routes — Admin only
+  {
+    path: "/admin",
+    element: protect(AdminPanel, ["ADMIN"]),
+  },
+  // Catch-all 404
+  {
+    path: "*",
+    Component: NotFound,
   },
 ]);

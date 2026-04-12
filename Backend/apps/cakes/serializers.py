@@ -4,8 +4,10 @@ DRF serializers for the cakes app.
 Maps CakeReservation entity to API representations.
 """
 
+from decimal import Decimal
+
 from rest_framework import serializers
-from apps.cakes.models import CakeReservation
+from apps.cakes.models import CakeReservation, CakeSizePrice, CakeFlavor
 
 
 class CakeReservationSerializer(serializers.ModelSerializer):
@@ -46,10 +48,49 @@ class SubmitReservationSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=500, required=False, default="")
     pickup_date = serializers.DateField()
     pickup_time = serializers.TimeField()
-    advance_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    advance_amount = serializers.DecimalField(
+        max_digits=10, decimal_places=2, min_value=Decimal("1.00"),
+    )
     wallet_pin = serializers.CharField(write_only=True)
 
 
 class ReservationActionSerializer(serializers.Serializer):
     """Serializer for manager reservation actions."""
     reason = serializers.CharField(required=False, default="")
+
+
+# ---------------------------------------------------------------------------
+# CakeSizePrice — manager-managed size/price configuration
+# ---------------------------------------------------------------------------
+
+class CakeSizePriceSerializer(serializers.ModelSerializer):
+    """Read/write serializer for cake size-price entries."""
+    is_available = serializers.BooleanField(default=True)
+
+    class Meta:
+        model = CakeSizePrice
+        fields = ["id", "size", "price", "is_available", "created_at", "updated_at"]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+# ---------------------------------------------------------------------------
+# CakeFlavor — manager-managed flavor catalog
+# ---------------------------------------------------------------------------
+
+class CakeFlavorSerializer(serializers.ModelSerializer):
+    """Read/write serializer for cake flavors."""
+    photo_url = serializers.SerializerMethodField()
+    is_available = serializers.BooleanField(default=True)
+
+    class Meta:
+        model = CakeFlavor
+        fields = ["id", "name", "photo_url", "is_available", "created_at", "updated_at"]
+        read_only_fields = ["id", "photo_url", "created_at", "updated_at"]
+
+    def get_photo_url(self, obj):
+        """Return /files/cake_images/<canteen_id>/<id>.jpg if the file exists."""
+        from apps.canteens.utils.file_handlers import cake_image_exists
+        if cake_image_exists(obj.canteen_id, obj.pk):
+            return f"/files/cake_images/{obj.canteen_id}/{obj.pk}.jpg"
+        return None
+

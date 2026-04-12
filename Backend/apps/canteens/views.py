@@ -566,11 +566,15 @@ def serve_document(request, canteen_id, filename):
     elif user.role != User.Role.ADMIN:
         return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
 
-    file_path = get_document_path(canteen.pk, filename)
+    try:
+        file_path = get_document_path(canteen.pk, filename)
+    except ValueError:
+        raise Http404("Document not found")
+
     if not os.path.isfile(file_path):
         raise Http404("Document not found")
 
-    return FileResponse(open(file_path, "rb"), as_attachment=True, filename=filename)
+    return FileResponse(open(file_path, "rb"), as_attachment=True, filename=os.path.basename(filename))
 
 
 # ---------------------------------------------------------------------------

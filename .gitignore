@@ -16,3 +16,12 @@ Frontend/build/
 Frontend/tests/
 .claude/
 Context/
+.env
+*.env
+BUG_REPORT.md
+Backend/server.log
+Frontend/frontend.log
+general_bug_fix_guide.md
+unresolved_issues.md
+Test_Document.md
+.codex

@@ -42,7 +42,7 @@ The original Figma design can be found [here](https://www.figma.com/design/OnOWp
 | UI components  | shadcn/ui (Radix primitives), Lucide icons, Recharts |
 | Animations     | Motion (Framer Motion), Sonner (toasts)              |
 | Database       | PostgreSQL 12+ (production), SQLite (test fallback)  |
-| Auth           | Session-based with OTP email verification            |
+| Auth           | Session-based with OTP email verification; CSRF enforced (X-CSRFToken header) |
 | Email          | Django SMTP via Gmail                                |
 | Image handling | Pillow (server-side conversion to .jpg)              |
 | CORS           | django-cors-headers                                  |
@@ -136,12 +136,17 @@ Backend/files/
 
 ### Database details
 
-By default, the backend connects to a PostgreSQL instance with the following credentials (defined in `Backend/config/settings.py`):
-- **Database Name**: `skipq_db`
-- **User**: `postgres`
-- **Password**: `sppsql` (can be overridden via the `DB_PASSWORD` environment variable)
-- **Host**: `localhost`
-- **Port**: `5433`
+By default, the backend connects to a PostgreSQL instance with the following credentials. All values can be overridden via a `Backend/.env` file or environment variables:
+
+| Variable          | Default        | Description          |
+| ----------------- | -------------- | -------------------- |
+| `DB_NAME`         | `skipq_db`     | Database name        |
+| `DB_USER`         | `postgres`     | Database user        |
+| `DB_PASSWORD`     | *(required)*   | Database password    |
+| `DB_HOST`         | `localhost`    | Database host        |
+| `DB_PORT`         | `5433`         | Database port        |
+| `EMAIL_HOST_USER` | *(gmail addr)* | SMTP sender address  |
+| `EMAIL_HOST_PASSWORD` | *(required)* | SMTP app password  |
 
 Note: During test runs (`python manage.py test`), Django automatically falls back to an in-memory SQLite database (`db.sqlite3`) to avoid altering production data.
 
@@ -238,13 +243,14 @@ All endpoints are under the `/api/` namespace.
 
 ### Users (`/api/users/`)
 
-| Method | Endpoint             | Description               |
-| ------ | -------------------- | ------------------------- |
-| GET    | `/profile/`          | View current user profile |
-| PATCH  | `/profile/`          | Update profile fields     |
-| GET    | `/wallet/`           | View wallet balance       |
-| POST   | `/wallet/add-funds/` | Add funds to wallet       |
-| POST   | `/wallet/set-pin/`   | Set or update wallet PIN  |
+| Method | Endpoint                | Description                                            |
+| ------ | ----------------------- | ------------------------------------------------------ |
+| GET    | `/profile/`             | View current user profile                              |
+| PATCH  | `/profile/`             | Update profile fields                                  |
+| GET    | `/wallet/`              | View wallet balance                                    |
+| POST   | `/wallet/add-funds/`    | Add funds to wallet                                    |
+| POST   | `/wallet/set-pin/`      | Set wallet PIN (fails if PIN already exists)           |
+| POST   | `/wallet/change-pin/`   | Change wallet PIN (requires current PIN verification)  |
 
 ### Canteens (`/api/canteens/`)
 
@@ -299,16 +305,25 @@ All endpoints are under the `/api/` namespace.
 
 ### Cake reservations (`/api/cakes/`)
 
-| Method | Endpoint               | Description                                  |
-| ------ | ---------------------- | -------------------------------------------- |
-| POST   | `/check-availability/` | Check if a date is available for reservation |
-| POST   | `/reserve/`            | Submit cake reservation (wallet payment)     |
-| GET    | `/my-reservations/`    | Customer's own reservations                  |
-| GET    | `/pending/`            | Pending reservations (manager view)          |
-| GET    | `/manager-all/`        | All reservations (manager view)              |
-| POST   | `/<id>/accept/`        | Accept reservation                           |
-| POST   | `/<id>/reject/`        | Reject reservation + auto-refund             |
-| POST   | `/<id>/complete/`      | Mark as picked up                            |
+| Method       | Endpoint                    | Description                                                    |
+| ------------ | --------------------------- | -------------------------------------------------------------- |
+| POST         | `/check-availability/`      | Check if a date is available for reservation                   |
+| POST         | `/reserve/`                 | Submit cake reservation (wallet payment; price validated server-side) |
+| GET          | `/my-reservations/`         | Customer's own reservations                                    |
+| GET          | `/options/<canteen_id>/`    | Available sizes/prices and flavors for a canteen (customer use)|
+| GET          | `/pending/`                 | Pending reservations (manager view)                            |
+| GET          | `/manager-all/`             | All reservations (manager view)                                |
+| POST         | `/<id>/accept/`             | Accept reservation                                             |
+| POST         | `/<id>/reject/`             | Reject reservation + auto-refund                               |
+| POST         | `/<id>/complete/`           | Mark as picked up                                              |
+| GET          | `/manage/sizes/`            | List cake size-price entries for manager's canteen             |
+| POST         | `/manage/sizes/`            | Create a new size-price entry                                  |
+| PUT/PATCH    | `/manage/sizes/<id>/`       | Update a size-price entry                                      |
+| DELETE       | `/manage/sizes/<id>/`       | Delete a size-price entry                                      |
+| GET          | `/manage/flavors/`          | List cake flavors for manager's canteen                        |
+| POST         | `/manage/flavors/`          | Create a new flavor (supports photo upload)                    |
+| PUT/PATCH    | `/manage/flavors/<id>/`     | Update a flavor                                                |
+| DELETE       | `/manage/flavors/<id>/`     | Delete a flavor                                                |
 
 ### Admin (`/api/admin/`)
 
@@ -342,12 +357,13 @@ The app uses React Router with 28 routes split across three user roles. Public p
 | `/checkout`                    | Checkout             | Customer |
 | `/order-confirmation/:orderId` | Order Confirmation   | Customer |
 | `/payment-result`              | Payment Result       | Customer |
-| `/track-orders`                | Track Orders         | Customer |
-| `/wallet`                      | Wallet Dashboard     | Customer |
-| `/wallet/set-pin`              | Set Wallet PIN       | Customer |
-| `/wallet/verify-pin`           | Verify Wallet PIN    | Customer |
-| `/profile`                     | User Profile         | Customer |
-| `/cake-reservation`            | Cake Reservation     | Customer |
+| `/track-orders`                | Track Orders         | Customer          |
+| `/cake-reservation`            | Cake Reservation     | Customer          |
+| `/wallet`                      | Wallet Dashboard     | Customer, Manager |
+| `/wallet/set-pin`              | Set Wallet PIN       | Customer, Manager |
+| `/wallet/change-pin`           | Change Wallet PIN    | Customer, Manager |
+| `/wallet/verify-pin`           | Verify Wallet PIN    | Customer, Manager |
+| `/profile`                     | User Profile         | Customer, Manager |
 | `/canteen-register`            | Canteen Registration | Manager  |
 | `/owner/dashboard`             | Owner Dashboard      | Manager  |
 | `/owner/menu`                  | Menu Management      | Manager  |

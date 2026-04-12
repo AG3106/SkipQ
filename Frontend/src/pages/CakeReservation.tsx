@@ -8,22 +8,10 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { listCanteens } from "../api/canteens";
-import { checkCakeAvailability, getMyReservations } from "../api/cakes";
+import { checkCakeAvailability, getMyReservations, getCakeOptions } from "../api/cakes";
+import { buildFileUrl } from "../api/client";
 import { useWallet } from "../context/WalletContext";
-import type { Canteen, CakeReservation as CakeReservationType } from "../types";
-
-// ─── Data ───────────────────────────────────────────────────────────────────────
-
-const FLAVORS = ["Chocolate", "Vanilla", "Red Velvet", "Strawberry"];
-const SIZES = ["0.5 kg", "1 kg", "2 kg"];
-const SIZE_PRICES: Record<string, number> = { "0.5 kg": 350, "1 kg": 600, "2 kg": 1100 };
-
-const FLAVOR_IMAGES: Record<string, string> = {
-  Chocolate: "https://images.unsplash.com/photo-1771575521906-a1184137f1b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
-  Vanilla: "https://images.unsplash.com/photo-1662751381695-396624641958?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
-  "Red Velvet": "https://images.unsplash.com/photo-1586788680434-30d324b2d46f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
-  Strawberry: "https://images.unsplash.com/photo-1745334976407-50dfd62eeec5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
-};
+import type { Canteen, CakeReservation as CakeReservationType, CakeSizePrice, CakeFlavor } from "../types";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -80,6 +68,11 @@ export default function CakeReservation() {
   const [canteens, setCanteens] = useState<Canteen[]>([]);
   const [canteensLoading, setCanteensLoading] = useState(true);
 
+  // Cake options from API (per canteen)
+  const [availableSizes, setAvailableSizes] = useState<CakeSizePrice[]>([]);
+  const [availableFlavors, setAvailableFlavors] = useState<CakeFlavor[]>([]);
+  const [optionsLoading, setOptionsLoading] = useState(false);
+
   // Reservations from API
   const [reservations, setReservations] = useState<CakeReservationType[]>([]);
   const [reservationsLoading, setReservationsLoading] = useState(false);
@@ -103,7 +96,28 @@ export default function CakeReservation() {
   const { balance } = useWallet();
 
   const canteen = useMemo(() => canteens.find((c) => c.id === selectedCanteen), [canteens, selectedCanteen]);
-  const advanceAmount = size ? SIZE_PRICES[size] || 0 : 0;
+  const sizeEntry = useMemo(() => availableSizes.find((s) => s.size === size), [availableSizes, size]);
+  const advanceAmount = sizeEntry ? parseFloat(sizeEntry.price) : 0;
+
+  // Fetch cake options when canteen changes
+  useEffect(() => {
+    if (!selectedCanteen) {
+      setAvailableSizes([]);
+      setAvailableFlavors([]);
+      return;
+    }
+    setOptionsLoading(true);
+    getCakeOptions(selectedCanteen)
+      .then((opts) => {
+        setAvailableSizes(opts.sizes);
+        setAvailableFlavors(opts.flavors);
+      })
+      .catch(() => {
+        setAvailableSizes([]);
+        setAvailableFlavors([]);
+      })
+      .finally(() => setOptionsLoading(false));
+  }, [selectedCanteen]);
 
   // Handle return from VerifyWalletPin after successful cake reservation
   useEffect(() => {
@@ -325,6 +339,8 @@ export default function CakeReservation() {
                         onChange={(e) => {
                           setSelectedCanteen(Number(e.target.value) || null);
                           setAvailabilityResult(null);
+                          setFlavor("");
+                          setSize("");
                         }}
                         disabled={canteensLoading}
                         className="w-full appearance-none px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent pr-10"
@@ -413,22 +429,31 @@ export default function CakeReservation() {
                         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                           Flavor
                         </label>
+                        {availableFlavors.length === 0 ? (
+                          <p className="text-sm text-gray-400 dark:text-gray-500 mb-5">No flavors available at this canteen.</p>
+                        ) : (
                         <div className="grid grid-cols-2 gap-3 mb-5">
-                          {FLAVORS.map((f) => (
+                          {availableFlavors.map((f) => (
                             <button
-                              key={f}
-                              onClick={() => setFlavor(f)}
+                              key={f.id}
+                              onClick={() => setFlavor(f.name)}
                               className={`relative rounded-2xl overflow-hidden border-2 transition-all ${
-                                flavor === f
+                                flavor === f.name
                                   ? "border-[#D4725C] shadow-lg shadow-[#D4725C]/15"
                                   : "border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700"
                               }`}
                             >
-                              <img src={FLAVOR_IMAGES[f]} alt={f} className="w-full h-24 object-cover" />
+                              {f.photoUrl ? (
+                                <img src={buildFileUrl(f.photoUrl) ?? ""} alt={f.name} className="w-full h-24 object-cover" />
+                              ) : (
+                                <div className="w-full h-24 bg-gradient-to-br from-pink-100 to-orange-100 dark:from-pink-950/40 dark:to-orange-950/40 flex items-center justify-center">
+                                  <Cake className="size-8 text-[#D4725C]/40" />
+                                </div>
+                              )}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                               <div className="absolute bottom-0 left-0 right-0 p-2.5 flex items-center justify-between">
-                                <span className="text-white text-sm font-bold">{f}</span>
-                                {flavor === f && (
+                                <span className="text-white text-sm font-bold">{f.name}</span>
+                                {flavor === f.name && (
                                   <div className="w-5 h-5 bg-[#D4725C] rounded-full flex items-center justify-center">
                                     <Check className="size-3 text-white" />
                                   </div>
@@ -437,27 +462,32 @@ export default function CakeReservation() {
                             </button>
                           ))}
                         </div>
+                        )}
 
                         {/* Size */}
                         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                           Size
                         </label>
+                        {availableSizes.length === 0 ? (
+                          <p className="text-sm text-gray-400 dark:text-gray-500 mb-5">No sizes available at this canteen.</p>
+                        ) : (
                         <div className="flex gap-3 mb-5">
-                          {SIZES.map((s) => (
+                          {availableSizes.map((s) => (
                             <button
-                              key={s}
-                              onClick={() => setSize(s)}
+                              key={s.id}
+                              onClick={() => setSize(s.size)}
                               className={`flex-1 py-3 rounded-xl border-2 text-sm font-bold transition-all ${
-                                size === s
+                                size === s.size
                                   ? "border-[#D4725C] bg-[#D4725C]/10 dark:bg-[#D4725C]/20 text-[#D4725C]"
                                   : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600"
                               }`}
                             >
-                              <div>{s}</div>
-                              <div className="text-xs mt-0.5 opacity-70">₹{SIZE_PRICES[s]}</div>
+                              <div>{s.size}</div>
+                              <div className="text-xs mt-0.5 opacity-70">₹{parseFloat(s.price).toFixed(0)}</div>
                             </button>
                           ))}
                         </div>
+                        )}
 
                         {/* Design (optional) */}
                         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
@@ -566,7 +596,7 @@ export default function CakeReservation() {
                         {/* Submit */}
                         <button
                           onClick={handleSubmitReservation}
-                          disabled={!flavor || !size || !pickupTime}
+                          disabled={!flavor || !size || !pickupTime || optionsLoading}
                           className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white font-bold text-sm shadow-lg shadow-[#D4725C]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                         >
                           <Wallet className="size-4" /> Continue to Pay ₹{advanceAmount}

@@ -51,7 +51,8 @@ export default function UnifiedLogin() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const coerced = name === "phone" ? value.replace(/\D/g, "").slice(0, 10) : value;
+    setFormData((prev) => ({ ...prev, [name]: coerced }));
   };
 
   const startOtpTimer = () => {
@@ -140,6 +141,11 @@ export default function UnifiedLogin() {
       return;
     }
 
+    if (!/^\d{10}$/.test(formData.phone)) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return;
+    }
+
     if (formData.password.length < 8) {
       toast.error("Password must be at least 8 characters");
       return;
@@ -153,7 +159,7 @@ export default function UnifiedLogin() {
     // Call backend register
     setIsLoading(true);
     try {
-      await register(formData.email, formData.password, formData.name, "CUSTOMER", formData.phone);
+      await register(formData.email, formData.password, formData.name, "CUSTOMER", "+91" + formData.phone);
       toast.success("OTP sent to your email!");
       setSignupStep("otp");
       startOtpTimer();
@@ -190,7 +196,7 @@ export default function UnifiedLogin() {
   const handleResendOtp = async () => {
     setOtp(["", "", "", "", "", ""]);
     try {
-      await register(formData.email, formData.password, formData.name, "CUSTOMER", formData.phone);
+      await register(formData.email, formData.password, formData.name, "CUSTOMER", "+91" + formData.phone);
       toast.success("New OTP sent to your email!");
       startOtpTimer();
     } catch (err: any) {
@@ -467,15 +473,19 @@ export default function UnifiedLogin() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                       Phone Number
                     </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4725C] focus:border-transparent bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                      placeholder="Enter your phone"
-                    />
+                    <div className="flex items-center overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 focus-within:ring-2 focus-within:ring-[#D4725C] focus-within:border-transparent">
+                      <span className="px-3.5 py-3 text-gray-500 dark:text-gray-400 font-medium border-r border-gray-200 dark:border-gray-700 shrink-0 select-none">+91</span>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        maxLength={10}
+                        required
+                        className="flex-1 px-3 py-3 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                        placeholder="XXXXXXXXXX"
+                      />
+                    </div>
                   </div>
 
                   <div>

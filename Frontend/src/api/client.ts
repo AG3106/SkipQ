@@ -69,6 +69,15 @@ export class ApiError extends Error {
 }
 
 // ---------------------------------------------------------------------------
+// CSRF token helper
+// ---------------------------------------------------------------------------
+
+function getCsrfToken(): string | null {
+    const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]*)/);
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+// ---------------------------------------------------------------------------
 // Core fetch wrapper
 // ---------------------------------------------------------------------------
 
@@ -94,6 +103,14 @@ export async function apiRequest<T = unknown>(
             ...headers,
         },
     };
+
+    // Send CSRF token on unsafe methods
+    if (method !== "GET" && method !== "HEAD") {
+        const csrfToken = getCsrfToken();
+        if (csrfToken) {
+            (fetchOptions.headers as Record<string, string>)["X-CSRFToken"] = csrfToken;
+        }
+    }
 
     if (body) {
         if (isFormData) {

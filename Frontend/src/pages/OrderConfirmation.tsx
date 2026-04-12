@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { CheckCircle, Home, Package, Clock, ChefHat, Loader2, ArrowLeft, XCircle } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import { getOrderDetail } from "../api/orders";
-import type { Order } from "../types";
+import { getCanteenDetail } from "../api/canteens";
+import { useCart } from "../context/CartContext";
+import type { Order, CartItem } from "../types";
 
 const STATUS_STEPS = ["PENDING", "ACCEPTED", "READY", "COMPLETED"] as const;
 
@@ -14,8 +17,43 @@ function getStepIndex(status: string): number {
 
 export default function OrderConfirmation() {
   const { orderId } = useParams();
+  const navigate = useNavigate();
+  const { setCartItems } = useCart();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reorderLoading, setReorderLoading] = useState(false);
+
+  const handleOrderAgain = async () => {
+    if (!order) return;
+    setReorderLoading(true);
+    try {
+      const canteen = await getCanteenDetail(order.canteenId);
+      if (!canteen.isCurrentlyOpen) {
+        toast.error(`${canteen.name} is currently closed. Please try again during operating hours.`);
+        return;
+      }
+
+      const cartItems: CartItem[] = order.items.map((item) => ({
+        dishId: item.dish,
+        name: item.dishName,
+        price: parseFloat(item.priceAtOrder),
+        quantity: item.quantity,
+        photoUrl: null,
+        category: "",
+        isVeg: true,
+        canteenId: order.canteenId,
+        canteenName: order.canteenName,
+      }));
+
+      setCartItems(cartItems);
+      toast.success("Items added to cart! Review and proceed to checkout.");
+      navigate("/cart");
+    } catch {
+      toast.error("Could not verify canteen status. Please try again.");
+    } finally {
+      setReorderLoading(false);
+    }
+  };
 
   const isActive = (status: string) =>
     ["PENDING", "ACCEPTED", "READY", "CANCEL_REQUESTED"].includes(status);
@@ -119,7 +157,7 @@ export default function OrderConfirmation() {
               </p>
 
               {/* Order ID */}
-              <div className="bg-gray-50 border border-gray-200 dark:border-gray-700 border-dashed rounded-2xl p-6 mb-8 relative group cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-200 dark:hover:border-orange-800 transition-colors">
+              <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 border-dashed rounded-2xl p-6 mb-8 relative group cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-200 dark:hover:border-orange-800 transition-colors">
                 <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 group-hover:text-[#D4725C]">Order ID</div>
                 <div className="text-3xl font-black text-gray-900 dark:text-white tracking-wider group-hover:text-[#D4725C] transition-colors font-mono">{orderId}</div>
                 {order && (
@@ -131,7 +169,7 @@ export default function OrderConfirmation() {
 
               {/* Order Items */}
               {order && order.items.length > 0 && (
-                <div className="bg-gray-50/80/50 rounded-2xl p-4 mb-8 border border-gray-100/50 dark:border-gray-800 text-left">
+                <div className="bg-gray-50/80 dark:bg-gray-800/50 rounded-2xl p-4 mb-8 border border-gray-100/50 dark:border-gray-800 text-left">
                   <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
                     Items Ordered
                   </p>
@@ -183,7 +221,7 @@ export default function OrderConfirmation() {
                             }`}>
                             <Icon className={`size-6 ${isComplete ? "text-white" : "text-gray-400 dark:text-gray-600"}`} />
                           </div>
-                          <div className={isComplete ? "flex-1 bg-white p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
+                          <div className={isComplete ? "flex-1 bg-white dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm" : "flex-1"}>
                             <div className={`font-bold ${isComplete ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}>{step.label}</div>
                             <div className={`text-xs ${isComplete ? "text-gray-500 dark:text-gray-400" : "text-gray-400 dark:text-gray-600"}`}>{step.desc}</div>
                           </div>
@@ -195,7 +233,7 @@ export default function OrderConfirmation() {
               )}
 
               {/* Estimated Pickup Time */}
-              {order?.estimatedWaitMinutes && (
+              {order && order.estimatedWaitMinutes > 0 && (
                 <div className="bg-gradient-to-r from-[#D4725C] to-[#B85A4A] rounded-2xl p-6 text-white mb-8 shadow-lg shadow-orange-200 dark:shadow-orange-900/30 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:scale-110 transition-transform" />
                   <div className="relative z-10 flex items-center justify-between">
@@ -218,11 +256,12 @@ export default function OrderConfirmation() {
                     Back to Home
                   </Button>
                 </Link>
-                <Link to="/hostels" className="w-full sm:w-auto">
-                  <Button variant="outline" className="w-full h-14 border-2 border-gray-200 dark:border-gray-700 hover:border-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 text-gray-700 dark:text-gray-300 hover:text-[#D4725C] rounded-xl text-lg font-bold transition-all">
-                    Order Again
+                <div className="w-full sm:w-auto">
+                  <Button onClick={handleOrderAgain} disabled={reorderLoading} variant="outline" className="w-full h-14 border-2 border-gray-200 dark:border-gray-700 hover:border-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 text-gray-700 dark:text-gray-300 hover:text-[#D4725C] rounded-xl text-lg font-bold transition-all">
+                    {reorderLoading ? <Loader2 className="mr-2 size-5 animate-spin" /> : null}
+                    {reorderLoading ? "Checking..." : "Order Again"}
                   </Button>
-                </Link>
+                </div>
               </div>
             </div>
           )}

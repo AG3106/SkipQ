@@ -1,9 +1,11 @@
 """
-File handling utilities for canteen images, dish images, and registration documents.
+File handling utilities for canteen images, dish images, cake images,
+and registration documents.
 
 Directory structure under Backend/files/:
   canteen_images/   — public, <canteen_id>.jpg
   dish_images/      — public, <dish_id>.jpg
+  cake_images/      — public, <cake_flavor_id>.jpg
   documents/        — admin-only, <canteen_id>/aadhar_card.<ext> & hall_approval_form.<ext>
 """
 
@@ -131,6 +133,48 @@ def dish_image_exists(dish_id):
 
 
 # ---------------------------------------------------------------------------
+# Cake Images  —  files/cake_images/<canteen_id>/<cake_flavor_id>.jpg
+# ---------------------------------------------------------------------------
+
+def save_cake_image(canteen_id, cake_flavor_id, image_file):
+    """
+    Convert any uploaded image to JPEG and save as
+    files/cake_images/<canteen_id>/<cake_flavor_id>.jpg.
+
+    Returns the relative URL path.
+    """
+    dest_dir = os.path.join(settings.FILES_ROOT, "cake_images", str(canteen_id))
+    _ensure_dir(dest_dir)
+    filename = f"{cake_flavor_id}.jpg"
+    dest_path = os.path.join(dest_dir, filename)
+
+    jpg_buf = _convert_to_jpg(image_file)
+    with open(dest_path, "wb") as f:
+        f.write(jpg_buf.read())
+
+    logger.info("Saved cake image: %s", dest_path)
+    return f"/files/cake_images/{canteen_id}/{filename}"
+
+
+def delete_cake_image(canteen_id, cake_flavor_id):
+    """Remove the cake flavor image file if it exists."""
+    path = os.path.join(
+        settings.FILES_ROOT, "cake_images", str(canteen_id), f"{cake_flavor_id}.jpg"
+    )
+    if os.path.exists(path):
+        os.remove(path)
+        logger.info("Deleted cake image: %s", path)
+
+
+def cake_image_exists(canteen_id, cake_flavor_id):
+    """Check whether a cake flavor image file exists on disk."""
+    path = os.path.join(
+        settings.FILES_ROOT, "cake_images", str(canteen_id), f"{cake_flavor_id}.jpg"
+    )
+    return os.path.isfile(path)
+
+
+# ---------------------------------------------------------------------------
 # Documents  —  files/documents/<canteen_id>/{aadhar_card,hall_approval_form}.<ext>
 # ---------------------------------------------------------------------------
 
@@ -193,4 +237,8 @@ def get_canteen_documents(canteen_id):
 
 def get_document_path(canteen_id, filename):
     """Return the absolute filesystem path for a specific document file."""
-    return os.path.join(settings.FILES_ROOT, "documents", str(canteen_id), filename)
+    # Prevent path traversal — only allow the basename (no slashes or '..')
+    safe_filename = os.path.basename(filename)
+    if not safe_filename or safe_filename != filename:
+        raise ValueError("Invalid filename")
+    return os.path.join(settings.FILES_ROOT, "documents", str(canteen_id), safe_filename)

@@ -109,12 +109,19 @@ class AuthServiceTest(TestCase):
         self.assertTrue(hasattr(u, "customer_profile"))
 
     def test_complete_registration_manager_creates_pending(self):
-        result = auth_service.complete_registration("mr@gmail.com", password="pw123", role="MANAGER", name="MR")
+        result = auth_service.complete_registration(
+            "mr@gmail.com",
+            password="pw123",
+            role="MANAGER",
+            name="MR",
+            phone="9876543210",
+        )
         self.assertIsNone(result)  # No user created
         self.assertFalse(User.objects.filter(email="mr@gmail.com").exists())
         pending = PendingManagerRegistration.objects.get(email="mr@gmail.com")
         self.assertEqual(pending.status, PendingManagerRegistration.Status.PENDING)
         self.assertEqual(pending.name, "MR")
+        self.assertEqual(pending.phone, "9876543210")
 
     def test_hash_wallet_pin(self):
         h = auth_service.hash_wallet_pin("1234")
@@ -196,7 +203,9 @@ class AuthAPITest(TestCase):
             "name": "Reg User",
         })
         self.assertEqual(resp.status_code, 200)
-        otp_val = resp.data["otp_dev"]
+        # OTP is stored in the database
+        otp_rec = OTPVerification.objects.filter(email="reg@iitk.ac.in", is_used=False).latest("created_at")
+        otp_val = otp_rec.otp
 
         resp2 = self.client.post("/api/auth/verify-otp/", {
             "email": "reg@iitk.ac.in",
@@ -285,6 +294,24 @@ class ProfileAPITest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.name, "NEW NAME")
+
+    def test_patch_roll_number_snake_case_persists(self):
+        resp = self.client.patch("/api/users/profile/", {"roll_number": "240999"}, format="json")
+        self.assertEqual(resp.status_code, 200)
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.roll_number, "240999")
+
+        fresh_client = APIClient()
+        fresh_client.force_authenticate(user=self.user)
+        fresh_resp = fresh_client.get("/api/users/profile/")
+        self.assertEqual(fresh_resp.status_code, 200)
+        self.assertEqual(fresh_resp.data["roll_number"], "240999")
+
+    def test_patch_roll_number_camel_case_alias(self):
+        resp = self.client.patch("/api/users/profile/", {"rollNumber": "240888"}, format="json")
+        self.assertEqual(resp.status_code, 200)
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.roll_number, "240888")
 
     def test_wallet_balance(self):
         resp = self.client.get("/api/users/wallet/")

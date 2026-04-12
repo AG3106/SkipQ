@@ -80,7 +80,7 @@ export default function Cart() {
                     </div>
 
                     {/* Item Details */}
-                    <div className="flex-1 flex flex-col justify-between">
+                    <div className="flex-1 flex flex-col justify-between min-w-0">
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1">{item.name}</h3>

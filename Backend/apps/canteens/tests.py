@@ -61,17 +61,13 @@ class DishModelTest(TestCase):
         )
         cls.dish = Dish.objects.create(
             canteen=cls.canteen, name="Dosa", price=Decimal("60.00"),
-            discount=Decimal("10.00"), is_available=True, is_veg=True,
+            is_available=True, is_veg=True,
         )
 
-    def test_effective_price_with_discount(self):
+    def test_effective_price(self):
+        """get_effective_price() returns the price directly (discount removed)."""
         price = self.dish.get_effective_price()
-        self.assertEqual(price, Decimal("54.00"))
-
-    def test_effective_price_no_discount(self):
-        self.dish.discount = Decimal("0")
-        self.dish.save()
-        self.assertEqual(self.dish.get_effective_price(), Decimal("60.00"))
+        self.assertEqual(price, Decimal("60.00"))
 
     def test_toggle_availability(self):
         self.assertTrue(self.dish.is_available)

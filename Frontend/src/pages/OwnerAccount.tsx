@@ -72,7 +72,7 @@ export default function OwnerAccount() {
                 <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Manage your profile and preferences</p>
               </div>
             </div>
-            <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-white">
+            <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-white hidden sm:block">
               SkipQ <span className="text-[#D4725C]">Partner</span>
             </Link>
           </div>
@@ -119,9 +119,9 @@ export default function OwnerAccount() {
           <div className="px-8 pb-8 relative">
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between -mt-12 mb-8 gap-4">
               <div className="flex items-end gap-6">
-                <div className="w-32 h-32 bg-white dark:bg-gray-900 rounded-full p-1 shadow-lg shadow-gray-200 dark:shadow-black/20">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white dark:bg-gray-900 rounded-full p-1 shadow-lg shadow-gray-200 dark:shadow-black/20">
                   <div className="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center overflow-hidden border border-gray-100 dark:border-gray-700">
-                    <User className="size-12 text-gray-400 dark:text-gray-600" />
+                    <User className="size-10 sm:size-12 text-gray-400 dark:text-gray-600" />
                   </div>
                 </div>
                 <div className="mb-2">

@@ -112,7 +112,7 @@ export default function Statistics() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <Link to="/owner/dashboard" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
                 <ArrowLeft className="size-6 text-gray-600 dark:text-gray-400" />
@@ -176,8 +176,8 @@ export default function Statistics() {
 
         {/* Orders & Revenue Chart */}
         {chartData.length > 0 ? (
-          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 min-w-0 mb-8">
-            <div className="flex items-center justify-between mb-8">
+          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 sm:p-8 min-w-0 mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-3">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Orders & Revenue Trend</h2>
               <div className="flex gap-4 text-sm">
                 <div className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function Statistics() {
         )}
 
         {/* Top Performing Dishes */}
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 min-w-0">
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 sm:p-8 min-w-0">
           <h2 className="text-xl font-bold mb-8 text-gray-900 dark:text-white">Top Performing Dishes (Last 30 Days)</h2>
 
           {topDishes.length > 0 ? (
@@ -237,17 +237,17 @@ export default function Statistics() {
 
               <div className="mt-8 space-y-3">
                 {topDishes.map((dish, index) => (
-                  <div key={dish.dishId} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700 rounded-2xl hover:shadow-md transition-all">
-                    <div className="flex items-center gap-6">
-                      <div className="size-10 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center font-bold text-white dark:text-gray-900 shadow-lg shadow-gray-200 dark:shadow-black/20">
+                  <div key={dish.dishId} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700 rounded-2xl hover:shadow-md transition-all gap-3">
+                    <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+                      <div className="size-10 bg-gray-900 dark:bg-white rounded-xl flex items-center justify-center font-bold text-white dark:text-gray-900 shadow-lg shadow-gray-200 dark:shadow-black/20 shrink-0">
                         #{index + 1}
                       </div>
-                      <div>
-                        <p className="font-bold text-gray-900 dark:text-white text-lg">{dish.dishName}</p>
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-900 dark:text-white text-lg truncate">{dish.dishName}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{dish.totalOrdered} orders placed</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0 sm:ml-auto">
                       <p className="text-xl font-black text-[#2E7D32] dark:text-green-400">{formatRevenue(dish.revenue)}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">Revenue</p>
                     </div>

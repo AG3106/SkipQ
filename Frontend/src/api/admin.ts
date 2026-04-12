@@ -23,6 +23,7 @@ export interface PendingManagerRegistration {
     id: number;
     email: string;
     name: string;
+    phone: string;
     status: string;
     createdAt: string;
 }

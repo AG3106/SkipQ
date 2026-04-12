@@ -187,9 +187,9 @@ export default function TrackOrders() {
   const renderOrderCard = (order: Order) => (
     <>
       {/* Order Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
+      <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-2">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${getStatusColor(order.status)}`}>
               {getStatusIcon(order.status)}
               {getStatusText(order.status)}
@@ -200,7 +200,7 @@ export default function TrackOrders() {
           </h3>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{order.canteenName}</p>
         </div>
-        <div className="text-right flex items-center gap-2">
+        <div className="text-right flex items-center gap-2 shrink-0 self-end sm:self-auto">
           <div>
             <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Order Amount</p>
             <p className="text-2xl font-black text-[#D4725C]">₹{parseFloat(order.totalPrice).toFixed(0)}</p>
@@ -236,7 +236,7 @@ export default function TrackOrders() {
       )}
 
       {/* Items */}
-      <div className="bg-gray-50/80/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
+      <div className="bg-gray-50/80 dark:bg-gray-800/50 rounded-2xl p-4 mb-4 border border-gray-100/50 dark:border-gray-800">
         <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 mb-2.5 tracking-wider">
           Items Ordered
         </p>
@@ -528,7 +528,7 @@ export default function TrackOrders() {
                     <p className="text-sm font-bold text-gray-900 dark:text-white mb-4 text-center">Rate each item</p>
                     <div className="space-y-4">
                       {order.items.map((item) => (
-                        <div key={item.id} className="bg-gray-50/80/50 rounded-xl p-3.5 border border-gray-100/50 dark:border-gray-800">
+                        <div key={item.id} className="bg-gray-50/80 dark:bg-gray-800/50 rounded-xl p-3.5 border border-gray-100/50 dark:border-gray-800">
                           <p className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2">{item.dishName}</p>
                           <div className="flex items-center gap-1.5">
                             {[1, 2, 3, 4, 5].map((star) => (

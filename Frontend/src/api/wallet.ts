@@ -16,3 +16,19 @@ export async function addFunds(amount: number): Promise<{ balance: string; messa
 export async function setWalletPin(pin: string): Promise<{ message: string }> {
     return api.post("/api/users/wallet/set-pin/", { pin });
 }
+
+export async function changeWalletPin(currentPin: string, newPin: string): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/change-pin/", { currentPin, newPin });
+}
+
+export async function verifyWalletPin(pin: string): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/verify-pin/", { pin });
+}
+
+export async function forgotWalletPin(): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/forgot-pin/", {});
+}
+
+export async function resetWalletPin(otp: string, newPin: string): Promise<{ message: string }> {
+    return api.post("/api/users/wallet/reset-pin/", { otp, new_pin: newPin });
+}

@@ -124,6 +124,7 @@ class CustomerProfile(models.Model):
     )
     name = models.CharField(max_length=255, blank=True)
     phone = models.CharField(max_length=20, blank=True)
+    roll_number = models.CharField(max_length=20, blank=True)
     wallet_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     wallet_pin_hash = models.CharField(
         max_length=128,
@@ -248,6 +249,7 @@ class OTPVerification(models.Model):
     role = models.CharField(max_length=10, blank=True)
     name = models.CharField(max_length=255, blank=True)
     phone = models.CharField(max_length=20, blank=True)
+    failed_attempts = models.IntegerField(default=0, help_text="Number of incorrect OTP attempts")
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
 

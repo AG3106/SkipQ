@@ -1,33 +1,43 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router";
-import { ArrowLeft, ShieldCheck, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Delete } from "lucide-react";
+import { useNavigate, useSearchParams, useLocation } from "react-router";
+import { ArrowLeft, ShieldCheck, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Delete, KeyRound } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { setWalletPin as setWalletPinApi } from "../api/auth";
+import { changeWalletPin as changeWalletPinApi, verifyWalletPin as verifyWalletPinApi } from "../api/wallet";
 import { motion, AnimatePresence } from "motion/react";
 
-type Step = "set" | "confirm" | "success";
+type Step = "current" | "set" | "confirm" | "success";
 
 export default function SetWalletPin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isDark } = useTheme();
   const { refreshProfile, user } = useAuth();
   const isManager = user?.role === "MANAGER";
   const [searchParams] = useSearchParams();
   const isFromRegister = searchParams.get("from") === "register";
+  const isChangeMode = location.pathname === "/wallet/change-pin";
 
-  const [step, setStep] = useState<Step>("set");
+  const [step, setStep] = useState<Step>(isChangeMode ? "current" : "set");
+  const [currentPinInput, setCurrentPinInput] = useState<string[]>(["", "", "", ""]);
   const [pin, setPin] = useState<string[]>(["", "", "", ""]);
   const [confirmPin, setConfirmPin] = useState<string[]>(["", "", "", ""]);
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
+  const currentPinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const confirmInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const currentPin = step === "set" ? pin : confirmPin;
-  const currentRefs = step === "set" ? inputRefs : confirmInputRefs;
+  const activePin = step === "current" ? currentPinInput : step === "set" ? pin : confirmPin;
+  const activeRefs = step === "current" ? currentPinRefs : step === "set" ? inputRefs : confirmInputRefs;
+
+  // Legacy aliases used throughout the component
+  const currentPin = activePin;
+  const currentRefs = activeRefs;
 
   // Focus the first empty input on step change
   useEffect(() => {
@@ -36,14 +46,20 @@ export default function SetWalletPin() {
     setTimeout(() => currentRefs.current[idx]?.focus(), 100);
   }, [step]);
 
+  const getActiveSetter = useCallback(() => {
+    if (step === "current") return setCurrentPinInput;
+    if (step === "set") return setPin;
+    return setConfirmPin;
+  }, [step]);
+
   const handleDigitChange = useCallback(
     (index: number, value: string) => {
       // Only accept single digits
       const digit = value.replace(/\D/g, "").slice(-1);
       setError("");
 
-      const setter = step === "set" ? setPin : setConfirmPin;
-      setter((prev) => {
+      const setter = getActiveSetter();
+      setter((prev: string[]) => {
         const next = [...prev];
         next[index] = digit;
         return next;
@@ -54,23 +70,23 @@ export default function SetWalletPin() {
         currentRefs.current[index + 1]?.focus();
       }
     },
-    [step]
+    [step, getActiveSetter]
   );
 
   const handleKeyDown = useCallback(
     (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Backspace") {
-        const setter = step === "set" ? setPin : setConfirmPin;
+        const setter = getActiveSetter();
         if (currentPin[index] === "" && index > 0) {
           // Move back
           currentRefs.current[index - 1]?.focus();
-          setter((prev) => {
+          setter((prev: string[]) => {
             const next = [...prev];
             next[index - 1] = "";
             return next;
           });
         } else {
-          setter((prev) => {
+          setter((prev: string[]) => {
             const next = [...prev];
             next[index] = "";
             return next;
@@ -85,19 +101,19 @@ export default function SetWalletPin() {
         currentRefs.current[index + 1]?.focus();
       }
     },
-    [step, currentPin]
+    [step, currentPin, getActiveSetter]
   );
 
   // Virtual numpad digit press (for mobile)
   const handleNumpadPress = (digit: string) => {
     setError("");
-    const setter = step === "set" ? setPin : setConfirmPin;
-    const firstEmpty = currentPin.findIndex((d) => d === "");
+    const setter = getActiveSetter();
+    const firstEmpty = currentPin.findIndex((d: string) => d === "");
     if (digit === "delete") {
       // Find last filled
-      const lastFilled = currentPin.reduce((acc, d, i) => (d !== "" ? i : acc), -1);
+      const lastFilled = currentPin.reduce((acc: number, d: string, i: number) => (d !== "" ? i : acc), -1);
       if (lastFilled >= 0) {
-        setter((prev) => {
+        setter((prev: string[]) => {
           const next = [...prev];
           next[lastFilled] = "";
           return next;
@@ -106,7 +122,7 @@ export default function SetWalletPin() {
       return;
     }
     if (firstEmpty !== -1) {
-      setter((prev) => {
+      setter((prev: string[]) => {
         const next = [...prev];
         next[firstEmpty] = digit;
         return next;
@@ -119,7 +135,25 @@ export default function SetWalletPin() {
   const handleContinue = async () => {
     if (!isFilled) return;
 
-    if (step === "set") {
+    if (step === "current") {
+      // Verify the current PIN via the backend before proceeding
+      setVerifying(true);
+      setError("");
+      try {
+        await verifyWalletPinApi(currentPinInput.join(""));
+        // PIN is correct — proceed to set new PIN
+        setStep("set");
+        setShowPin(false);
+      } catch (err: any) {
+        // PIN is wrong — stay on this step and show error
+        const msg = err?.message || "Current PIN is incorrect";
+        setError(msg);
+        triggerShake();
+        setCurrentPinInput(["", "", "", ""]);
+      } finally {
+        setVerifying(false);
+      }
+    } else if (step === "set") {
       // Check for weak PINs
       const pinStr = pin.join("");
       if (pinStr === "0000" || pinStr === "1234" || pinStr === "1111") {
@@ -140,12 +174,17 @@ export default function SetWalletPin() {
       }
       // Save PIN via backend API
       try {
-        await setWalletPinApi(pinStr);
+        if (isChangeMode) {
+          await changeWalletPinApi(currentPinInput.join(""), pinStr);
+        } else {
+          await setWalletPinApi(pinStr);
+        }
         // Refresh profile so AuthContext knows PIN is set
         await refreshProfile();
         setStep("success");
       } catch (err: any) {
-        setError(err?.message || "Failed to set PIN. Please try again.");
+        const msg = err?.message || "Failed to save PIN. Please try again.";
+        setError(msg);
         triggerShake();
       }
     }
@@ -161,6 +200,10 @@ export default function SetWalletPin() {
       setStep("set");
       setConfirmPin(["", "", "", ""]);
       setError("");
+    } else if (step === "set" && isChangeMode) {
+      setStep("current");
+      setPin(["", "", "", ""]);
+      setError("");
     } else if (isFromRegister) {
       // Cannot go back during mandatory PIN setup after registration
       return;
@@ -169,8 +212,10 @@ export default function SetWalletPin() {
     }
   };
 
-  const filledCount = currentPin.filter((d) => d !== "").length;
-  const progressPercent = step === "set" ? 50 : step === "confirm" ? 100 : 100;
+  const filledCount = currentPin.filter((d: string) => d !== "").length;
+  const totalSteps = isChangeMode ? 3 : 2;
+  const currentStepNum = step === "current" ? 1 : step === "set" ? (isChangeMode ? 2 : 1) : isChangeMode ? 3 : 2;
+  const progressPercent = (currentStepNum / totalSteps) * 100;
 
   // Success screen
   if (step === "success") {
@@ -198,15 +243,20 @@ export default function SetWalletPin() {
           </motion.div>
 
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-3">
-            PIN Set Successfully!
+            {isChangeMode ? "PIN Changed Successfully!" : "PIN Set Successfully!"}
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mb-10">
-            Your wallet is now secured with a 4-digit PIN. You'll need it for every transaction.
+            {isChangeMode
+              ? "Your wallet PIN has been updated. Use your new PIN for future transactions."
+              : "Your wallet is now secured with a 4-digit PIN. You'll need it for every transaction."
+            }
           </p>
 
           <button
             onClick={() => {
-              if (isFromRegister) {
+              if (isChangeMode) {
+                navigate("/wallet");
+              } else if (isFromRegister) {
                 localStorage.removeItem("pendingPinSetup");
                 navigate(isManager ? "/owner/dashboard" : "/hostels");
               } else {
@@ -215,7 +265,7 @@ export default function SetWalletPin() {
             }}
             className="w-full py-4 bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white rounded-2xl font-bold shadow-lg shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
-            {isFromRegister ? (isManager ? "Go to Dashboard" : "Continue to SkipQ") : "Go to Wallet"}
+            {isChangeMode ? "Back to Wallet" : isFromRegister ? (isManager ? "Go to Dashboard" : "Continue to SkipQ") : "Go to Wallet"}
           </button>
         </motion.div>
       </div>
@@ -244,7 +294,7 @@ export default function SetWalletPin() {
           {/* Step indicator */}
           <div className="flex items-center gap-2">
             <span className="text-[10px] md:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-              Step {step === "set" ? "1" : "2"} of 2
+              Step {currentStepNum} of {totalSteps}
             </span>
           </div>
 
@@ -283,7 +333,9 @@ export default function SetWalletPin() {
             className="text-center mb-4 md:mb-8"
           >
             <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#D4725C]/10 to-[#B85A4A]/10 dark:from-[#D4725C]/20 dark:to-[#B85A4A]/20 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-3 md:mb-6 border border-[#D4725C]/20 dark:border-[#D4725C]/30">
-              {step === "set" ? (
+              {step === "current" ? (
+                <KeyRound className="size-7 md:size-9 text-[#D4725C]" />
+              ) : step === "set" ? (
                 <Lock className="size-7 md:size-9 text-[#D4725C]" />
               ) : (
                 <ShieldCheck className="size-7 md:size-9 text-[#D4725C]" />
@@ -291,12 +343,19 @@ export default function SetWalletPin() {
             </div>
 
             <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white mb-1 md:mb-2">
-              {step === "set" ? "Set Wallet PIN" : "Confirm Wallet PIN"}
+              {step === "current"
+                ? "Enter Current PIN"
+                : step === "set"
+                  ? (isChangeMode ? "Set New PIN" : "Set Wallet PIN")
+                  : "Confirm Wallet PIN"
+              }
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              {step === "set"
-                ? "Enter a 4-digit PIN to secure your wallet"
-                : "Re-enter your PIN to confirm"
+              {step === "current"
+                ? "Verify your current PIN to continue"
+                : step === "set"
+                  ? "Enter a 4-digit PIN to secure your wallet"
+                  : "Re-enter your PIN to confirm"
               }
             </p>
           </motion.div>
@@ -423,15 +482,27 @@ export default function SetWalletPin() {
           {/* Continue button */}
           <motion.button
             onClick={handleContinue}
-            disabled={!isFilled}
-            whileTap={isFilled ? { scale: 0.97 } : {}}
+            disabled={!isFilled || verifying}
+            whileTap={isFilled && !verifying ? { scale: 0.97 } : {}}
             className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg transition-all duration-300 shadow-lg ${isFilled
               ? "bg-gradient-to-r from-[#D4725C] to-[#B85A4A] text-white shadow-orange-200 dark:shadow-orange-900/30 hover:shadow-xl hover:scale-[1.01]"
               : "bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none"
               }`}
           >
-            {step === "set" ? "Continue" : "Set PIN"}
+            {step === "current" ? (verifying ? "Verifying..." : "Verify") : step === "set" ? "Continue" : (isChangeMode ? "Change PIN" : "Set PIN")}
           </motion.button>
+
+          {/* Forgot PIN link — only visible on the "Enter Current PIN" step */}
+          {step === "current" && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => navigate("/wallet/forgot-pin")}
+                className="text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] transition-colors"
+              >
+                Forgot PIN? Reset it
+              </button>
+            </div>
+          )}
 
           {/* Security note */}
           <div className="mt-3 md:mt-6 flex items-start gap-2 md:gap-2.5 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-xl p-2.5 md:p-3.5 border border-gray-100 dark:border-gray-800">

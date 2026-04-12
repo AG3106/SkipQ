@@ -8,7 +8,6 @@ Implements workflows from:
 """
 
 import random
-import hashlib
 import logging
 
 from django.contrib.auth import login, logout
@@ -128,8 +127,19 @@ def verify_otp(email, entered_otp):
     if timezone.now() - otp_record.created_at > timedelta(minutes=10):
         raise ValueError("OTP has expired. Please request a new one.")
 
+    # Check if already locked out from too many attempts
+    if otp_record.failed_attempts >= 5:
+        raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+
     if otp_record.otp != entered_otp:
-        raise ValueError("Invalid OTP")
+        otp_record.failed_attempts += 1
+        if otp_record.failed_attempts >= 5:
+            otp_record.is_used = True
+            otp_record.save()
+            raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+        otp_record.save()
+        remaining = 5 - otp_record.failed_attempts
+        raise ValueError(f"Invalid OTP. {remaining} attempt(s) remaining.")
 
     otp_record.is_used = True
     otp_record.save()
@@ -162,8 +172,14 @@ def complete_registration(email, password=None, password_hash=None, role="CUSTOM
 
     Accepts either a plaintext password or a pre-hashed password_hash.
     """
+    # Prevent privilege escalation — only CUSTOMER and MANAGER allowed via signup
+    if role not in (User.Role.CUSTOMER, User.Role.MANAGER):
+        raise ValueError("Invalid role for registration")
+
     # --- Manager flow: pending admin approval ---
     if role == User.Role.MANAGER:
+        if not phone:
+            raise ValueError("Phone number is required for manager registration")
         if not password_hash and password:
             from django.contrib.auth.hashers import make_password
             password_hash = make_password(password)
@@ -280,8 +296,19 @@ def validate_otp(email, entered_otp):
     if timezone.now() - otp_record.created_at > timedelta(minutes=10):
         raise ValueError("OTP has expired. Please request a new one.")
 
+    # Check if already locked out from too many attempts
+    if otp_record.failed_attempts >= 5:
+        raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+
     if otp_record.otp != entered_otp:
-        raise ValueError("Invalid OTP")
+        otp_record.failed_attempts += 1
+        if otp_record.failed_attempts >= 5:
+            otp_record.is_used = True
+            otp_record.save()
+            raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+        otp_record.save()
+        remaining = 5 - otp_record.failed_attempts
+        raise ValueError(f"Invalid OTP. {remaining} attempt(s) remaining.")
 
     return True
 
@@ -316,12 +343,57 @@ def reset_password(email, otp, new_password):
 
 
 # ---------------------------------------------------------------------------
+# Forgot Wallet PIN — mirrors the Forgot Password flow
+# ---------------------------------------------------------------------------
+
+def forgot_wallet_pin_request(user):
+    """
+    Step 1 of Forgot Wallet PIN flow.
+    Sends an OTP to the authenticated user's email so they can reset
+    their wallet PIN without knowing the current one.
+    """
+    email = user.email
+
+    # Determine the user's name for the email greeting
+    name = ""
+    if user.role == "CUSTOMER" and hasattr(user, "customer_profile"):
+        name = user.customer_profile.name
+    elif user.role == "MANAGER" and hasattr(user, "manager_profile"):
+        name = user.manager_profile.contact_details
+
+    generate_and_send_otp(email, name=name or "User")
+    logger.info("Forgot-wallet-PIN OTP requested for %s", email)
+
+
+def reset_wallet_pin(user, otp, new_pin):
+    """
+    Step 2 of Forgot Wallet PIN flow.
+    Verifies the OTP, then resets the wallet PIN (bypassing the
+    current-PIN requirement).
+    """
+    from apps.users.services import profile_service
+
+    verify_otp(user.email, otp)
+
+    if user.role == "CUSTOMER" and hasattr(user, "customer_profile"):
+        profile = user.customer_profile
+    elif user.role == "MANAGER" and hasattr(user, "manager_profile"):
+        profile = user.manager_profile
+    else:
+        raise ValueError("No wallet for this role")
+
+    profile_service.set_wallet_pin(profile, new_pin)
+    logger.info("Wallet PIN reset successfully for %s", user.email)
+
+
+# ---------------------------------------------------------------------------
 # Wallet PIN hashing
 # ---------------------------------------------------------------------------
 
 def hash_wallet_pin(pin):
-    """Hash a wallet PIN using SHA-256."""
-    return hashlib.sha256(pin.encode()).hexdigest()
+    """Hash a wallet PIN using Django's password hashing (PBKDF2/bcrypt with salt)."""
+    from django.contrib.auth.hashers import make_password
+    return make_password(pin)
 
 
 def verify_wallet_pin(stored_hash, pin):
@@ -329,7 +401,8 @@ def verify_wallet_pin(stored_hash, pin):
     Sequence diagram (Order/phase2, step 16):
       BE → verifyWalletPIN(userID, pinHash)
     """
-    return stored_hash == hash_wallet_pin(pin)
+    from django.contrib.auth.hashers import check_password
+    return check_password(pin, stored_hash)
 
 
 # ---------------------------------------------------------------------------
@@ -354,7 +427,9 @@ def approve_manager_registration(pending_id):
     user = User(email=pending.email, role=User.Role.MANAGER, is_verified=True)
     user.password = pending.password_hash
     user.save()
-    CanteenManagerProfile.objects.create(user=user, contact_details=pending.phone or pending.name)
+    if not pending.phone:
+        raise ValueError("Manager phone is missing for approval")
+    CanteenManagerProfile.objects.create(user=user, contact_details=pending.phone)
 
     # Mark as approved
     pending.status = PendingManagerRegistration.Status.APPROVED

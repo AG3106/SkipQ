@@ -1,23 +1,19 @@
 """
 Custom authentication class for the SkipQ API.
 
-DRF's built-in SessionAuthentication enforces CSRF on unsafe methods (POST, PUT, etc.),
-which blocks programmatic API clients. Since CORS middleware already validates origins,
-CSRF enforcement on API endpoints is redundant.
+Uses standard SessionAuthentication with CSRF enforcement.
+The frontend must send the CSRF token via the X-CSRFToken header.
 """
 
 from rest_framework.authentication import SessionAuthentication
 
 
-class CsrfExemptSessionAuthentication(SessionAuthentication):
+class CsrfSessionAuthentication(SessionAuthentication):
     """
-    SessionAuthentication subclass that skips CSRF validation.
+    Standard SessionAuthentication that enforces CSRF validation.
 
-    Used as the default authentication class for DRF API endpoints.
-    The CORS middleware (django-cors-headers) already handles
-    origin validation for cross-origin requests.
+    The frontend should:
+      1. Read the 'csrftoken' cookie set by Django.
+      2. Send it as the 'X-CSRFToken' header on all unsafe requests (POST, PUT, DELETE).
     """
-
-    def enforce_csrf(self, request):
-        # Skip CSRF check for API endpoints
-        return
+    pass

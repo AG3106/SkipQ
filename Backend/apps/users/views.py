@@ -8,6 +8,7 @@ to a sequence diagram workflow.
 
 import logging
 
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -23,6 +24,9 @@ from apps.users.serializers import (
     CanteenManagerProfileSerializer,
     AddFundsSerializer,
     SetWalletPINSerializer,
+    ChangeWalletPINSerializer,
+    VerifyWalletPINSerializer,
+    ResetWalletPINSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
 )
@@ -35,6 +39,7 @@ logger = logging.getLogger(__name__)
 # Registration — NewUser/phase1 sequence diagram
 # ---------------------------------------------------------------------------
 
+@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def initiate_signup(request):
@@ -54,6 +59,7 @@ def initiate_signup(request):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def verify_otp(request):
@@ -100,12 +106,12 @@ def verify_otp(request):
 # Login / Logout — Login/phase1 sequence diagram
 # ---------------------------------------------------------------------------
 
+@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def login_view(request):
     """
-    P
-    OST /api/auth/login/
+    POST /api/auth/login/
 
     Sequence diagram (Login/phase1):
       FE → loginRequest(email, password, rememberMe)
@@ -154,6 +160,7 @@ def logout_view(request):
 # Forgot Password
 # ---------------------------------------------------------------------------
 
+@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def forgot_password_view(request):
@@ -171,6 +178,7 @@ def forgot_password_view(request):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def verify_forgot_password_otp_view(request):
@@ -191,6 +199,7 @@ def verify_forgot_password_otp_view(request):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def reset_password_view(request):
@@ -225,7 +234,13 @@ def profile_view(request):
     if user.role == User.Role.CUSTOMER:
         profile = user.customer_profile
         if request.method == "PATCH":
-            serializer = CustomerProfileSerializer(profile, data=request.data, partial=True)
+            payload = request.data.copy()
+            # Email is immutable — silently drop it if supplied.
+            payload.pop("email", None)
+            # Accept both camelCase and snake_case for roll number updates.
+            if "rollNumber" in payload and "roll_number" not in payload:
+                payload["roll_number"] = payload["rollNumber"]
+            serializer = CustomerProfileSerializer(profile, data=payload, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
         data = CustomerProfileSerializer(profile).data
@@ -299,17 +314,116 @@ def set_wallet_pin(request):
     serializer.is_valid(raise_exception=True)
     try:
         if request.user.role == User.Role.CUSTOMER:
-            profile_service.set_wallet_pin(
-                request.user.customer_profile,
-                serializer.validated_data["pin"],
-            )
+            profile = request.user.customer_profile
         elif request.user.role == User.Role.MANAGER:
-            profile_service.set_wallet_pin(
-                request.user.manager_profile,
-                serializer.validated_data["pin"],
-            )
+            profile = request.user.manager_profile
         else:
             return Response({"error": "No wallet for this role"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message": "Wallet PIN updated"})
+
+        if profile.wallet_pin_hash:
+            return Response({"error": "PIN already set. Use change-pin instead."}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile_service.set_wallet_pin(profile, serializer.validated_data["pin"])
+        return Response({"message": "Wallet PIN set successfully"})
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def change_wallet_pin(request):
+    """
+    POST /api/users/wallet/change-pin/
+
+    Change wallet PIN. Requires current PIN for verification.
+    """
+    serializer = ChangeWalletPINSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+
+    try:
+        if request.user.role == User.Role.CUSTOMER:
+            profile = request.user.customer_profile
+        elif request.user.role == User.Role.MANAGER:
+            profile = request.user.manager_profile
+        else:
+            return Response({"error": "No wallet for this role"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not profile.wallet_pin_hash:
+            return Response({"error": "No PIN set. Use set-pin instead."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verify current PIN
+        if not auth_service.verify_wallet_pin(profile.wallet_pin_hash, data["current_pin"]):
+            return Response({"error": "Current PIN is incorrect"}, status=status.HTTP_403_FORBIDDEN)
+
+        # Set new PIN
+        profile_service.set_wallet_pin(profile, data["new_pin"])
+        return Response({"message": "Wallet PIN changed successfully"})
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def verify_wallet_pin(request):
+    """
+    POST /api/users/wallet/verify-pin/
+
+    Verify the current wallet PIN without changing it.
+    Used by the change-pin flow to validate the current PIN upfront.
+    """
+    serializer = VerifyWalletPINSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        if request.user.role == User.Role.CUSTOMER:
+            profile = request.user.customer_profile
+        elif request.user.role == User.Role.MANAGER:
+            profile = request.user.manager_profile
+        else:
+            return Response({"error": "No wallet for this role"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not profile.wallet_pin_hash:
+            return Response({"error": "No PIN set."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not auth_service.verify_wallet_pin(profile.wallet_pin_hash, serializer.validated_data["pin"]):
+            return Response({"error": "Current PIN is incorrect"}, status=status.HTTP_403_FORBIDDEN)
+
+        return Response({"message": "PIN verified successfully"})
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def forgot_wallet_pin(request):
+    """
+    POST /api/users/wallet/forgot-pin/
+
+    Step 1 of Forgot Wallet PIN flow.
+    Sends an OTP to the authenticated user's email.
+    """
+    try:
+        auth_service.forgot_wallet_pin_request(request.user)
+        return Response({"message": "OTP sent to your email"}, status=status.HTTP_200_OK)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def reset_wallet_pin_view(request):
+    """
+    POST /api/users/wallet/reset-pin/
+
+    Step 2 of Forgot Wallet PIN flow.
+    Verifies OTP and sets a new wallet PIN.
+    """
+    serializer = ResetWalletPINSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+    try:
+        auth_service.reset_wallet_pin(request.user, data["otp"], data["new_pin"])
+        return Response({"message": "Wallet PIN reset successfully"}, status=status.HTTP_200_OK)
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

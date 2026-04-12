@@ -4,13 +4,18 @@ import {
   ArrowLeft, Cake, Clock, MapPin, Calendar, Check, X,
   CheckCircle, XCircle, Package, AlertTriangle, RefreshCw,
   ChefHat, Moon, Sun, LogOut, User, Mail, Palette, MessageSquare,
-  Scale, Eye, Loader2,
+  Scale, Eye, Loader2, Plus, Trash2, Pencil, Settings, ImagePlus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { useTheme } from "../context/ThemeContext";
-import { getManagerAllCakes, acceptCake, rejectCake, completeCake } from "../api/cakes";
-import type { CakeReservation } from "../types";
+import {
+  getManagerAllCakes, acceptCake, rejectCake, completeCake,
+  getManagerSizePrices, createSizePrice, updateSizePrice, deleteSizePrice,
+  getManagerFlavors, createFlavor, updateFlavor, deleteFlavor,
+} from "../api/cakes";
+import { buildFileUrl } from "../api/client";
+import type { CakeReservation, CakeSizePrice, CakeFlavor } from "../types";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -42,10 +47,26 @@ export default function CakeManagement() {
   const { isDark, toggleTheme } = useTheme();
   const [requests, setRequests] = useState<CakeReservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeView, setActiveView] = useState<"pending" | "active" | "history">("pending");
+  const [activeView, setActiveView] = useState<"pending" | "active" | "history" | "settings">("pending");
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  // Settings state
+  const [sizes, setSizes] = useState<CakeSizePrice[]>([]);
+  const [flavors, setFlavors] = useState<CakeFlavor[]>([]);
+  const [settingsLoading, setSettingsLoading] = useState(false);
+
+  // Size form
+  const [showSizeForm, setShowSizeForm] = useState(false);
+  const [editingSizeId, setEditingSizeId] = useState<number | null>(null);
+  const [sizeForm, setSizeForm] = useState({ size: "", price: "" });
+
+  // Flavor form
+  const [showFlavorForm, setShowFlavorForm] = useState(false);
+  const [editingFlavorId, setEditingFlavorId] = useState<number | null>(null);
+  const [flavorName, setFlavorName] = useState("");
+  const [flavorPhoto, setFlavorPhoto] = useState<File | null>(null);
 
   const fetchCakes = () => {
     setLoading(true);
@@ -58,9 +79,88 @@ export default function CakeManagement() {
       .finally(() => setLoading(false));
   };
 
+  const fetchSettings = () => {
+    setSettingsLoading(true);
+    Promise.all([getManagerSizePrices(), getManagerFlavors()])
+      .then(([s, f]) => { setSizes(s); setFlavors(f); })
+      .catch(() => toast.error("Failed to load cake settings"))
+      .finally(() => setSettingsLoading(false));
+  };
+
   useEffect(() => {
     fetchCakes();
   }, []);
+
+  useEffect(() => {
+    if (activeView === "settings") fetchSettings();
+  }, [activeView]);
+
+  // ─── Size CRUD ─────────────────────────────────────────────────────────────
+
+  const resetSizeForm = () => { setShowSizeForm(false); setEditingSizeId(null); setSizeForm({ size: "", price: "" }); };
+
+  const handleSaveSize = async () => {
+    if (!sizeForm.size.trim() || !sizeForm.price.trim()) { toast.error("Size and price are required"); return; }
+    try {
+      if (editingSizeId) {
+        const updated = await updateSizePrice(editingSizeId, sizeForm);
+        setSizes((prev) => prev.map((s) => (s.id === editingSizeId ? updated : s)));
+        toast.success("Size updated");
+      } else {
+        const created = await createSizePrice(sizeForm);
+        setSizes((prev) => [...prev, created]);
+        toast.success("Size added");
+      }
+      resetSizeForm();
+    } catch {
+      toast.error("Failed to save size");
+    }
+  };
+
+  const handleDeleteSize = async (id: number) => {
+    try {
+      await deleteSizePrice(id);
+      setSizes((prev) => prev.filter((s) => s.id !== id));
+      toast.success("Size removed");
+    } catch {
+      toast.error("Failed to delete size");
+    }
+  };
+
+  // ─── Flavor CRUD ───────────────────────────────────────────────────────────
+
+  const resetFlavorForm = () => { setShowFlavorForm(false); setEditingFlavorId(null); setFlavorName(""); setFlavorPhoto(null); };
+
+  const handleSaveFlavor = async () => {
+    if (!flavorName.trim()) { toast.error("Flavor name is required"); return; }
+    const fd = new FormData();
+    fd.append("name", flavorName.trim());
+    if (flavorPhoto) fd.append("photo", flavorPhoto);
+    try {
+      if (editingFlavorId) {
+        const updated = await updateFlavor(editingFlavorId, fd);
+        setFlavors((prev) => prev.map((f) => (f.id === editingFlavorId ? updated : f)));
+        toast.success("Flavor updated");
+      } else {
+        const created = await createFlavor(fd);
+        setFlavors((prev) => [...prev, created]);
+        toast.success("Flavor added");
+      }
+      resetFlavorForm();
+    } catch {
+      toast.error("Failed to save flavor");
+    }
+  };
+
+  const handleDeleteFlavor = async (id: number) => {
+    try {
+      await deleteFlavor(id);
+      setFlavors((prev) => prev.filter((f) => f.id !== id));
+      toast.success("Flavor removed");
+    } catch {
+      toast.error("Failed to delete flavor");
+    }
+  };
 
   const pending = requests.filter((r) => r.status === "PENDING_APPROVAL");
   const active = requests.filter((r) => r.status === "CONFIRMED");
@@ -113,6 +213,7 @@ export default function CakeManagement() {
     { key: "pending" as const, label: "Pending", count: pending.length },
     { key: "active" as const, label: "Active", count: active.length },
     { key: "history" as const, label: "History", count: history.length },
+    { key: "settings" as const, label: "Settings", count: 0 },
   ];
 
   return (
@@ -174,6 +275,7 @@ export default function CakeManagement() {
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
+              {v.key === "settings" && <Settings className="size-3.5" />}
               {v.label}
               {v.count > 0 && (
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
@@ -483,6 +585,217 @@ export default function CakeManagement() {
                     </motion.div>
                   );
                 })
+              )}
+            </motion.div>
+          )}
+
+          {/* ─── Settings View ────────────────────────────────────────── */}
+          {activeView === "settings" && (
+            <motion.div key="settings" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="space-y-6">
+              {settingsLoading ? (
+                <div className="flex justify-center py-24">
+                  <Loader2 className="size-10 animate-spin text-[#D4725C]" />
+                </div>
+              ) : (
+                <>
+                  {/* ── Sizes & Prices ─────────────────────────────────── */}
+                  <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl border border-gray-100 dark:border-gray-800 p-5 md:p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-[#D4725C]/10 dark:bg-[#D4725C]/20 rounded-xl flex items-center justify-center">
+                          <Scale className="size-5 text-[#D4725C]" />
+                        </div>
+                        <div>
+                          <h3 className="font-black text-lg text-gray-900 dark:text-white">Sizes & Prices</h3>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">Set available cake sizes and advance amounts</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => { resetSizeForm(); setShowSizeForm(true); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#D4725C] text-white text-xs font-bold hover:bg-[#B85A4A] transition-colors"
+                      >
+                        <Plus className="size-3.5" /> Add Size
+                      </button>
+                    </div>
+
+                    {/* Size form */}
+                    <AnimatePresence>
+                      {showSizeForm && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden mb-4"
+                        >
+                          <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4 space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Size</label>
+                                <input
+                                  type="text"
+                                  value={sizeForm.size}
+                                  onChange={(e) => setSizeForm((p) => ({ ...p, size: e.target.value }))}
+                                  placeholder="e.g. 1 kg"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D4725C] placeholder-gray-400"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Advance Price (₹)</label>
+                                <input
+                                  type="number"
+                                  value={sizeForm.price}
+                                  onChange={(e) => setSizeForm((p) => ({ ...p, price: e.target.value }))}
+                                  placeholder="e.g. 600"
+                                  min="1"
+                                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D4725C] placeholder-gray-400"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={resetSizeForm} className="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-sm font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                Cancel
+                              </button>
+                              <button onClick={handleSaveSize} className="flex-1 py-2 rounded-lg bg-[#D4725C] text-white text-sm font-bold hover:bg-[#B85A4A] transition-colors">
+                                {editingSizeId ? "Update" : "Add"}
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Sizes list */}
+                    {sizes.length === 0 ? (
+                      <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No sizes configured yet. Add your first cake size above.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {sizes.map((s) => (
+                          <div key={s.id} className="flex items-center justify-between bg-gray-50/80 dark:bg-gray-800/50 rounded-xl px-4 py-3 border border-gray-100 dark:border-gray-800">
+                            <div>
+                              <span className="font-bold text-gray-900 dark:text-white">{s.size}</span>
+                              <span className="text-[#D4725C] font-black ml-3">₹{parseFloat(s.price).toFixed(0)}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => { setEditingSizeId(s.id); setSizeForm({ size: s.size, price: parseFloat(s.price).toString() }); setShowSizeForm(true); }}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
+                              >
+                                <Pencil className="size-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSize(s.id)}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-100 dark:hover:bg-red-950/30 transition-colors text-red-500 dark:text-red-400"
+                              >
+                                <Trash2 className="size-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ── Flavors ────────────────────────────────────────── */}
+                  <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl border border-gray-100 dark:border-gray-800 p-5 md:p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-pink-100 dark:bg-pink-950/30 rounded-xl flex items-center justify-center">
+                          <Palette className="size-5 text-pink-600 dark:text-pink-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-black text-lg text-gray-900 dark:text-white">Flavors</h3>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">Manage available cake flavors and photos</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => { resetFlavorForm(); setShowFlavorForm(true); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#D4725C] text-white text-xs font-bold hover:bg-[#B85A4A] transition-colors"
+                      >
+                        <Plus className="size-3.5" /> Add Flavor
+                      </button>
+                    </div>
+
+                    {/* Flavor form */}
+                    <AnimatePresence>
+                      {showFlavorForm && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden mb-4"
+                        >
+                          <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4 space-y-3">
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Flavor Name</label>
+                              <input
+                                type="text"
+                                value={flavorName}
+                                onChange={(e) => setFlavorName(e.target.value)}
+                                placeholder="e.g. Chocolate"
+                                className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D4725C] placeholder-gray-400"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Photo (optional)</label>
+                              <label className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 hover:border-[#D4725C] transition-colors">
+                                <ImagePlus className="size-4 text-gray-400" />
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                  {flavorPhoto ? flavorPhoto.name : "Choose image..."}
+                                </span>
+                                <input type="file" accept="image/*" className="hidden" onChange={(e) => setFlavorPhoto(e.target.files?.[0] || null)} />
+                              </label>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={resetFlavorForm} className="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-sm font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                Cancel
+                              </button>
+                              <button onClick={handleSaveFlavor} className="flex-1 py-2 rounded-lg bg-[#D4725C] text-white text-sm font-bold hover:bg-[#B85A4A] transition-colors">
+                                {editingFlavorId ? "Update" : "Add"}
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Flavors list */}
+                    {flavors.length === 0 ? (
+                      <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">No flavors configured yet. Add your first cake flavor above.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3">
+                        {flavors.map((f) => (
+                          <div key={f.id} className="relative rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 group">
+                            {f.photoUrl ? (
+                              <img src={buildFileUrl(f.photoUrl) ?? ""} alt={f.name} className="w-full h-28 object-cover" />
+                            ) : (
+                              <div className="w-full h-28 bg-gradient-to-br from-pink-100 to-orange-100 dark:from-pink-950/40 dark:to-orange-950/40 flex items-center justify-center">
+                                <Cake className="size-10 text-[#D4725C]/30" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
+                              <span className="text-white text-sm font-bold">{f.name}</span>
+                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  onClick={() => { setEditingFlavorId(f.id); setFlavorName(f.name); setFlavorPhoto(null); setShowFlavorForm(true); }}
+                                  className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/20 hover:bg-white/40 backdrop-blur-sm transition-colors"
+                                >
+                                  <Pencil className="size-3 text-white" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteFlavor(f.id)}
+                                  className="w-7 h-7 flex items-center justify-center rounded-lg bg-red-500/40 hover:bg-red-500/60 backdrop-blur-sm transition-colors"
+                                >
+                                  <Trash2 className="size-3 text-white" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </motion.div>
           )}

@@ -325,7 +325,7 @@ export default function MenuManagement() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 mt-6 text-sm text-gray-500 dark:text-gray-400 font-medium">
+          <div className="flex items-center gap-4 mt-6 text-sm text-gray-500 dark:text-gray-400 font-medium flex-wrap">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-gray-400"></span>
               Total Items: <strong className="text-gray-900 dark:text-white">{filteredItems.length}</strong>
@@ -484,7 +484,7 @@ export default function MenuManagement() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
                       Price ({"\u20B9"}) *

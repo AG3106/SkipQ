@@ -618,16 +618,16 @@ export default function VerifyWalletPin() {
           </motion.button>
 
           {/* Forgot PIN link */}
-          {/* {!processing && (
+          {!processing && (
             <div className="mt-5 text-center">
               <button
-                onClick={() => navigate("/wallet/set-pin")}
+                onClick={() => navigate("/wallet/forgot-pin")}
                 className="text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] transition-colors"
               >
                 Forgot PIN? Reset it
               </button>
             </div>
-          )} */}
+          )}
 
           {/* Security note */}
           <div className={`mt-3 md:mt-6 flex items-start gap-2 md:gap-2.5 backdrop-blur-md rounded-xl p-2.5 md:p-3.5 border transition-colors duration-500 ${hasError || locked

@@ -19,11 +19,18 @@ from apps.users.models import CustomerProfile, CanteenManagerProfile
 logger = logging.getLogger(__name__)
 
 
+def _lock_profile(profile):
+    """Re-fetch the profile with a row-level lock to prevent race conditions."""
+    return type(profile).objects.select_for_update().get(pk=profile.pk)
+
+
 def update_customer_profile(customer_profile, **kwargs):
     """
     manageProfile(): void — from class diagram.
     Updates customer profile fields.
     """
+    # Email lives on the User model and must never be changed here.
+    kwargs.pop("email", None)
     for field, value in kwargs.items():
         if hasattr(customer_profile, field):
             setattr(customer_profile, field, value)
@@ -37,16 +44,23 @@ def add_funds(customer_profile, amount):
     addFundsToWallet(): void — from class diagram.
     Adds funds to the customer's wallet balance.
     """
+    from django.db import transaction
+
     amount = Decimal(str(amount))
     if amount <= 0:
         raise ValueError("Amount must be positive")
-    customer_profile.wallet_balance += amount
-    customer_profile.save(update_fields=["wallet_balance"])
+
+    with transaction.atomic():
+        locked_profile = _lock_profile(customer_profile)
+        locked_profile.wallet_balance += amount
+        locked_profile.save(update_fields=["wallet_balance"])
+
+    customer_profile.wallet_balance = locked_profile.wallet_balance
     logger.info(
         "Added ₹%s to wallet of %s. New balance: ₹%s",
-        amount, customer_profile.user.email, customer_profile.wallet_balance,
+        amount, customer_profile.user.email, locked_profile.wallet_balance,
     )
-    return customer_profile.wallet_balance
+    return locked_profile.wallet_balance
 
 
 def deduct_funds(customer_profile, amount):
@@ -57,17 +71,26 @@ def deduct_funds(customer_profile, amount):
       BE → deductFunds(userID, totalAmount)
 
     Returns True if successful, raises ValueError if insufficient funds.
+    Must be called within a transaction.atomic() block for safe locking.
     """
     amount = Decimal(str(amount))
     if amount <= 0:
         raise ValueError("Amount must be positive")
-    if customer_profile.wallet_balance < amount:
+
+    # Lock the row to prevent concurrent double-spend
+    locked_profile = _lock_profile(customer_profile)
+
+    if locked_profile.wallet_balance < amount:
         raise ValueError("Insufficient funds in wallet")
-    customer_profile.wallet_balance -= amount
-    customer_profile.save(update_fields=["wallet_balance"])
+    locked_profile.wallet_balance -= amount
+    locked_profile.save(update_fields=["wallet_balance"])
+
+    # Update the caller's reference so it reflects the new balance
+    customer_profile.wallet_balance = locked_profile.wallet_balance
+
     logger.info(
         "Deducted ₹%s from wallet of %s. New balance: ₹%s",
-        amount, customer_profile.user.email, customer_profile.wallet_balance,
+        amount, customer_profile.user.email, locked_profile.wallet_balance,
     )
     return True
 
@@ -78,15 +101,20 @@ def refund_to_wallet(customer_profile, amount):
 
     Sequence diagram (Cake/phase3, step 27):
       BE → processRefund(userID, amount)
+    Must be called within a transaction.atomic() block for safe locking.
     """
     amount = Decimal(str(amount))
-    customer_profile.wallet_balance += amount
-    customer_profile.save(update_fields=["wallet_balance"])
+
+    locked_profile = _lock_profile(customer_profile)
+    locked_profile.wallet_balance += amount
+    locked_profile.save(update_fields=["wallet_balance"])
+
+    customer_profile.wallet_balance = locked_profile.wallet_balance
     logger.info(
         "Refunded ₹%s to wallet of %s. New balance: ₹%s",
-        amount, customer_profile.user.email, customer_profile.wallet_balance,
+        amount, customer_profile.user.email, locked_profile.wallet_balance,
     )
-    return customer_profile.wallet_balance
+    return locked_profile.wallet_balance
 
 
 def set_wallet_pin(profile, pin):
@@ -103,16 +131,20 @@ def credit_to_manager(manager_profile, amount):
 
     Called by order_service.mark_order_completed() to transfer
     order funds to the manager's wallet balance.
+    Must be called within a transaction.atomic() block for safe locking.
     """
     amount = Decimal(str(amount))
     if amount <= 0:
         raise ValueError("Amount must be positive")
-    # Ensure wallet_balance is Decimal (may come as float from DB in some backends)
-    current_balance = Decimal(str(manager_profile.wallet_balance))
-    manager_profile.wallet_balance = current_balance + amount
-    manager_profile.save(update_fields=["wallet_balance"])
+
+    locked_profile = _lock_profile(manager_profile)
+    current_balance = Decimal(str(locked_profile.wallet_balance))
+    locked_profile.wallet_balance = current_balance + amount
+    locked_profile.save(update_fields=["wallet_balance"])
+
+    manager_profile.wallet_balance = locked_profile.wallet_balance
     logger.info(
         "Credited ₹%s to manager wallet of %s. New balance: ₹%s",
-        amount, manager_profile.user.email, manager_profile.wallet_balance,
+        amount, manager_profile.user.email, locked_profile.wallet_balance,
     )
-    return manager_profile.wallet_balance
+    return locked_profile.wallet_balance

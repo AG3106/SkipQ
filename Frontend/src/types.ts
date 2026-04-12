@@ -23,6 +23,7 @@ export interface CustomerProfile {
     user: User;
     name: string;
     phone: string;
+    rollNumber: string;
     walletBalance: string; // Decimal string from backend
 }
 
@@ -85,6 +86,7 @@ export interface Canteen {
     imageUrl: string | null;
     isCurrentlyOpen: boolean;
     estimatedWaitTime: string;
+    medianRating: number;
     holidays: CanteenHoliday[];
     createdAt: string;
 }
@@ -121,6 +123,7 @@ export interface PopularDish {
     canteenId: number;
     canteenName: string;
     canteenLocation: string;
+    isCanteenOpen: boolean;
     ratingCount: number;
 }
 
@@ -162,11 +165,14 @@ export interface Payment {
 export interface Order {
     id: number;
     customerEmail: string;
+    canteenId: number;
     canteenName: string;
     status: string;
     bookTime: string;
     receiveTime: string | null;
     notes: string;
+    customerName: string;
+    rollNo: string;
     rejectReason: string;
     cancelRejectionReason: string;
     items: OrderItem[];
@@ -203,6 +209,29 @@ export interface CakeReservation {
     status: string;
     rejectionReason: string;
     createdAt: string;
+}
+
+export interface CakeSizePrice {
+    id: number;
+    size: string;
+    price: string;
+    isAvailable: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CakeFlavor {
+    id: number;
+    name: string;
+    photoUrl: string | null;
+    isAvailable: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CakeOptions {
+    sizes: CakeSizePrice[];
+    flavors: CakeFlavor[];
 }
 
 // ---------------------------------------------------------------------------
