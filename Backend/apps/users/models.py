@@ -249,6 +249,7 @@ class OTPVerification(models.Model):
     role = models.CharField(max_length=10, blank=True)
     name = models.CharField(max_length=255, blank=True)
     phone = models.CharField(max_length=20, blank=True)
+    failed_attempts = models.IntegerField(default=0, help_text="Number of incorrect OTP attempts")
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
 

@@ -99,6 +99,10 @@ export default function Checkout() {
       toast.error("Please enter your roll number");
       return;
     }
+    if (!/^\d{6,10}$/.test(rollNo.trim())) {
+      toast.error("Please enter a valid campus roll number (6-10 digits)");
+      return;
+    }
     if (total > balance) {
       toast.error("Insufficient wallet balance");
       return;

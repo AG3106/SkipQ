@@ -24,6 +24,7 @@ import { useWallet } from "../context/WalletContext";
 import { useAuth } from "../context/AuthContext";
 import type { CustomerProfile } from "../types";
 import { getOrderHistory } from "../api/orders";
+import { toast } from "sonner";
 import { updateProfile } from "../api/auth";
 
 interface ProfileField {
@@ -80,6 +81,12 @@ export default function UserProfile() {
   }, [user, authProfile]);
 
   const saveProfile = async (key: string, value: string) => {
+    if (key === "rollNumber") {
+      if (!/^\d{6,10}$/.test(value.trim())) {
+        toast.error("Please enter a valid campus roll number (6-10 digits)");
+        return;
+      }
+    }
     const updated = { ...profile, [key]: value };
     setProfile(updated);
     localStorage.setItem("skipq_profile", JSON.stringify(updated));

@@ -127,8 +127,19 @@ def verify_otp(email, entered_otp):
     if timezone.now() - otp_record.created_at > timedelta(minutes=10):
         raise ValueError("OTP has expired. Please request a new one.")
 
+    # Check if already locked out from too many attempts
+    if otp_record.failed_attempts >= 5:
+        raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+
     if otp_record.otp != entered_otp:
-        raise ValueError("Invalid OTP")
+        otp_record.failed_attempts += 1
+        if otp_record.failed_attempts >= 5:
+            otp_record.is_used = True
+            otp_record.save()
+            raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+        otp_record.save()
+        remaining = 5 - otp_record.failed_attempts
+        raise ValueError(f"Invalid OTP. {remaining} attempt(s) remaining.")
 
     otp_record.is_used = True
     otp_record.save()
@@ -283,8 +294,19 @@ def validate_otp(email, entered_otp):
     if timezone.now() - otp_record.created_at > timedelta(minutes=10):
         raise ValueError("OTP has expired. Please request a new one.")
 
+    # Check if already locked out from too many attempts
+    if otp_record.failed_attempts >= 5:
+        raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+
     if otp_record.otp != entered_otp:
-        raise ValueError("Invalid OTP")
+        otp_record.failed_attempts += 1
+        if otp_record.failed_attempts >= 5:
+            otp_record.is_used = True
+            otp_record.save()
+            raise ValueError("Too many incorrect attempts. This OTP has been invalidated. Please request a new one.")
+        otp_record.save()
+        remaining = 5 - otp_record.failed_attempts
+        raise ValueError(f"Invalid OTP. {remaining} attempt(s) remaining.")
 
     return True
 

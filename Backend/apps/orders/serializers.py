@@ -5,6 +5,7 @@ Maps Order, OrderItem, Payment entities to API representations.
 """
 
 from rest_framework import serializers
+from django.core.validators import RegexValidator
 from apps.orders.models import Order, OrderItem, Payment
 
 
@@ -98,7 +99,11 @@ class PlaceOrderSerializer(serializers.Serializer):
     wallet_pin = serializers.CharField(write_only=True)
     notes = serializers.CharField(required=False, default="")
     customer_name = serializers.CharField(required=False, default="")
-    roll_no = serializers.CharField(required=False, default="")
+    roll_no = serializers.CharField(
+        required=False, 
+        default="", 
+        validators=[RegexValidator(r'^\d{6,10}$', message="Enter a valid campus roll number (6-10 digits).")]
+    )
 
     def validate_items(self, value):
         """Validate that items list is well-formed."""

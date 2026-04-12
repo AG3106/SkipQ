@@ -6,6 +6,7 @@ API representations.
 """
 
 from rest_framework import serializers
+from django.core.validators import RegexValidator
 from apps.users.models import User, CustomerProfile, CanteenManagerProfile, AdminProfile
 
 
@@ -66,6 +67,11 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomerProfileSerializer(serializers.ModelSerializer):
     """Customer profile with wallet info."""
     user = UserSerializer(read_only=True)
+    roll_number = serializers.CharField(
+        required=False, 
+        allow_blank=True,
+        validators=[RegexValidator(r'^\d{6,10}$', message="Enter a valid campus roll number (6-10 digits).")]
+    )
 
     class Meta:
         model = CustomerProfile
