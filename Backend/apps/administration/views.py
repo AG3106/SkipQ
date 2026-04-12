@@ -119,6 +119,7 @@ def pending_manager_registrations(request):
             "id": p.pk,
             "email": p.email,
             "name": p.name,
+            "phone": p.phone,
             "status": p.status,
             "created_at": p.created_at.isoformat(),
         }

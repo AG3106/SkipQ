@@ -178,6 +178,8 @@ def complete_registration(email, password=None, password_hash=None, role="CUSTOM
 
     # --- Manager flow: pending admin approval ---
     if role == User.Role.MANAGER:
+        if not phone:
+            raise ValueError("Phone number is required for manager registration")
         if not password_hash and password:
             from django.contrib.auth.hashers import make_password
             password_hash = make_password(password)
@@ -425,7 +427,9 @@ def approve_manager_registration(pending_id):
     user = User(email=pending.email, role=User.Role.MANAGER, is_verified=True)
     user.password = pending.password_hash
     user.save()
-    CanteenManagerProfile.objects.create(user=user, contact_details=pending.phone or pending.name)
+    if not pending.phone:
+        raise ValueError("Manager phone is missing for approval")
+    CanteenManagerProfile.objects.create(user=user, contact_details=pending.phone)
 
     # Mark as approved
     pending.status = PendingManagerRegistration.Status.APPROVED

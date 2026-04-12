@@ -1677,3 +1677,1511 @@
 11:41:39 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
 11:41:49 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
 11:42:04 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+11:44:39 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:44:39 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+11:44:39 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:44:39 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:44:39 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:44:39 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:44:39 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:44:39 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:46:34 PM [vite] (client) Pre-transform error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+11:46:34 PM [vite] (client) Pre-transform error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+11:46:34 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:46:34 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:47:45 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:47:45 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:48:54 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:48:54 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:48:55 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:48:55 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:48:56 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:48:56 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:48:57 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx: Unexpected token (144:0)
+
+  142 |     }
+  143 |
+> 144 | <<<<<<< HEAD
+      | ^
+  145 |     if (formData.phone.length !== 10) {
+  146 |       toast.error("Please enter a valid 10-digit phone number");
+  147 | =======
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UnifiedLogin.tsx:144:0
+  142|      }
+  143|  
+  144|  <<<<<<< HEAD
+     |  ^
+  145|      if (formData.phone.length !== 10) {
+  146|        toast.error("Please enter a valid 10-digit phone number");
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12895:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseArrowExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12075:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11264:10)
+      at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9766:18)
+      at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11194:27)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11120:19)
+      at TypeScriptParserMixin.parseSubscript (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9272:18)
+      at TypeScriptParserMixin.parseSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11094:19)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11085:17)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12421:16)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseVar (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13384:91)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13230:10)
+      at TypeScriptParserMixin.parseVarStatement (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+11:48:57 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:49:05 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+11:49:05 PM [vite] (client) Pre-transform error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+11:49:05 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (38:1)
+
+  36 |   placeholder?: string;
+  37 |   options?: string[];
+> 38 | <<<<<<< HEAD
+     |  ^
+  39 |   readonly?: boolean;
+  40 | =======
+  41 |   editable?: boolean;
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:38:1
+  36 |    placeholder?: string;
+  37 |    options?: string[];
+  38 |  <<<<<<< HEAD
+     |   ^
+  39 |    readonly?: boolean;
+  40 |  =======
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseIdentifierName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12203:12)
+      at TypeScriptParserMixin.parseIdentifier (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12181:23)
+      at TypeScriptParserMixin.tsParseTypeParameterName (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10116:27)
+      at TypeScriptParserMixin.tsParseTypeParameter (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8049:22)
+      at TypeScriptParserMixin.tsParseDelimitedListWorker (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7893:23)
+      at TypeScriptParserMixin.tsParseDelimitedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7883:25)
+      at TypeScriptParserMixin.tsParseBracketedList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7923:25)
+      at TypeScriptParserMixin.tsParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8069:24)
+      at TypeScriptParserMixin.tsTryParseTypeParameters (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8056:19)
+      at TypeScriptParserMixin.tsFillSignature (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8082:37)
+      at TypeScriptParserMixin.tsParseSignatureMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8111:10)
+      at TypeScriptParserMixin.tsParseTypeMember (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8193:19)
+      at TypeScriptParserMixin.tsParseList (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:7878:19)
+      at TypeScriptParserMixin.tsParseObjectTypeMembers (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8230:26)
+      at TypeScriptParserMixin.tsInType (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8797:14)
+      at TypeScriptParserMixin.tsParseInterfaceDeclaration (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:8760:22)
+      at TypeScriptParserMixin.parseStatementContent (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9475:33)
+      at TypeScriptParserMixin.parseStatementLike (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:261:32)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:189:28
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:113:33
+      at step (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:287:14)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/commit_and_conquer/SkipQ/Frontend/node_modules/gensync/index.js:223:11)
+11:50:08 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:50:08 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (303:0)
+
+  301 |                         </div>
+  302 |                       ) : (
+> 303 | >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+      | ^
+  304 |                         <button
+  305 |                           onClick={() => startEdit(field.key, field.value)}
+  306 |                           className="w-9 h-9 rounded-xl text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center justify-center transition-all shrink-0"
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:303:0
+  301|                          </div>
+  302|                        ) : (
+  303|  >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+     |  ^
+  304|                          <button
+  305|                            onClick={() => startEdit(field.key, field.value)}
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10893:29)
+      at TypeScriptParserMixin.parseConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9603:18)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10885:17)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOpBaseRightExpr (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10986:34)
+      at TypeScriptParserMixin.parseExprOpRightExpr (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10981:21)
+      at TypeScriptParserMixin.parseExprOp (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10947:27)
+11:50:08 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (303:0)
+
+  301 |                         </div>
+  302 |                       ) : (
+> 303 | >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+      | ^
+  304 |                         <button
+  305 |                           onClick={() => startEdit(field.key, field.value)}
+  306 |                           className="w-9 h-9 rounded-xl text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center justify-center transition-all shrink-0"
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:303:0
+  301|                          </div>
+  302|                        ) : (
+  303|  >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+     |  ^
+  304|                          <button
+  305|                            onClick={() => startEdit(field.key, field.value)}
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10893:29)
+      at TypeScriptParserMixin.parseConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9603:18)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10885:17)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOpBaseRightExpr (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10986:34)
+      at TypeScriptParserMixin.parseExprOpRightExpr (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10981:21)
+      at TypeScriptParserMixin.parseExprOp (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10947:27)
+11:50:08 PM [vite] (client) Pre-transform error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (303:0)
+
+  301 |                         </div>
+  302 |                       ) : (
+> 303 | >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+      | ^
+  304 |                         <button
+  305 |                           onClick={() => startEdit(field.key, field.value)}
+  306 |                           className="w-9 h-9 rounded-xl text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center justify-center transition-all shrink-0"
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:303:0
+  301|                          </div>
+  302|                        ) : (
+  303|  >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+     |  ^
+  304|                          <button
+  305|                            onClick={() => startEdit(field.key, field.value)}
+11:50:09 PM [vite] Internal server error: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx: Unexpected token (303:0)
+
+  301 |                         </div>
+  302 |                       ) : (
+> 303 | >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+      | ^
+  304 |                         <button
+  305 |                           onClick={() => startEdit(field.key, field.value)}
+  306 |                           className="w-9 h-9 rounded-xl text-gray-400 dark:text-gray-500 hover:text-[#D4725C] dark:hover:text-[#D4725C] hover:bg-orange-50 dark:hover:bg-orange-950/20 flex items-center justify-center transition-all shrink-0"
+  Plugin: vite:react-babel
+  File: /home/commit_and_conquer/SkipQ/Frontend/src/pages/UserProfile.tsx:303:0
+  301|                          </div>
+  302|                        ) : (
+  303|  >>>>>>> 326ca4ad4b5fef5ee2c61d0d4e6b47482a2d3da6
+     |  ^
+  304|                          <button
+  305|                            onClick={() => startEdit(field.key, field.value)}
+      at constructor (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.unexpected (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11442:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOps (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at TypeScriptParserMixin.parseConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10893:29)
+      at TypeScriptParserMixin.parseConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9603:18)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10885:17)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9786:20)
+      at /home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:39
+      at TypeScriptParserMixin.allowInAnd (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+      at TypeScriptParserMixin.parseExprAtom (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+      at TypeScriptParserMixin.parseUpdate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:9837:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+      at TypeScriptParserMixin.parseExprOpBaseRightExpr (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10986:34)
+      at TypeScriptParserMixin.parseExprOpRightExpr (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10981:21)
+      at TypeScriptParserMixin.parseExprOp (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10947:27)
+11:50:27 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+1:06:27 AM [vite] (client) hmr update /src/index.css, /src/pages/AdminPanel.tsx

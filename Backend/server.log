@@ -11934,3 +11934,495 @@ Quit the server with CONTROL-C.
 [2026-04-12 23:44:09,511] WARNING apps.orders.consumers consumers.connect:47 — WebSocket rejected: user aayushk24@iitk.ac.in is not a manager or has no canteen
 [2026-04-12 23:44:09,512] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.20.62:56804]
 [2026-04-12 23:44:09,512] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.20.62:56804]
+[2026-04-12 23:44:39,447] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/users/serializers.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 12, 2026 - 23:43:06
+Django version 4.2.29, using settings 'config.settings'
+Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[2026-04-12 23:44:40,389] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.8/threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/daphne/management/commands/runserver.py", line 96, in inner_run
+    self.check(display_num_errors=True)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/core/management/base.py", line 485, in check
+    all_issues = checks.run_checks(
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/core/checks/registry.py", line 88, in run_checks
+    new_errors = check(app_configs=app_configs, databases=databases)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/core/checks/urls.py", line 14, in check_url_config
+    return check_resolver(resolver)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/core/checks/urls.py", line 24, in check_resolver
+    return check_method()
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/urls/resolvers.py", line 494, in check
+    for pattern in self.url_patterns:
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/utils/functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/urls/resolvers.py", line 715, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/utils/functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/django/urls/resolvers.py", line 708, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.8/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1014, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 975, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 671, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 848, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/home/commit_and_conquer/SkipQ/Backend/config/urls.py", line 22, in <module>
+    from apps.users.urls import auth_urlpatterns, user_urlpatterns
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/users/urls.py", line 4, in <module>
+    from apps.users import views
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/users/views.py", line 18, in <module>
+    from apps.users.serializers import (
+  File "/home/commit_and_conquer/SkipQ/Backend/apps/users/serializers.py", line 30
+    <<<<<<< HEAD
+    ^
+SyntaxError: invalid syntax
+[2026-04-12 23:48:53,473] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/users/serializers.py changed, reloading.
+Performing system checks...
+
+[2026-04-12 23:48:54,321] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-04-12 23:48:54,645] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-12 23:48:54,645] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-12 23:48:54,646] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-12 23:50:27,640] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.04, 172.23.20.62:53318]
+[2026-04-12 23:50:27,829] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.04, 172.23.20.62:53318]
+[2026-04-12 23:50:27,896] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.10, 172.23.20.62:53332]
+[2026-04-12 23:50:27,905] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.10, 172.23.20.62:53336]
+[2026-04-12 23:50:27,963] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.16, 172.23.20.62:53328]
+[2026-04-12 23:50:28,035] INFO django.channels.server runserver.log_action:172 — HTTP GET /files/canteen_images/12.jpg 304 [0.01, 172.23.20.62:53332]
+[2026-04-12 23:50:28,293] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/ 200 [0.17, 172.23.20.62:53332]
+[2026-04-12 23:52:25,474] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.06, 172.23.20.62:40074]
+[2026-04-12 23:52:29,613] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.07, 172.23.20.62:58810]
+[2026-04-12 23:52:29,623] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.08, 172.23.20.62:58822]
+[2026-04-12 23:52:29,685] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.20.62:40074]
+[2026-04-12 23:52:32,336] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.08, 172.23.20.62:58822]
+[2026-04-12 23:52:32,337] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.20.62:58810]
+[2026-04-12 23:52:32,404] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.14, 172.23.20.62:40074]
+[2026-04-12 23:52:40,516] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/12/menu/ 200 [0.06, 172.23.20.62:58810]
+[2026-04-12 23:52:40,522] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/12/ 200 [0.06, 172.23.20.62:40074]
+[2026-04-12 23:52:40,523] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/12/menu/popular/ 200 [0.06, 172.23.20.62:58822]
+[2026-04-12 23:52:43,006] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.07, 172.23.20.62:58810]
+[2026-04-12 23:52:43,055] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.12, 172.23.20.62:58822]
+[2026-04-12 23:52:43,077] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.20.62:40074]
+[2026-04-12 23:53:07,358] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.20.62:58810]
+[2026-04-12 23:53:07,364] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.08, 172.23.20.62:58822]
+[2026-04-12 23:53:07,427] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.20.62:40074]
+[2026-04-12 23:53:33,511] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/ 200 [0.17, 172.23.20.62:40074]
+[2026-04-12 23:53:38,200] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.22.94:43434]
+[2026-04-12 23:53:38,303] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/users/profile/ 200 [0.01, 172.23.20.62:50034]
+[2026-04-12 23:53:38,378] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.09, 172.23.22.94:43434]
+[2026-04-12 23:53:38,394] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.10, 172.23.22.94:43448]
+[2026-04-12 23:53:38,414] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.12, 172.23.22.94:43456]
+[2026-04-12 23:53:38,422] INFO django.channels.server runserver.log_action:168 — HTTP PATCH /api/users/profile/ 200 [0.11, 172.23.20.62:40074]
+[2026-04-12 23:53:38,479] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.18, 172.23.22.94:43442]
+[2026-04-12 23:53:40,020] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.20.62:58810]
+[2026-04-12 23:53:40,030] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.09, 172.23.20.62:58822]
+[2026-04-12 23:53:40,099] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.16, 172.23.20.62:40074]
+[2026-04-12 23:53:42,175] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/4/menu/popular/ 200 [0.07, 172.23.22.94:43456]
+[2026-04-12 23:53:42,180] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/4/menu/ 200 [0.08, 172.23.22.94:43442]
+[2026-04-12 23:53:42,198] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/4/ 200 [0.09, 172.23.22.94:43448]
+[2026-04-12 23:53:43,204] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/ 200 [0.17, 172.23.20.62:40074]
+[2026-04-12 23:53:44,583] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/logout/ 200 [0.01, 172.23.20.62:50034]
+[2026-04-12 23:53:44,628] INFO apps.users.services.auth_service auth_service.logout_user:273 — User logged out
+[2026-04-12 23:53:44,634] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/logout/ 200 [0.04, 172.23.20.62:40074]
+[2026-04-12 23:53:47,378] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/ 200 [0.12, 172.23.22.94:43448]
+[2026-04-12 23:54:03,547] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/login/ 200 [0.00, 172.23.20.62:50034]
+[2026-04-12 23:54:04,277] INFO apps.users.services.auth_service auth_service.authenticate_user:262 — Standard session (browser close) for manager1@iitk.ac.in
+[2026-04-12 23:54:04,296] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/login/ 200 [0.74, 172.23.20.62:40074]
+[2026-04-12 23:54:04,332] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.20.62:46724]
+[2026-04-12 23:54:04,366] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.06, 172.23.20.62:40074]
+[2026-04-12 23:54:04,379] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.20.62:46724]
+[2026-04-12 23:54:04,380] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-12 23:54:04,432] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.11, 172.23.20.62:58822]
+[2026-04-12 23:54:04,433] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.20.62:46728]
+[2026-04-12 23:54:04,452] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.13, 172.23.20.62:58810]
+[2026-04-12 23:54:04,464] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.09, 172.23.20.62:40074]
+[2026-04-12 23:54:04,494] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.16, 172.23.20.62:46726]
+[2026-04-12 23:54:14,171] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/users/profile/ 200 [0.00, 172.23.22.94:53184]
+[2026-04-12 23:54:14,221] INFO django.channels.server runserver.log_action:168 — HTTP PATCH /api/users/profile/ 200 [0.05, 172.23.22.94:43448]
+[2026-04-12 23:54:31,559] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.06, 172.23.20.62:58810]
+[2026-04-12 23:54:31,561] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.07, 172.23.20.62:40074]
+[2026-04-12 23:54:31,623] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.13, 172.23.20.62:46726]
+[2026-04-12 23:55:01,556] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.19.213:41726]
+[2026-04-12 23:55:01,622] WARNING django.request log.log_response:246 — Forbidden: /api/orders/history/
+[2026-04-12 23:55:01,623] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/orders/history/ 403 [0.03, 172.23.19.213:41726]
+[2026-04-12 23:55:01,627] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.03, 172.23.19.213:41742]
+[2026-04-12 23:55:01,763] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.19.213:41726]
+[2026-04-12 23:55:01,925] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:41746]
+[2026-04-12 23:55:01,968] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.19.213:41746]
+[2026-04-12 23:55:01,968] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-12 23:55:02,007] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.09, 172.23.19.213:41726]
+[2026-04-12 23:55:02,014] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.10, 172.23.19.213:41742]
+[2026-04-12 23:55:02,017] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.09, 172.23.19.213:41772]
+[2026-04-12 23:55:02,053] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.13, 172.23.19.213:41756]
+[2026-04-12 23:55:04,407] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:41746]
+[2026-04-12 23:55:04,408] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-12 23:55:04,462] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/manager/dashboard/ 200 [0.05, 172.23.19.213:41756]
+[2026-04-12 23:55:14,002] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.20.62:46724]
+[2026-04-12 23:55:14,003] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-12 23:55:30,554] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:39866]
+[2026-04-12 23:55:30,603] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.19.213:39866]
+[2026-04-12 23:55:30,604] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-12 23:55:30,617] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.07, 172.23.19.213:41756]
+[2026-04-12 23:55:30,623] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.08, 172.23.19.213:41726]
+[2026-04-12 23:55:30,666] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.12, 172.23.19.213:41742]
+[2026-04-12 23:55:34,980] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:39866]
+[2026-04-12 23:55:34,982] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-12 23:55:35,029] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/manager/dashboard/ 200 [0.05, 172.23.19.213:41756]
+[2026-04-12 23:55:56,428] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:55440]
+[2026-04-12 23:55:56,477] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.19.213:55440]
+[2026-04-12 23:55:56,477] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-12 23:55:56,497] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.07, 172.23.19.213:41756]
+[2026-04-12 23:55:56,504] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.08, 172.23.19.213:41742]
+[2026-04-12 23:55:56,547] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.12, 172.23.19.213:41726]
+[2026-04-12 23:57:27,002] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:55440]
+[2026-04-12 23:57:27,003] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-13 00:06:53,664] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:39428]
+[2026-04-13 00:06:53,693] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.19.213:39428]
+[2026-04-13 00:06:53,693] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-13 00:12:03,756] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/logout/ 200 [0.01, 172.23.19.213:43898]
+[2026-04-13 00:12:03,821] INFO apps.users.services.auth_service auth_service.logout_user:273 — User logged out
+[2026-04-13 00:12:03,827] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/logout/ 200 [0.06, 172.23.19.213:43908]
+[2026-04-13 00:12:03,946] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:39428]
+[2026-04-13 00:12:03,947] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-13 00:12:26,012] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:53180]
+[2026-04-13 00:12:26,018] WARNING apps.orders.consumers consumers.connect:39 — WebSocket rejected: unauthenticated connection
+[2026-04-13 00:12:26,019] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.19.213:53180]
+[2026-04-13 00:12:26,020] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:53180]
+[2026-04-13 00:12:26,036] WARNING django.request log.log_response:246 — Forbidden: /api/orders/pending/
+[2026-04-13 00:12:26,037] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/orders/pending/ 403 [0.03, 172.23.19.213:43908]
+[2026-04-13 00:12:26,041] WARNING django.request log.log_response:246 — Forbidden: /api/cakes/manager-all/
+[2026-04-13 00:12:26,042] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/cakes/manager-all/ 403 [0.03, 172.23.19.213:53188]
+[2026-04-13 00:12:26,043] WARNING django.request log.log_response:246 — Forbidden: /api/orders/active/
+[2026-04-13 00:12:26,044] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/orders/active/ 403 [0.03, 172.23.19.213:53182]
+[2026-04-13 00:12:27,042] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:32794]
+[2026-04-13 00:12:27,044] WARNING apps.orders.consumers consumers.connect:39 — WebSocket rejected: unauthenticated connection
+[2026-04-13 00:12:27,044] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.19.213:32794]
+[2026-04-13 00:12:27,045] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:32794]
+[2026-04-13 00:12:29,106] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:32800]
+[2026-04-13 00:12:29,108] WARNING apps.orders.consumers consumers.connect:39 — WebSocket rejected: unauthenticated connection
+[2026-04-13 00:12:29,109] INFO django.channels.server runserver.log_action:191 — WebSocket REJECT /ws/orders/ [172.23.19.213:32800]
+[2026-04-13 00:12:29,109] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:32800]
+[2026-04-13 00:12:29,434] WARNING django.request log.log_response:246 — Forbidden: /api/orders/active/
+[2026-04-13 00:12:29,435] WARNING django.request log.log_response:246 — Forbidden: /api/cakes/manager-all/
+[2026-04-13 00:12:29,436] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/orders/active/ 403 [0.03, 172.23.19.213:53188]
+[2026-04-13 00:12:29,437] WARNING django.request log.log_response:246 — Forbidden: /api/orders/pending/
+[2026-04-13 00:12:29,438] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/cakes/manager-all/ 403 [0.03, 172.23.19.213:53182]
+[2026-04-13 00:12:29,439] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/orders/pending/ 403 [0.03, 172.23.19.213:43908]
+[2026-04-13 00:12:30,784] WARNING django.request log.log_response:246 — Forbidden: /api/orders/pending/
+[2026-04-13 00:12:30,786] WARNING django.request log.log_response:246 — Forbidden: /api/orders/active/
+[2026-04-13 00:12:30,787] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/orders/pending/ 403 [0.03, 172.23.19.213:43908]
+[2026-04-13 00:12:30,787] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/orders/active/ 403 [0.03, 172.23.19.213:53182]
+[2026-04-13 00:12:30,790] WARNING django.request log.log_response:246 — Forbidden: /api/cakes/manager-all/
+[2026-04-13 00:12:30,791] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/cakes/manager-all/ 403 [0.03, 172.23.19.213:53188]
+[2026-04-13 00:12:31,679] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/logout/ 200 [0.00, 172.23.19.213:43898]
+[2026-04-13 00:12:31,694] WARNING django.request log.log_response:246 — Forbidden: /api/auth/logout/
+[2026-04-13 00:12:31,694] WARNING django.channels.server runserver.log_action:178 — HTTP POST /api/auth/logout/ 403 [0.01, 172.23.19.213:43908]
+[2026-04-13 00:12:44,152] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/login/ 200 [0.00, 172.23.19.213:43898]
+[2026-04-13 00:12:44,888] INFO apps.users.services.auth_service auth_service.authenticate_user:262 — Standard session (browser close) for manager1@iitk.ac.in
+[2026-04-13 00:12:44,906] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/login/ 200 [0.75, 172.23.19.213:53182]
+[2026-04-13 00:12:45,012] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.19.213:41376]
+[2026-04-13 00:12:45,057] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.07, 172.23.19.213:53182]
+[2026-04-13 00:12:45,084] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.19.213:41376]
+[2026-04-13 00:12:45,084] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-13 00:12:45,115] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.10, 172.23.19.213:43908]
+[2026-04-13 00:12:45,128] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.11, 172.23.19.213:53188]
+[2026-04-13 00:12:45,134] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.11, 172.23.19.213:41386]
+[2026-04-13 00:12:45,162] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.07, 172.23.19.213:53182]
+[2026-04-13 00:12:45,184] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.16, 172.23.19.213:41402]
+[2026-04-13 00:12:48,582] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.19.213:41376]
+[2026-04-13 00:12:48,584] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-13 00:12:48,619] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/manager/dashboard/ 200 [0.04, 172.23.19.213:41402]
+[2026-04-13 00:24:57,504] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.21.185:54486]
+[2026-04-13 00:24:57,544] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.21.185:54486]
+[2026-04-13 00:24:57,574] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.05, 172.23.21.185:54502]
+[2026-04-13 00:24:57,584] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/manager/dashboard/ 200 [0.06, 172.23.21.185:54490]
+[2026-04-13 00:24:57,601] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.21.185:54514]
+[2026-04-13 00:24:57,615] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.03, 172.23.21.185:54486]
+[2026-04-13 00:24:57,632] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.21.185:54514]
+[2026-04-13 00:24:57,632] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-13 00:24:57,687] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.07, 172.23.21.185:54502]
+[2026-04-13 00:24:57,690] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.07, 172.23.21.185:54490]
+[2026-04-13 00:24:57,725] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.10, 172.23.21.185:54486]
+[2026-04-13 00:30:09,938] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/logout/ 200 [0.00, 172.23.21.185:39140]
+[2026-04-13 00:30:09,988] INFO apps.users.services.auth_service auth_service.logout_user:273 — User logged out
+[2026-04-13 00:30:09,998] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/logout/ 200 [0.05, 172.23.21.185:39148]
+[2026-04-13 00:30:10,064] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.21.185:54514]
+[2026-04-13 00:30:10,065] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-13 00:32:02,555] WARNING django.request log.log_response:246 — Forbidden: /api/users/profile/
+[2026-04-13 00:32:02,556] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/users/profile/ 403 [0.01, 172.23.16.77:33892]
+[2026-04-13 00:32:02,570] WARNING django.request log.log_response:246 — Forbidden: /api/users/profile/
+[2026-04-13 00:32:02,571] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/users/profile/ 403 [0.01, 172.23.16.77:33892]
+[2026-04-13 00:32:40,333] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/login/ 200 [0.00, 172.23.16.77:39170]
+[2026-04-13 00:32:41,082] INFO apps.users.services.auth_service auth_service.authenticate_user:262 — Standard session (browser close) for aayushk24@iitk.ac.in
+[2026-04-13 00:32:41,100] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/login/ 200 [0.76, 172.23.16.77:33892]
+[2026-04-13 00:32:41,299] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.16.77:33892]
+[2026-04-13 00:32:41,388] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.09, 172.23.16.77:39190]
+[2026-04-13 00:32:41,402] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.16.77:39172]
+[2026-04-13 00:32:41,412] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.11, 172.23.16.77:39196]
+[2026-04-13 00:32:41,464] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.16, 172.23.16.77:39174]
+[2026-04-13 00:32:41,513] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.16.77:39190]
+[2026-04-13 00:32:41,516] INFO django.channels.server runserver.log_action:172 — HTTP GET /files/canteen_images/12.jpg 304 [0.02, 172.23.16.77:39174]
+[2026-04-13 00:33:16,279] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.16.77:39174]
+[2026-04-13 00:33:16,291] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.09, 172.23.16.77:39196]
+[2026-04-13 00:33:16,353] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.16.77:39190]
+[2026-04-13 00:33:17,233] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.11, 172.23.16.77:39174]
+[2026-04-13 00:33:22,039] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.07, 172.23.16.77:39174]
+[2026-04-13 00:33:22,057] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.09, 172.23.16.77:39196]
+[2026-04-13 00:33:22,120] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.16.77:39190]
+[2026-04-13 00:33:40,308] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/3/menu/popular/ 200 [0.06, 172.23.16.77:39196]
+[2026-04-13 00:33:40,314] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/3/menu/ 200 [0.07, 172.23.16.77:39190]
+[2026-04-13 00:33:40,320] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/3/ 200 [0.07, 172.23.16.77:39174]
+[2026-04-13 00:33:40,493] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/16.jpg 200 [0.04, 172.23.16.77:39196]
+[2026-04-13 00:33:40,496] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/21.jpg 200 [0.05, 172.23.16.77:39172]
+[2026-04-13 00:33:40,498] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/18.jpg 200 [0.05, 172.23.16.77:39190]
+[2026-04-13 00:33:40,501] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/17.jpg 200 [0.05, 172.23.16.77:52428]
+[2026-04-13 00:33:40,503] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/15.jpg 200 [0.05, 172.23.16.77:33892]
+[2026-04-13 00:33:40,505] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/13.jpg 200 [0.06, 172.23.16.77:39174]
+[2026-04-13 00:33:40,556] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/22.jpg 200 [0.02, 172.23.16.77:39190]
+[2026-04-13 00:33:40,557] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/20.jpg 200 [0.02, 172.23.16.77:33892]
+[2026-04-13 00:33:58,697] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.13, 172.23.16.77:39172]
+[2026-04-13 00:33:58,710] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.14, 172.23.16.77:33892]
+[2026-04-13 00:33:58,774] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.21, 172.23.16.77:39196]
+[2026-04-13 00:34:07,497] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.06, 172.23.16.77:39196]
+[2026-04-13 00:34:16,339] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/34/ 200 [0.04, 172.23.16.77:39196]
+[2026-04-13 00:34:20,264] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.05, 172.23.16.77:39196]
+[2026-04-13 00:34:31,872] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/orders/20/rate/ 200 [0.00, 172.23.16.77:54334]
+[2026-04-13 00:34:31,959] INFO apps.canteens.services.menu_service menu_service.add_rating:96 — Rating added for 'Paneer Butter Masala' by aayushk24@iitk.ac.in: 3★
+[2026-04-13 00:34:31,976] INFO apps.canteens.services.menu_service menu_service.add_rating:96 — Rating added for 'Masala Dosa' by aayushk24@iitk.ac.in: 4★
+[2026-04-13 00:34:32,001] INFO apps.canteens.services.menu_service menu_service.add_rating:96 — Rating added for 'Cold Coffee' by aayushk24@iitk.ac.in: 4★
+[2026-04-13 00:34:32,017] INFO apps.canteens.services.menu_service menu_service.add_rating:96 — Rating added for 'Veg Biryani' by aayushk24@iitk.ac.in: 5★
+[2026-04-13 00:34:32,026] INFO apps.orders.services.order_service order_service.rate_order:382 — Order #20 rated by aayushk24@iitk.ac.in
+[2026-04-13 00:34:32,049] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/orders/20/rate/ 200 [0.17, 172.23.16.77:39196]
+[2026-04-13 00:34:32,136] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.05, 172.23.16.77:39196]
+[2026-04-13 00:34:38,648] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/orders/12/rate/ 200 [0.00, 172.23.16.77:54334]
+[2026-04-13 00:34:38,715] INFO apps.canteens.services.menu_service menu_service.add_rating:96 — Rating added for 'Masala Dosa' by aayushk24@iitk.ac.in: 2★
+[2026-04-13 00:34:38,723] INFO apps.orders.services.order_service order_service.rate_order:382 — Order #12 rated by aayushk24@iitk.ac.in
+[2026-04-13 00:34:38,741] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/orders/12/rate/ 200 [0.09, 172.23.16.77:39196]
+[2026-04-13 00:34:38,849] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.07, 172.23.16.77:39196]
+[2026-04-13 00:34:49,817] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/orders/35/rate/ 200 [0.00, 172.23.16.77:54334]
+[2026-04-13 00:34:49,885] INFO apps.canteens.services.menu_service menu_service.add_rating:96 — Rating added for 'Chicken Kolhapuri' by aayushk24@iitk.ac.in: 5★
+[2026-04-13 00:34:49,893] INFO apps.orders.services.order_service order_service.rate_order:382 — Order #35 rated by aayushk24@iitk.ac.in
+[2026-04-13 00:34:49,910] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/orders/35/rate/ 200 [0.09, 172.23.16.77:39196]
+[2026-04-13 00:34:50,065] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/detailed/ 200 [0.05, 172.23.16.77:39196]
+[2026-04-13 00:34:53,271] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.07, 172.23.16.77:39172]
+[2026-04-13 00:34:53,283] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.08, 172.23.16.77:33892]
+[2026-04-13 00:34:53,344] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.14, 172.23.16.77:39196]
+[2026-04-13 00:35:00,926] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/menu/popular/ 200 [0.06, 172.23.16.77:33892]
+[2026-04-13 00:35:00,928] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/menu/ 200 [0.07, 172.23.16.77:39172]
+[2026-04-13 00:35:00,931] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/ 200 [0.07, 172.23.16.77:39196]
+[2026-04-13 00:37:19,014] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.21.206:52708]
+[2026-04-13 00:37:19,067] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.04, 172.23.21.206:52708]
+[2026-04-13 00:37:19,135] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.08, 172.23.21.206:52728]
+[2026-04-13 00:37:19,136] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/menu/ 200 [0.08, 172.23.21.206:52722]
+[2026-04-13 00:37:19,137] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/menu/popular/ 200 [0.08, 172.23.21.206:52726]
+[2026-04-13 00:37:19,140] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/1/ 200 [0.09, 172.23.21.206:52714]
+[2026-04-13 00:37:19,357] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.07, 172.23.21.206:52708]
+[2026-04-13 00:37:19,359] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.21.206:52722]
+[2026-04-13 00:37:19,373] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.10, 172.23.21.206:52714]
+[2026-04-13 00:37:19,453] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/16.jpg 200 [0.04, 172.23.21.206:52722]
+[2026-04-13 00:37:19,460] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.19, 172.23.21.206:52726]
+[2026-04-13 00:37:19,464] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/22.jpg 200 [0.04, 172.23.21.206:52714]
+[2026-04-13 00:39:47,559] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.07, 172.23.21.206:44428]
+[2026-04-13 00:39:47,578] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.09, 172.23.21.206:44434]
+[2026-04-13 00:39:47,632] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.21.206:44426]
+[2026-04-13 00:39:47,677] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/16.jpg 200 [0.02, 172.23.21.206:44428]
+[2026-04-13 00:39:47,679] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/22.jpg 200 [0.02, 172.23.21.206:44434]
+[2026-04-13 00:40:46,616] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.22.194:60188]
+[2026-04-13 00:40:46,755] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.08, 172.23.22.194:60230]
+[2026-04-13 00:40:46,761] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.09, 172.23.22.194:60204]
+[2026-04-13 00:40:46,774] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.10, 172.23.22.194:60218]
+[2026-04-13 00:40:46,830] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.16, 172.23.22.194:60188]
+[2026-04-13 00:43:27,933] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.18.80:39716]
+[2026-04-13 00:43:28,130] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.06, 172.23.18.80:39716]
+[2026-04-13 00:43:28,158] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.07, 172.23.18.80:39726]
+[2026-04-13 00:43:28,181] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.10, 172.23.18.80:39740]
+[2026-04-13 00:43:28,247] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.17, 172.23.18.80:39718]
+[2026-04-13 00:43:28,250] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/16.jpg 200 [0.03, 172.23.18.80:39726]
+[2026-04-13 00:43:28,256] INFO django.channels.server runserver.log_action:168 — HTTP GET /files/dish_images/22.jpg 200 [0.02, 172.23.18.80:39740]
+[2026-04-13 00:43:28,351] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.18.80:39726]
+[2026-04-13 00:43:28,513] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.18.80:39716]
+[2026-04-13 00:43:28,535] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.12, 172.23.18.80:39718]
+[2026-04-13 00:43:28,543] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.13, 172.23.18.80:39740]
+[2026-04-13 00:43:28,597] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.19, 172.23.18.80:39726]
+[2026-04-13 00:45:14,563] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.07, 172.23.18.80:41954]
+[2026-04-13 00:45:14,577] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.08, 172.23.18.80:41958]
+[2026-04-13 00:45:14,642] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.18.80:41946]
+[2026-04-13 00:47:49,626] WARNING django.request log.log_response:246 — Forbidden: /api/users/profile/
+[2026-04-13 00:47:49,627] WARNING django.channels.server runserver.log_action:178 — HTTP GET /api/users/profile/ 403 [0.01, 172.23.20.20:61526]
+[2026-04-13 00:48:36,300] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.20.81:45030]
+[2026-04-13 00:48:36,391] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.20.81:45030]
+[2026-04-13 00:48:36,551] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.08, 172.23.20.81:45054]
+[2026-04-13 00:48:36,559] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.09, 172.23.20.81:45070]
+[2026-04-13 00:48:36,564] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.10, 172.23.20.81:45036]
+[2026-04-13 00:48:36,668] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.09, 172.23.20.81:45036]
+[2026-04-13 00:48:36,676] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.20.81:45070]
+[2026-04-13 00:48:36,685] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.11, 172.23.20.81:45054]
+[2026-04-13 00:48:36,689] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.23, 172.23.20.81:45030]
+[2026-04-13 00:48:36,885] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.10, 172.23.20.81:45036]
+[2026-04-13 00:51:44,334] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.23.187:42568]
+[2026-04-13 00:51:44,387] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.23.187:42568]
+[2026-04-13 00:51:44,535] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.08, 172.23.23.187:42590]
+[2026-04-13 00:51:44,539] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.09, 172.23.23.187:42580]
+[2026-04-13 00:51:44,543] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.09, 172.23.23.187:42578]
+[2026-04-13 00:51:44,660] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.09, 172.23.23.187:42580]
+[2026-04-13 00:51:44,664] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.09, 172.23.23.187:42578]
+[2026-04-13 00:51:44,689] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.12, 172.23.23.187:42590]
+[2026-04-13 00:51:44,694] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.25, 172.23.23.187:42568]
+[2026-04-13 00:51:44,806] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.11, 172.23.23.187:42580]
+[2026-04-13 00:54:09,550] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.21.149:55714]
+[2026-04-13 00:54:09,617] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.21.149:55714]
+[2026-04-13 00:54:09,789] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.21.149:55762]
+[2026-04-13 00:54:09,792] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.10, 172.23.21.149:55740]
+[2026-04-13 00:54:09,806] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.11, 172.23.21.149:55746]
+[2026-04-13 00:54:09,887] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.20, 172.23.21.149:55724]
+[2026-04-13 00:54:09,937] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.08, 172.23.21.149:55714]
+[2026-04-13 00:54:09,946] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.09, 172.23.21.149:55740]
+[2026-04-13 00:54:09,958] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.10, 172.23.21.149:55746]
+[2026-04-13 00:54:10,047] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.15, 172.23.21.149:55724]
+[2026-04-13 00:57:53,774] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.22.77:40156]
+[2026-04-13 00:57:53,820] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.04, 172.23.22.77:40156]
+[2026-04-13 00:57:53,894] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.08, 172.23.22.77:40192]
+[2026-04-13 00:57:53,904] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.10, 172.23.22.77:40180]
+[2026-04-13 00:57:53,910] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.10, 172.23.22.77:40186]
+[2026-04-13 00:57:54,014] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.09, 172.23.22.77:40186]
+[2026-04-13 00:57:54,016] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.11, 172.23.22.77:40156]
+[2026-04-13 00:57:54,022] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.11, 172.23.22.77:40180]
+[2026-04-13 00:57:54,043] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.24, 172.23.22.77:40164]
+[2026-04-13 00:57:54,154] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.10, 172.23.22.77:40180]
+[2026-04-13 01:06:02,753] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/users/serializers.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 12, 2026 - 23:48:54
+Django version 4.2.29, using settings 'config.settings'
+Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[2026-04-13 01:06:03,670] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-04-13 01:06:03,974] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-13 01:06:03,974] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-13 01:06:03,976] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-13 01:06:07,369] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/users/services/auth_service.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 13, 2026 - 01:06:03
+Django version 4.2.29, using settings 'config.settings'
+Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[2026-04-13 01:06:08,258] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-04-13 01:06:08,571] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-13 01:06:08,572] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-13 01:06:08,573] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-13 01:06:09,920] INFO django.utils.autoreload autoreload.trigger_reload:265 — /home/commit_and_conquer/SkipQ/Backend/apps/administration/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 13, 2026 - 01:06:08
+Django version 4.2.29, using settings 'config.settings'
+Starting ASGI/Daphne version 4.1.2 development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+[2026-04-13 01:06:10,795] INFO django.utils.autoreload autoreload.run_with_reloader:667 — Watching for file changes with StatReloader
+/home/commit_and_conquer/SkipQ/Backend/.venv/lib/python3.8/site-packages/rest_framework/fields.py:992: UserWarning: min_value should be a Decimal instance.
+  warnings.warn("min_value should be a Decimal instance.")
+[2026-04-13 01:06:11,134] INFO daphne.server server.run:120 — HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+[2026-04-13 01:06:11,134] INFO daphne.server server.run:129 — Configuring endpoint tcp:port=8000:interface=0.0.0.0
+[2026-04-13 01:06:11,134] INFO daphne.server server.listen_success:160 — Listening on TCP address 0.0.0.0:8000
+[2026-04-13 01:07:55,851] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.04, 172.23.19.136:53790]
+[2026-04-13 01:07:55,885] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.02, 172.23.19.136:53790]
+[2026-04-13 01:07:56,041] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.13, 172.23.19.136:53790]
+[2026-04-13 01:07:56,069] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.07, 172.23.19.136:53812]
+[2026-04-13 01:07:56,103] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.11, 172.23.19.136:53798]
+[2026-04-13 01:07:56,107] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.11, 172.23.19.136:53794]
+[2026-04-13 01:07:56,136] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.05, 172.23.19.136:53812]
+[2026-04-13 01:07:56,199] INFO django.channels.server runserver.log_action:172 — HTTP GET /files/canteen_images/12.jpg 304 [0.05, 172.23.19.136:53822]
+[2026-04-13 01:07:56,251] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.10, 172.23.19.136:53794]
+[2026-04-13 01:07:56,256] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.11, 172.23.19.136:53798]
+[2026-04-13 01:07:56,270] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.18, 172.23.19.136:53790]
+[2026-04-13 01:10:41,022] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.16.179:43502]
+[2026-04-13 01:10:41,137] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.05, 172.23.16.179:43502]
+[2026-04-13 01:10:41,204] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.16.179:43556]
+[2026-04-13 01:10:41,205] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.10, 172.23.16.179:43532]
+[2026-04-13 01:10:41,233] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.13, 172.23.16.179:43548]
+[2026-04-13 01:10:41,299] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.09, 172.23.16.179:43502]
+[2026-04-13 01:10:41,350] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.13, 172.23.16.179:43532]
+[2026-04-13 01:10:41,358] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.12, 172.23.16.179:43548]
+[2026-04-13 01:10:41,368] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.26, 172.23.16.179:43518]
+[2026-04-13 01:10:41,511] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.10, 172.23.16.179:43532]
+[2026-04-13 01:14:42,305] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.16.10:56620]
+[2026-04-13 01:14:42,463] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.03, 172.23.16.10:56620]
+[2026-04-13 01:14:42,593] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.08, 172.23.16.10:56646]
+[2026-04-13 01:14:42,597] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.08, 172.23.16.10:56640]
+[2026-04-13 01:14:42,609] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.10, 172.23.16.10:56624]
+[2026-04-13 01:14:42,712] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/dishes/popular/ 200 [0.09, 172.23.16.10:56646]
+[2026-04-13 01:14:42,717] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.16.10:56640]
+[2026-04-13 01:14:42,728] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/previous-order/ 200 [0.11, 172.23.16.10:56624]
+[2026-04-13 01:14:42,740] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.23, 172.23.16.10:56620]
+[2026-04-13 01:14:42,907] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/ 200 [0.10, 172.23.16.10:56624]
+[2026-04-13 01:21:54,298] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/history/ 200 [0.17, 172.23.16.10:39854]
+[2026-04-13 01:21:56,249] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/logout/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:21:56,290] INFO apps.users.services.auth_service auth_service.logout_user:275 — User logged out
+[2026-04-13 01:21:56,296] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/logout/ 200 [0.04, 172.23.16.10:39854]
+[2026-04-13 01:22:07,655] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/auth/login/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:22:08,369] INFO apps.users.services.auth_service auth_service.authenticate_user:264 — Standard session (browser close) for manager1@iitk.ac.in
+[2026-04-13 01:22:08,387] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/auth/login/ 200 [0.71, 172.23.16.10:39854]
+[2026-04-13 01:22:08,485] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.16.10:50722]
+[2026-04-13 01:22:08,578] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.10, 172.23.16.10:50736]
+[2026-04-13 01:22:08,581] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.10, 172.23.16.10:39854]
+[2026-04-13 01:22:08,590] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/wallet/ 200 [0.10, 172.23.16.10:50756]
+[2026-04-13 01:22:08,591] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.16.10:50722]
+[2026-04-13 01:22:08,591] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-13 01:22:08,597] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.11, 172.23.16.10:50740]
+[2026-04-13 01:22:08,642] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/users/profile/ 200 [0.05, 172.23.16.10:39854]
+[2026-04-13 01:22:08,656] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.17, 172.23.16.10:50750]
+[2026-04-13 01:22:10,954] INFO django.channels.server runserver.log_action:187 — WebSocket DISCONNECT /ws/orders/ [172.23.16.10:50722]
+[2026-04-13 01:22:10,956] INFO apps.orders.consumers consumers.disconnect:71 — WebSocket disconnected from group orders_canteen_1
+[2026-04-13 01:22:11,007] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/canteens/manager/dashboard/ 200 [0.06, 172.23.16.10:39854]
+[2026-04-13 01:22:23,045] INFO django.channels.server runserver.log_action:189 — WebSocket HANDSHAKING /ws/orders/ [172.23.16.10:50734]
+[2026-04-13 01:22:23,090] INFO django.channels.server runserver.log_action:185 — WebSocket CONNECT /ws/orders/ [172.23.16.10:50734]
+[2026-04-13 01:22:23,090] INFO apps.orders.consumers consumers.connect:59 — WebSocket connected: manager manager1@iitk.ac.in joined group orders_canteen_1
+[2026-04-13 01:22:23,117] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/pending/ 200 [0.08, 172.23.16.10:39854]
+[2026-04-13 01:22:23,118] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/orders/active/ 200 [0.08, 172.23.16.10:50750]
+[2026-04-13 01:22:23,159] INFO django.channels.server runserver.log_action:168 — HTTP GET /api/cakes/manager-all/ 200 [0.12, 172.23.16.10:50756]
+[2026-04-13 01:22:48,014] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/cakes/18/accept/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:22:48,078] INFO apps.cakes.models models.update_status:113 — CakeReservation #18 transitioned: PENDING_APPROVAL → CONFIRMED
+[2026-04-13 01:22:48,079] INFO apps.cakes.services.cake_service cake_service.accept_reservation:154 — Cake reservation #18 confirmed
+[2026-04-13 01:22:48,091] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/cakes/18/accept/ 200 [0.07, 172.23.16.10:39854]
+[2026-04-13 01:22:49,536] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/cakes/17/accept/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:22:49,586] INFO apps.cakes.models models.update_status:113 — CakeReservation #17 transitioned: PENDING_APPROVAL → CONFIRMED
+[2026-04-13 01:22:49,586] INFO apps.cakes.services.cake_service cake_service.accept_reservation:154 — Cake reservation #17 confirmed
+[2026-04-13 01:22:49,598] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/cakes/17/accept/ 200 [0.06, 172.23.16.10:39854]
+[2026-04-13 01:22:52,289] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/cakes/17/complete/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:22:52,335] INFO apps.cakes.models models.update_status:113 — CakeReservation #17 transitioned: CONFIRMED → COMPLETED
+[2026-04-13 01:22:52,335] INFO apps.cakes.services.cake_service cake_service.complete_reservation:191 — Cake reservation #17 completed (picked up)
+[2026-04-13 01:22:52,351] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/cakes/17/complete/ 200 [0.05, 172.23.16.10:39854]
+[2026-04-13 01:22:53,633] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/cakes/18/complete/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:22:53,676] INFO apps.cakes.models models.update_status:113 — CakeReservation #18 transitioned: CONFIRMED → COMPLETED
+[2026-04-13 01:22:53,676] INFO apps.cakes.services.cake_service cake_service.complete_reservation:191 — Cake reservation #18 completed (picked up)
+[2026-04-13 01:22:53,689] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/cakes/18/complete/ 200 [0.05, 172.23.16.10:39854]
+[2026-04-13 01:22:54,529] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/cakes/14/complete/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:22:54,576] INFO apps.cakes.models models.update_status:113 — CakeReservation #14 transitioned: CONFIRMED → COMPLETED
+[2026-04-13 01:22:54,576] INFO apps.cakes.services.cake_service cake_service.complete_reservation:191 — Cake reservation #14 completed (picked up)
+[2026-04-13 01:22:54,588] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/cakes/14/complete/ 200 [0.05, 172.23.16.10:39854]
+[2026-04-13 01:22:56,118] INFO django.channels.server runserver.log_action:168 — HTTP OPTIONS /api/cakes/16/complete/ 200 [0.00, 172.23.16.10:39494]
+[2026-04-13 01:22:56,167] INFO apps.cakes.models models.update_status:113 — CakeReservation #16 transitioned: CONFIRMED → COMPLETED
+[2026-04-13 01:22:56,167] INFO apps.cakes.services.cake_service cake_service.complete_reservation:191 — Cake reservation #16 completed (picked up)
+[2026-04-13 01:22:56,179] INFO django.channels.server runserver.log_action:168 — HTTP POST /api/cakes/16/complete/ 200 [0.05, 172.23.16.10:39854]

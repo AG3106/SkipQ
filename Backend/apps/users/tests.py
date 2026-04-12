@@ -109,12 +109,19 @@ class AuthServiceTest(TestCase):
         self.assertTrue(hasattr(u, "customer_profile"))
 
     def test_complete_registration_manager_creates_pending(self):
-        result = auth_service.complete_registration("mr@gmail.com", password="pw123", role="MANAGER", name="MR")
+        result = auth_service.complete_registration(
+            "mr@gmail.com",
+            password="pw123",
+            role="MANAGER",
+            name="MR",
+            phone="9876543210",
+        )
         self.assertIsNone(result)  # No user created
         self.assertFalse(User.objects.filter(email="mr@gmail.com").exists())
         pending = PendingManagerRegistration.objects.get(email="mr@gmail.com")
         self.assertEqual(pending.status, PendingManagerRegistration.Status.PENDING)
         self.assertEqual(pending.name, "MR")
+        self.assertEqual(pending.phone, "9876543210")
 
     def test_hash_wallet_pin(self):
         h = auth_service.hash_wallet_pin("1234")

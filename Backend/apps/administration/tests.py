@@ -161,6 +161,7 @@ class ManagerRegistrationApprovalTest(AdminTestBase):
             email="newmgr@gmail.com",
             password_hash=make_password("securepass"),
             name="New Manager",
+            phone="9998887776",
         )
 
     def test_pending_manager_registrations_list(self):
@@ -180,6 +181,7 @@ class ManagerRegistrationApprovalTest(AdminTestBase):
         user = User.objects.get(email="newmgr@gmail.com")
         self.assertEqual(user.role, User.Role.MANAGER)
         self.assertTrue(hasattr(user, "manager_profile"))
+        self.assertEqual(user.manager_profile.contact_details, "9998887776")
         self.pending.refresh_from_db()
         self.assertEqual(self.pending.status, "APPROVED")
 
@@ -208,4 +210,3 @@ class ManagerRegistrationApprovalTest(AdminTestBase):
         self.login_as_customer()
         resp = self.client.get("/api/admin/manager-registrations/")
         self.assertEqual(resp.status_code, 403)
-

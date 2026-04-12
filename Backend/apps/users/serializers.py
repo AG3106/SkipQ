@@ -38,6 +38,15 @@ class InitiateSignupSerializer(serializers.Serializer):
         ],
     )
 
+    def validate(self, attrs):
+        role = attrs.get("role", User.Role.CUSTOMER)
+        phone = (attrs.get("phone") or "").strip()
+        if role == User.Role.MANAGER and not phone:
+            raise serializers.ValidationError({
+                "phone": "Phone number is required for managers.",
+            })
+        return attrs
+
 
 class VerifyOTPSerializer(serializers.Serializer):
     """
