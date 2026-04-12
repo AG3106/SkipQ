@@ -732,7 +732,7 @@ class PreviousOrderViewTest(TestCase):
         self.assertFalse(data["is_rated"])
         self.assertEqual(len(data["items"]), 2)
         self.assertIn("canteen_name", data)
-        self.assertIn("total", data)
+        self.assertIn("total_price", data)
         # Check dish details in items
         dish_names = {item["dish_name"] for item in data["items"]}
         self.assertIn("Masala Dosa", dish_names)
@@ -812,7 +812,7 @@ class OrderHistoryDetailedViewTest(TestCase):
             self.assertIn("status", order_data)
             self.assertIn("book_time", order_data)
             self.assertIn("is_rated", order_data)
-            self.assertIn("total", order_data)
+            self.assertIn("total_price", order_data)
             self.assertIn("items", order_data)
             self.assertIn("payment", order_data)
             self.assertTrue(len(order_data["items"]) > 0)

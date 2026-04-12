@@ -196,7 +196,9 @@ class AuthAPITest(TestCase):
             "name": "Reg User",
         })
         self.assertEqual(resp.status_code, 200)
-        otp_val = resp.data["otp_dev"]
+        # OTP is stored in the database
+        otp_rec = OTPVerification.objects.filter(email="reg@iitk.ac.in", is_used=False).latest("created_at")
+        otp_val = otp_rec.otp
 
         resp2 = self.client.post("/api/auth/verify-otp/", {
             "email": "reg@iitk.ac.in",
