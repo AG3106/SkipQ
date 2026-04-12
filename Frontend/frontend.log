@@ -1645,3 +1645,35 @@
       at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
 6:32:48 PM [vite] (client) hmr update /src/index.css, /src/pages/OwnerDashboard.tsx
 6:37:35 PM [vite] (client) hmr update /src/index.css, /src/pages/OwnerDashboard.tsx
+7:25:07 PM [vite] (client) hmr update /src/context/CartContext.tsx, /src/index.css
+7:25:07 PM [vite] (client) hmr update /src/pages/OrderConfirmation.tsx, /src/index.css
+7:25:07 PM [vite] (client) page reload src/types.ts
+7:25:07 PM [vite] (client) hmr invalidate /src/context/CartContext.tsx Could not Fast Refresh ("useCart" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+7:25:07 PM [vite] (client) hmr update /src/App.tsx, /src/index.css, /src/pages/Checkout.tsx, /src/pages/Cart.tsx, /src/pages/VerifyWalletPin.tsx, /src/components/AddToCartButton.tsx, /src/components/Header.tsx
+9:27:34 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+9:27:34 PM [vite] (client) hmr update /src/pages/SetWalletPin.tsx, /src/index.css
+9:27:34 PM [vite] (client) hmr update /src/pages/VerifyWalletPin.tsx, /src/index.css
+9:46:04 PM [vite] (client) hmr update /src/pages/HostelSelection.tsx, /src/index.css
+9:46:04 PM [vite] (client) hmr update /src/pages/MenuBrowsing.tsx, /src/index.css
+10:14:17 PM [vite] (client) hmr update /src/pages/OrderConfirmation.tsx, /src/index.css
+11:28:56 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:29:00 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:29:09 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:32:12 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:32:19 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:32:36 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:34:10 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:34:18 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:34:48 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:34:58 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:35:37 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:36:06 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
+11:40:34 PM [vite] (client) hmr update /src/pages/OwnerRegistration.tsx, /src/index.css
+11:40:46 PM [vite] (client) hmr update /src/pages/OwnerRegistration.tsx, /src/index.css
+11:40:52 PM [vite] (client) hmr update /src/pages/OwnerRegistration.tsx, /src/index.css
+11:40:59 PM [vite] (client) hmr update /src/pages/OwnerRegistration.tsx, /src/index.css
+11:41:12 PM [vite] (client) hmr update /src/pages/OwnerRegistration.tsx, /src/index.css
+11:41:21 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+11:41:39 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+11:41:49 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+11:42:04 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css

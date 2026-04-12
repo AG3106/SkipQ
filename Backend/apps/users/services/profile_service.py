@@ -29,6 +29,8 @@ def update_customer_profile(customer_profile, **kwargs):
     manageProfile(): void — from class diagram.
     Updates customer profile fields.
     """
+    # Email lives on the User model and must never be changed here.
+    kwargs.pop("email", None)
     for field, value in kwargs.items():
         if hasattr(customer_profile, field):
             setattr(customer_profile, field, value)

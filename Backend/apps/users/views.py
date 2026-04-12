@@ -235,6 +235,8 @@ def profile_view(request):
         profile = user.customer_profile
         if request.method == "PATCH":
             payload = request.data.copy()
+            # Email is immutable — silently drop it if supplied.
+            payload.pop("email", None)
             # Accept both camelCase and snake_case for roll number updates.
             if "rollNumber" in payload and "roll_number" not in payload:
                 payload["roll_number"] = payload["rollNumber"]

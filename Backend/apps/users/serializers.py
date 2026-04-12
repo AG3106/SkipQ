@@ -26,7 +26,17 @@ class InitiateSignupSerializer(serializers.Serializer):
         default=User.Role.CUSTOMER,
     )
     name = serializers.CharField(max_length=255, required=False, default="")
-    phone = serializers.CharField(max_length=20, required=False, default="")
+    phone = serializers.CharField(
+        max_length=20,
+        required=False,
+        default="",
+        validators=[
+            RegexValidator(
+                r'^(\+91\d{10})?$',
+                message="Phone number must be in +91XXXXXXXXXX format or left blank.",
+            )
+        ],
+    )
 
 
 class VerifyOTPSerializer(serializers.Serializer):
@@ -67,8 +77,18 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomerProfileSerializer(serializers.ModelSerializer):
     """Customer profile with wallet info."""
     user = UserSerializer(read_only=True)
+    phone = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        validators=[
+            RegexValidator(
+                r'^(\+91\d{10})?$',
+                message="Phone number must be in +91XXXXXXXXXX format or left blank.",
+            )
+        ],
+    )
     roll_number = serializers.CharField(
-        required=False, 
+        required=False,
         allow_blank=True,
         validators=[RegexValidator(r'^\d{6,10}$', message="Enter a valid campus roll number (6-10 digits).")]
     )

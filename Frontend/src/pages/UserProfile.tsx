@@ -35,6 +35,7 @@ interface ProfileField {
   type?: string;
   placeholder?: string;
   options?: string[];
+  readonly?: boolean;
 }
 
 export default function UserProfile() {
@@ -87,6 +88,13 @@ export default function UserProfile() {
         return;
       }
     }
+    if (key === "phone") {
+      if (!/^\d{10}$/.test(value.trim())) {
+        toast.error("Please enter a valid 10-digit phone number");
+        return;
+      }
+      value = "+91" + value.trim();
+    }
     const updated = { ...profile, [key]: value };
     setProfile(updated);
     localStorage.setItem("skipq_profile", JSON.stringify(updated));
@@ -105,7 +113,12 @@ export default function UserProfile() {
 
   const startEdit = (key: string, currentValue: string) => {
     setEditingField(key);
-    setEditValue(currentValue);
+    // Strip +91 prefix so user edits only the 10-digit number
+    if (key === "phone") {
+      setEditValue(currentValue.replace(/^\+91/, ""));
+    } else {
+      setEditValue(currentValue);
+    }
   };
 
   const cancelEdit = () => {
@@ -117,7 +130,7 @@ export default function UserProfile() {
 
   const fields: ProfileField[] = [
     { key: "name", label: "Full Name", value: profile.name, icon: <User className="size-5" />, placeholder: "Enter your name" },
-    { key: "email", label: "Email Address", value: profile.email, icon: <Mail className="size-5" />, type: "email", placeholder: "Enter your email" },
+    { key: "email", label: "Email Address", value: profile.email, icon: <Mail className="size-5" />, type: "email", placeholder: "Enter your email", readonly: true },
     { key: "phone", label: "Phone Number", value: profile.phone, icon: <Phone className="size-5" />, type: "tel", placeholder: "+91 XXXXX XXXXX" },
     { key: "rollNumber", label: "Roll Number", value: profile.rollNumber, icon: <Shield className="size-5" />, placeholder: "e.g. 240000" },
   ];
@@ -193,6 +206,56 @@ export default function UserProfile() {
               const isEditing = editingField === field.key;
               const justSaved = saveAnimation === field.key;
 
+              const renderEditInput = () => {
+                if (field.options) {
+                  return (
+                    <select
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      className="w-full bg-white dark:bg-gray-800 border border-[#D4725C]/30 dark:border-[#D4725C]/40 rounded-lg px-3 py-1.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C]"
+                    >
+                      {field.options.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  );
+                }
+                if (field.key === "phone") {
+                  return (
+                    <div className="flex items-center w-full border border-[#D4725C]/30 dark:border-[#D4725C]/40 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[#D4725C]/20 focus-within:border-[#D4725C] bg-white dark:bg-gray-800">
+                      <span className="px-3 py-1.5 text-gray-500 dark:text-gray-400 font-medium border-r border-[#D4725C]/20 dark:border-[#D4725C]/30 shrink-0 select-none">+91</span>
+                      <input
+                        type="tel"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        placeholder="XXXXXXXXXX"
+                        maxLength={10}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveProfile(field.key, editValue);
+                          if (e.key === "Escape") cancelEdit();
+                        }}
+                        className="flex-1 bg-transparent px-3 py-1.5 text-gray-900 dark:text-white focus:outline-none placeholder-gray-400"
+                      />
+                    </div>
+                  );
+                }
+                return (
+                  <input
+                    type={field.type || "text"}
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    placeholder={field.placeholder}
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveProfile(field.key, editValue);
+                      if (e.key === "Escape") cancelEdit();
+                    }}
+                    className="w-full bg-white dark:bg-gray-800 border border-[#D4725C]/30 dark:border-[#D4725C]/40 rounded-lg px-3 py-1.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] placeholder-gray-400"
+                  />
+                );
+              };
+
               return (
                 <div
                   key={field.key}
@@ -210,30 +273,7 @@ export default function UserProfile() {
 
                         {isEditing ? (
                           <div className="flex items-center gap-2">
-                            {field.options ? (
-                              <select
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                                className="w-full bg-white dark:bg-gray-800 border border-[#D4725C]/30 dark:border-[#D4725C]/40 rounded-lg px-3 py-1.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C]"
-                              >
-                                {field.options.map((opt) => (
-                                  <option key={opt} value={opt}>{opt}</option>
-                                ))}
-                              </select>
-                            ) : (
-                              <input
-                                type={field.type || "text"}
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                                placeholder={field.placeholder}
-                                autoFocus
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") saveProfile(field.key, editValue);
-                                  if (e.key === "Escape") cancelEdit();
-                                }}
-                                className="w-full bg-white dark:bg-gray-800 border border-[#D4725C]/30 dark:border-[#D4725C]/40 rounded-lg px-3 py-1.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4725C]/20 focus:border-[#D4725C] placeholder-gray-400"
-                              />
-                            )}
+                            {renderEditInput()}
                           </div>
                         ) : (
                           <p className="text-gray-900 dark:text-white font-medium truncate">{field.value}</p>
@@ -242,7 +282,7 @@ export default function UserProfile() {
                     </div>
 
                     {/* Action buttons */}
-                    {isEditing ? (
+                    {!field.readonly && (isEditing ? (
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           onClick={() => saveProfile(field.key, editValue)}
@@ -264,7 +304,7 @@ export default function UserProfile() {
                       >
                         <Pencil className="size-4" />
                       </button>
-                    )}
+                    ))}
                   </div>
                 </div>
               );
