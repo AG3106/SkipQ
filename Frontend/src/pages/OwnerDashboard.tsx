@@ -5,7 +5,7 @@ import {
   User, LogOut, Clock, X, Check, Eye,
   ChefHat, Moon, Sun, XCircle, AlertTriangle, Ban, Wallet, Cake,
   Palette, MessageSquare, Scale, Package, CheckCircle, RefreshCw, Loader2,
-  BarChart3
+  BarChart3, Wifi, WifiOff
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useTheme } from "../context/ThemeContext";
@@ -28,6 +28,7 @@ import {
   rejectCake,
   completeCake,
 } from "../api/cakes";
+import { useOrderWebSocket } from "../utils/useOrderWebSocket";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -151,6 +152,54 @@ export default function OwnerDashboard() {
     fetchOrders();
     fetchCakes();
   }, [fetchOrders, fetchCakes]);
+
+  // ─── Real-Time WebSocket ────────────────────────────────────────────────────
+  const { status: wsStatus } = useOrderWebSocket({
+    onNewOrder: (order) => {
+      // Add new order to pending list in real time
+      if (order.status === "CANCEL_REQUESTED") {
+        setCancelRequestedOrders((prev) => {
+          if (prev.some((o) => o.id === order.id)) return prev;
+          return [order, ...prev];
+        });
+      } else {
+        setPendingOrders((prev) => {
+          if (prev.some((o) => o.id === order.id)) return prev;
+          return [order, ...prev];
+        });
+      }
+      toast.success(`New order #${order.id} received!`, {
+        description: order.items.map((i) => `${i.quantity}x ${i.dishName}`).join(", "),
+      });
+    },
+    onOrderUpdate: (order) => {
+      // Remove from all lists first, then place in the correct one
+      const removeFromAll = (id: number) => {
+        setPendingOrders((prev) => prev.filter((o) => o.id !== id));
+        setActiveOrders((prev) => prev.filter((o) => o.id !== id));
+        setCancelRequestedOrders((prev) => prev.filter((o) => o.id !== id));
+      };
+
+      removeFromAll(order.id);
+
+      switch (order.status) {
+        case "PENDING":
+          setPendingOrders((prev) => [order, ...prev]);
+          break;
+        case "ACCEPTED":
+        case "READY":
+          setActiveOrders((prev) => [order, ...prev.filter((o) => o.id !== order.id)]);
+          break;
+        case "CANCEL_REQUESTED":
+          setCancelRequestedOrders((prev) => [order, ...prev]);
+          toast.info(`Order #${order.id}: cancellation requested`);
+          break;
+        // COMPLETED, REJECTED, REFUNDED, CANCELLED — just remove from lists
+        default:
+          break;
+      }
+    },
+  });
 
   // ─── Order Handlers ─────────────────────────────────────────────────────────
 
@@ -350,6 +399,22 @@ export default function OwnerDashboard() {
 
             {/* Actions */}
             <div className="flex items-center gap-1 md:gap-2 shrink-0">
+              {/* WebSocket connection indicator */}
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full" title={`Live updates: ${wsStatus}`}>
+                <span
+                  className={`w-2 h-2 rounded-full transition-colors duration-500 ${
+                    wsStatus === "connected"
+                      ? "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]"
+                      : wsStatus === "connecting"
+                        ? "bg-yellow-500 animate-pulse"
+                        : "bg-red-400"
+                  }`}
+                />
+                <span className="hidden lg:inline text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                  {wsStatus === "connected" ? "Live" : wsStatus === "connecting" ? "Connecting" : "Offline"}
+                </span>
+              </div>
+
               <button
                 onClick={() => { fetchOrders(); fetchCakes(); }}
                 className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-orange-50 dark:hover:bg-orange-950/30 rounded-full transition-all duration-300 text-gray-600 dark:text-gray-300"
