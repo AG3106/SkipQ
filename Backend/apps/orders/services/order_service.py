@@ -16,6 +16,7 @@ from django.utils import timezone
 
 from apps.orders.models import Order, OrderItem, Payment
 from apps.orders.services import payment_service
+from apps.orders.signals import broadcast_order_event
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,8 @@ def place_order(customer_profile, canteen, items, wallet_pin, notes="", customer
         order.pk, customer_profile.user.email, canteen.name, total,
     )
 
-    # Step 5: Notification would be sent here (TODO: WebSocket / push notification)
+    # Step 5: Notify managers in real time via WebSocket
+    broadcast_order_event(order, event_type="new_order")
     return order
 
 
@@ -126,7 +128,7 @@ def accept_order(order):
     """
     order.update_order_status(Order.Status.ACCEPTED)
     logger.info("Order #%s accepted by manager", order.pk)
-    # TODO: notify("Order Accepted") — push notification
+    broadcast_order_event(order)
     return order
 
 
@@ -149,6 +151,7 @@ def reject_order(order, reason=""):
     order.update_order_status(Order.Status.REFUNDED)
 
     logger.info("Order #%s rejected and refunded. Reason: %s", order.pk, reason)
+    broadcast_order_event(order)
     return order
 
 
@@ -170,7 +173,7 @@ def request_cancel(order, customer_profile):
 
     order.update_order_status(Order.Status.CANCEL_REQUESTED)
     logger.info("Order #%s cancel requested by customer", order.pk)
-    # TODO: notify manager about cancel request
+    broadcast_order_event(order)
     return order
 
 
@@ -194,7 +197,7 @@ def approve_cancel(order):
     order.update_order_status(Order.Status.REFUNDED)
 
     logger.info("Order #%s cancel approved by manager and refunded", order.pk)
-    # TODO: notify customer — "Your cancellation has been approved and refunded"
+    broadcast_order_event(order)
     return order
 
 
@@ -220,7 +223,7 @@ def reject_cancel(order, reason=""):
         "Order #%s cancel request denied by manager. Reason: %s",
         order.pk, reason,
     )
-    # TODO: notify customer — "Your cancellation request was denied: {reason}"
+    broadcast_order_event(order)
     return order
 
 
@@ -235,7 +238,7 @@ def mark_order_ready(order):
     """
     order.update_order_status(Order.Status.READY)
     logger.info("Order #%s marked as ready for pickup", order.pk)
-    # TODO: notify("Your Order is Ready!") — push notification
+    broadcast_order_event(order)
     return order
 
 
@@ -261,6 +264,7 @@ def mark_order_completed(order):
     order.add_to_order_history()
 
     logger.info("Order #%s completed — ₹%s credited to manager", order.pk, payment.amount)
+    broadcast_order_event(order)
     return order
 
 

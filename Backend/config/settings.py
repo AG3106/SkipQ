@@ -34,6 +34,8 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 # Application definition
 # ---------------------------------------------------------------------------
 INSTALLED_APPS = [
+    # Daphne ASGI server — must be first to replace runserver with ASGI support
+    "daphne",
     # Django built-ins
     "django.contrib.admin",
     "django.contrib.auth",
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     # Third-party
     "rest_framework",
     "corsheaders",
+    "channels",
     # Project apps — mapped from the class diagram entities
     "apps.users",
     "apps.canteens",
@@ -81,6 +84,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+
+# ---------------------------------------------------------------------------
+# Channel Layers — InMemoryChannelLayer for single-server deployment
+# Replace with Redis channel layer for multi-process/multi-server setups
+# ---------------------------------------------------------------------------
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 # ---------------------------------------------------------------------------
 # Database — PostgreSQL for production, SQLite for tests
