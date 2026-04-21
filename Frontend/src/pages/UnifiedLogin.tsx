@@ -375,7 +375,7 @@ export default function UnifiedLogin() {
           <div className="mt-12 space-y-4 text-white">
             <div className="flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-[#D4725C] rounded-full shadow-lg ring-2 ring-white/50"></div>
-              <span className="drop-shadow-md font-medium">14 Hostel Canteens</span>
+              <span className="drop-shadow-md font-medium">All canteens across campus</span>
             </div>
             <div className="flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-[#D4725C] rounded-full shadow-lg ring-2 ring-white/50"></div>
