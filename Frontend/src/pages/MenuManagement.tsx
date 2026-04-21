@@ -359,9 +359,9 @@ export default function MenuManagement() {
                       Out of Stock
                     </div>
                   )}
-                  {item.isVeg && item.isAvailable && (
-                    <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                      Veg
+                  {item.isAvailable && (
+                    <div className={`absolute top-4 right-4 ${item.isVeg ? "bg-green-600" : "bg-red-600"} text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm`}>
+                      {item.isVeg ? "Veg" : "Non-Veg"}
                     </div>
                   )}
                   <div className="absolute top-4 left-4">
