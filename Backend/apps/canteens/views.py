@@ -306,7 +306,15 @@ def add_dish(request, canteen_id):
     if image_file is None:
         image_file = request.FILES.get("image")
     serializer.validated_data.pop("is_available", None)
-    dish = menu_service.add_dish(canteen, **serializer.validated_data)
+    try:
+        dish = menu_service.add_dish(canteen, **serializer.validated_data)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception:
+        return Response(
+            {"error": "A dish with this name already exists in your canteen."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     if image_file:
         save_dish_image(dish.pk, image_file)
