@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { buildFileUrl } from "../api/client";
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
@@ -72,7 +73,7 @@ export default function Cart() {
                   >
                     {/* Item Image */}
                     <div className="relative size-24 md:size-32 rounded-xl overflow-hidden flex-shrink-0">
-                      <img
+                      <ImageWithFallback
                         src={buildFileUrl(item.photoUrl) || FALLBACK_IMAGE}
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

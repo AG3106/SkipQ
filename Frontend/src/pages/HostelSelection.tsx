@@ -187,7 +187,7 @@ export default function HostelSelection() {
                           </div>
                         ) : (
                           <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-red-600 dark:text-red-400 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm">
-                            Closed
+                            {canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Closed"}
                           </div>
                         )}
                       </div>
@@ -368,7 +368,7 @@ function PopularDishCard({ dish }: { dish: PopularDish }) {
               disabled
               className="w-full py-2 rounded-xl font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
             >
-              Canteen Closed
+              {dish.canteenHolidayToday ? `Holiday — ${dish.canteenHolidayToday}` : "Canteen Closed"}
             </button>
           )}
         </div>

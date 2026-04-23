@@ -22,6 +22,7 @@ urlpatterns = [
     path("<int:reservation_id>/accept/", views.accept_reservation, name="accept-reservation"),
     path("<int:reservation_id>/reject/", views.reject_reservation, name="reject-reservation"),
     path("<int:reservation_id>/complete/", views.complete_reservation, name="complete-reservation"),
+    path("<int:reservation_id>/cancel/", views.cancel_reservation, name="cancel-reservation"),
 
     # Manager CRUD — cake size/price and flavor management
     path("manage/sizes/", views.manager_size_prices, name="manager-size-prices"),

@@ -3185,3 +3185,39 @@
       at TypeScriptParserMixin.parseExprOp (/home/commit_and_conquer/SkipQ/Frontend/node_modules/@babel/parser/lib/index.js:10947:27)
 11:50:27 PM [vite] (client) hmr update /src/pages/UserProfile.tsx, /src/index.css
 1:06:27 AM [vite] (client) hmr update /src/index.css, /src/pages/AdminPanel.tsx
+4:39:54 PM [vite] (client) hmr update /src/pages/MenuBrowsing.tsx, /src/index.css
+4:52:20 PM [vite] (client) hmr update /src/pages/MenuManagement.tsx, /src/index.css
+5:01:54 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+3:36:21 PM [vite] (client) hmr update /src/pages/Cart.tsx, /src/index.css
+3:36:40 PM [vite] (client) hmr update /src/pages/OrderConfirmation.tsx, /src/index.css
+3:36:54 PM [vite] (client) hmr update /src/pages/OrderConfirmation.tsx, /src/index.css
+3:40:27 PM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+3:44:05 PM [vite] (client) hmr update /src/pages/VerifyWalletPin.tsx, /src/index.css
+3:44:23 PM [vite] (client) hmr update /src/components/AddToCartButton.tsx, /src/index.css
+3:44:33 PM [vite] (client) hmr update /src/context/CartContext.tsx, /src/index.css
+3:44:33 PM [vite] (client) hmr invalidate /src/context/CartContext.tsx Could not Fast Refresh ("useCart" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+3:44:33 PM [vite] (client) hmr update /src/App.tsx, /src/index.css, /src/pages/Checkout.tsx, /src/pages/Cart.tsx, /src/pages/VerifyWalletPin.tsx, /src/components/AddToCartButton.tsx, /src/components/Header.tsx, /src/pages/OrderConfirmation.tsx
+3:46:36 PM [vite] (client) hmr update /src/pages/Checkout.tsx, /src/index.css
+3:59:29 PM [vite] (client) hmr update /src/pages/VerifyWalletPin.tsx, /src/index.css
+3:59:51 PM [vite] (client) hmr update /src/pages/CakeReservation.tsx, /src/index.css
+4:14:47 PM [vite] (client) hmr update /src/index.css, /src/pages/CakeManagement.tsx, /src/pages/CakeReservation.tsx, /src/pages/OwnerDashboard.tsx, /src/pages/VerifyWalletPin.tsx
+4:15:26 PM [vite] (client) hmr update /src/pages/CakeReservation.tsx, /src/index.css
+4:15:42 PM [vite] (client) hmr update /src/pages/CakeReservation.tsx, /src/index.css
+4:34:14 PM [vite] (client) page reload src/types.ts
+4:34:45 PM [vite] (client) hmr update /src/pages/HostelSelection.tsx, /src/index.css
+4:34:47 PM [vite] (client) hmr update /src/pages/MenuBrowsing.tsx, /src/index.css
+4:35:43 PM [vite] (client) hmr update /src/pages/SearchResults.tsx, /src/index.css
+4:56:14 PM [vite] (client) hmr update /src/pages/OrderConfirmation.tsx, /src/index.css
+4:56:18 PM [vite] (client) hmr update /src/pages/TrackOrders.tsx, /src/index.css
+5:44:22 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+5:44:25 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+5:44:31 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+5:44:31 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+5:44:39 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+5:44:39 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+5:44:39 PM [vite] (client) hmr update /src/pages/ForgotWalletPin.tsx, /src/index.css
+8:33:13 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+8:33:17 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+8:33:18 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+8:33:20 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css
+8:34:19 PM [vite] (client) hmr update /src/pages/UnifiedLogin.tsx, /src/index.css

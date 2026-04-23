@@ -368,7 +368,7 @@ export default function UnifiedLogin() {
 
           {/* Tagline */}
           <p className="text-xl text-white uppercase tracking-widest font-light drop-shadow-md">
-            Your Perfect Meal, Just A Click Away!
+            Skip the Queue and Enjoy Your Food!
           </p>
 
           {/* Additional info */}
@@ -383,7 +383,7 @@ export default function UnifiedLogin() {
             </div>
             <div className="flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-[#D4725C] rounded-full shadow-lg ring-2 ring-white/50"></div>
-              <span className="drop-shadow-md font-medium">Quick Pickup</span>
+              <span className="drop-shadow-md font-medium">No more waiting at the canteen</span>
             </div>
           </div>
         </div>

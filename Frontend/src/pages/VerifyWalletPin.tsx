@@ -46,7 +46,7 @@ export default function VerifyWalletPin() {
 
   const totalAmount = mode === "cake" && cakeData
     ? parseFloat(cakeData.advanceAmount)
-    : items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    : items.reduce((sum, i) => sum + Math.round(i.price) * i.quantity, 0);
   const itemCount = mode === "cake" ? 1 : items.length;
   const itemLabel = mode === "cake" ? "cake reservation" : `item${items.length > 1 ? "s" : ""}`;
 
@@ -186,7 +186,7 @@ export default function VerifyWalletPin() {
         });
         await refreshBalance();
         toast.success("Reservation submitted!");
-        navigate("/cake-reservation", { replace: true, state: { cakeSubmitted: true } });
+        navigate("/cake-reservation", { replace: true, state: { cakeSubmitted: true, cakeData } });
       } else {
         const order = await placeOrder({
           canteenId: canteenId!,
@@ -335,10 +335,10 @@ export default function VerifyWalletPin() {
                 <div className="text-right">
                   <p className={`text-xl md:text-2xl font-black tracking-tight transition-colors duration-500 ${hasError ? "text-red-500 dark:text-red-400" : "text-[#D4725C]"
                     }`}>
-                    ₹{totalAmount.toFixed(2)}
+                    ₹{totalAmount.toFixed(0)}
                   </p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
-                    Bal: ₹{balance.toFixed(2)}
+                    Bal: ₹{balance.toFixed(0)}
                   </p>
                 </div>
               </div>
@@ -612,8 +612,8 @@ export default function VerifyWalletPin() {
               : locked
                 ? `Locked (${lockTimer}s)`
                 : mode === "cake"
-                  ? `Reserve & Pay · ₹${totalAmount.toFixed(2)}`
-                  : `Confirm Payment · ₹${totalAmount.toFixed(2)}`
+                  ? `Reserve & Pay · ₹${totalAmount.toFixed(0)}`
+                  : `Confirm Payment · ₹${totalAmount.toFixed(0)}`
             }
           </motion.button>
 

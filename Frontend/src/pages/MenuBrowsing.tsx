@@ -132,7 +132,7 @@ export default function MenuBrowsing() {
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
                   <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight min-w-0">{canteen.name}</h1>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold border shrink-0 ${canteen.isCurrentlyOpen ? "bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"}`}>
-                    {canteen.isCurrentlyOpen ? "Open Now" : "Closed"}
+                    {canteen.isCurrentlyOpen ? "Open Now" : canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Closed"}
                   </span>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 text-lg">
@@ -234,7 +234,7 @@ export default function MenuBrowsing() {
                         disabled
                         className="w-full py-2 rounded-xl font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                       >
-                        Canteen Closed
+                        {canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Canteen Closed"}
                       </button>
                     )}
                   </div>
@@ -393,7 +393,7 @@ export default function MenuBrowsing() {
                         disabled
                         className="w-full py-3 rounded-xl font-semibold text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                       >
-                        Canteen Closed
+                        {canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Canteen Closed"}
                       </button>
                     )}
                   </div>

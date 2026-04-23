@@ -7,6 +7,7 @@ API representations.
 
 from rest_framework import serializers
 from django.core.validators import RegexValidator
+from decimal import Decimal
 from apps.users.models import User, CustomerProfile, CanteenManagerProfile, AdminProfile
 
 
@@ -133,7 +134,7 @@ class AdminProfileSerializer(serializers.ModelSerializer):
 # ---------------------------------------------------------------------------
 
 class AddFundsSerializer(serializers.Serializer):
-    amount = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=1)
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=Decimal("1.00"))
 
 
 class SetWalletPINSerializer(serializers.Serializer):

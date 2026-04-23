@@ -251,6 +251,34 @@ def complete_reservation(request, reservation_id):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def cancel_reservation(request, reservation_id):
+    """
+    POST /api/cakes/<reservation_id>/cancel/
+
+    Customer-initiated cancellation.
+    Only allowed while reservation is still PENDING_APPROVAL.
+    Automatically refunds the advance to the customer's wallet.
+    """
+    if request.user.role != User.Role.CUSTOMER:
+        return Response({"error": "Only customers can cancel their reservations"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        reservation = CakeReservation.objects.get(
+            pk=reservation_id,
+            customer=request.user.customer_profile,
+        )
+    except CakeReservation.DoesNotExist:
+        return Response({"error": "Reservation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        reservation = cake_service.cancel_reservation(reservation)
+        return Response(CakeReservationSerializer(reservation).data)
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 # ---------------------------------------------------------------------------
 # Public cake options — available sizes/prices and flavors for a canteen
 # ---------------------------------------------------------------------------

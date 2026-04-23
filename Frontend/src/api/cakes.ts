@@ -56,6 +56,10 @@ export async function completeCake(reservationId: number): Promise<CakeReservati
     return api.post<CakeReservation>(`/api/cakes/${reservationId}/complete/`);
 }
 
+export async function cancelCake(reservationId: number): Promise<CakeReservation> {
+    return api.post<CakeReservation>(`/api/cakes/${reservationId}/cancel/`);
+}
+
 // Cake options — public (per canteen)
 
 export async function getCakeOptions(canteenId: number): Promise<CakeOptions> {

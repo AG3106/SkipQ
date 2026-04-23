@@ -268,7 +268,7 @@ export default function TrackOrders() {
         </div>
       )}
 
-      {order.status === "REJECTED" && order.rejectReason && (
+      {(order.status === "REJECTED" || order.status === "REFUNDED") && order.rejectReason && (
         <div className="rounded-2xl p-4 mb-4 border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
