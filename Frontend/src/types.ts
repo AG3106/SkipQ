@@ -85,6 +85,7 @@ export interface Canteen {
     managerEmail: string;
     imageUrl: string | null;
     isCurrentlyOpen: boolean;
+    holidayToday: string | null;
     estimatedWaitTime: string;
     medianRating: number;
     holidays: CanteenHoliday[];
@@ -124,6 +125,7 @@ export interface PopularDish {
     canteenName: string;
     canteenLocation: string;
     isCanteenOpen: boolean;
+    canteenHolidayToday: string | null;
     ratingCount: number;
 }
 

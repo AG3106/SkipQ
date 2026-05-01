@@ -36,6 +36,9 @@ def add_dish(canteen, name, price, description="", category="", photo=None, is_v
     updateMenu(dish: Dish): void — from class diagram (Canteen).
     Adds a new dish to the canteen's menu.
     """
+    if Dish.objects.filter(canteen=canteen, name=name).exists():
+        raise ValueError(f"A dish named '{name}' already exists in this canteen.")
+
     dish = Dish.objects.create(
         canteen=canteen,
         name=name,

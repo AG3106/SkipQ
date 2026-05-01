@@ -10,6 +10,8 @@ import { getCanteenDetail, getCanteenMenu, getCanteenPopularDishes } from "../ap
 import { buildFileUrl } from "../api/client";
 import type { Canteen, Dish, PopularDish } from "../types";
 
+type DietaryFilter = "all" | "veg" | "non-veg";
+
 const DISH_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1680359873864-43e89bf248ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
 
 /** Convert "HH:MM:SS" or "HH:MM" to "h:mm AM/PM" */
@@ -24,6 +26,7 @@ export default function MenuBrowsing() {
   const [searchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") || "";
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedDiet, setSelectedDiet] = useState<DietaryFilter>("all");
   const [searchQuery, setSearchQuery] = useState(urlQuery);
   const [isSearchFocused, setIsSearchFocused] = useState(!!urlQuery);
 
@@ -65,7 +68,12 @@ export default function MenuBrowsing() {
     const matchesSearch =
       item.name.toLowerCase().includes(q) ||
       item.description.toLowerCase().includes(q);
-    return matchesCategory && matchesSearch;
+
+    let matchesDiet = true;
+    if (selectedDiet === "veg") matchesDiet = item.isVeg;
+    else if (selectedDiet === "non-veg") matchesDiet = !item.isVeg;
+
+    return matchesCategory && matchesSearch && matchesDiet;
   });
 
   if (loading) {
@@ -124,7 +132,7 @@ export default function MenuBrowsing() {
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
                   <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight min-w-0">{canteen.name}</h1>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold border shrink-0 ${canteen.isCurrentlyOpen ? "bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"}`}>
-                    {canteen.isCurrentlyOpen ? "Open Now" : "Closed"}
+                    {canteen.isCurrentlyOpen ? "Open Now" : canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Closed"}
                   </span>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 text-lg">
@@ -152,7 +160,13 @@ export default function MenuBrowsing() {
         </div>
 
         {/* Popular Dishes Section */}
-        {popularDishes.length > 0 && !searchQuery && (
+        {(() => {
+          const filteredPopular = popularDishes.filter((d) => {
+            if (selectedDiet === "veg") return d.isVeg;
+            if (selectedDiet === "non-veg") return !d.isVeg;
+            return true;
+          });
+          return filteredPopular.length > 0 && !searchQuery ? (
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-[#D4725C]/10 to-[#B85A4A]/10 dark:from-[#D4725C]/20 dark:to-[#B85A4A]/20 rounded-xl flex items-center justify-center border border-[#D4725C]/15 dark:border-[#D4725C]/25">
@@ -165,7 +179,7 @@ export default function MenuBrowsing() {
             </div>
 
             <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
-              {popularDishes.map((dish) => (
+              {filteredPopular.map((dish) => (
                 <div
                   key={dish.id}
                   className="min-w-[260px] max-w-[280px] bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-800 hover:border-orange-100 dark:hover:border-orange-900/40 transition-all duration-300 flex-shrink-0 group"
@@ -220,7 +234,7 @@ export default function MenuBrowsing() {
                         disabled
                         className="w-full py-2 rounded-xl font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                       >
-                        Canteen Closed
+                        {canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Canteen Closed"}
                       </button>
                     )}
                   </div>
@@ -228,7 +242,35 @@ export default function MenuBrowsing() {
               ))}
             </div>
           </div>
-        )}
+        ) : null;
+        })()}
+
+        {/* Dietary Filters */}
+        <div className="mb-6">
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { id: "all", label: "All", activeColor: "bg-gray-900 dark:bg-white dark:text-gray-900" },
+              { id: "veg", label: "Pure Veg", color: "green", activeColor: "bg-green-600" },
+              { id: "non-veg", label: "Non-Veg", color: "red", activeColor: "bg-red-600" },
+            ].map((filter) => (
+              <button
+                key={filter.id}
+                onClick={() => setSelectedDiet(filter.id as DietaryFilter)}
+                className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 flex items-center gap-2 border ${selectedDiet === filter.id
+                  ? `${filter.activeColor} text-white shadow-lg shadow-gray-200 dark:shadow-black/20 scale-105 border-transparent`
+                  : `bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700`
+                  }`}
+              >
+                {filter.color && (
+                  <div className={`w-4 h-4 border border-current rounded flex items-center justify-center ${selectedDiet === filter.id ? "text-white" : filter.color === "green" ? "text-green-600" : "text-red-600"}`}>
+                    <div className={`w-2 h-2 rounded-full ${filter.color === "green" ? "bg-green-600" : "bg-red-600"}`} />
+                  </div>
+                )}
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Search & Filter Section */}
         <div className="relative z-30 bg-[#FDFCFB]/80/80 backdrop-blur-md py-4 -mx-4 px-4 mb-6">
@@ -351,7 +393,7 @@ export default function MenuBrowsing() {
                         disabled
                         className="w-full py-3 rounded-xl font-semibold text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                       >
-                        Canteen Closed
+                        {canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Canteen Closed"}
                       </button>
                     )}
                   </div>

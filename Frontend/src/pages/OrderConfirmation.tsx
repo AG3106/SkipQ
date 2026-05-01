@@ -4,9 +4,9 @@ import { CheckCircle, Home, Package, Clock, ChefHat, Loader2, ArrowLeft, XCircle
 import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import { getOrderDetail } from "../api/orders";
-import { getCanteenDetail } from "../api/canteens";
+import { getCanteenDetail, getCanteenMenu } from "../api/canteens";
 import { useCart } from "../context/CartContext";
-import type { Order, CartItem } from "../types";
+import type { Order, CartItem, Dish } from "../types";
 
 const STATUS_STEPS = ["PENDING", "ACCEPTED", "READY", "COMPLETED"] as const;
 
@@ -33,17 +33,24 @@ export default function OrderConfirmation() {
         return;
       }
 
-      const cartItems: CartItem[] = order.items.map((item) => ({
-        dishId: item.dish,
-        name: item.dishName,
-        price: parseFloat(item.priceAtOrder),
-        quantity: item.quantity,
-        photoUrl: null,
-        category: "",
-        isVeg: true,
-        canteenId: order.canteenId,
-        canteenName: order.canteenName,
-      }));
+      // Fetch the canteen menu so we can look up photo URLs and other dish details
+      const menu = await getCanteenMenu(order.canteenId).catch(() => [] as Dish[]);
+      const dishMap = new Map(menu.map((d) => [d.id, d]));
+
+      const cartItems: CartItem[] = order.items.map((item) => {
+        const dish = dishMap.get(item.dish);
+        return {
+          dishId: item.dish,
+          name: item.dishName,
+          price: parseFloat(item.priceAtOrder),
+          quantity: item.quantity,
+          photoUrl: dish?.photoUrl ?? null,
+          category: dish?.category ?? "",
+          isVeg: dish?.isVeg ?? true,
+          canteenId: order.canteenId,
+          canteenName: order.canteenName,
+        };
+      });
 
       setCartItems(cartItems);
       toast.success("Items added to cart! Review and proceed to checkout.");
@@ -144,14 +151,14 @@ export default function OrderConfirmation() {
               </div>
 
               <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
-                {order?.status === "COMPLETED" ? "Order Complete!" : order?.status === "READY" ? "Order Ready!" : order?.status === "REJECTED" || order?.status === "CANCELLED" ? "Order Cancelled" : "Order Placed!"}
+                {order?.status === "COMPLETED" ? "Order Complete!" : order?.status === "READY" ? "Order Ready!" : order?.status === "REJECTED" || order?.status === "CANCELLED" || order?.status === "REFUNDED" ? "Order Cancelled" : "Order Placed!"}
               </h1>
               <p className="text-gray-500 dark:text-gray-400 text-lg mb-8 max-w-md mx-auto">
                 {order?.status === "COMPLETED"
                   ? "Your order has been collected. Hope you enjoyed it!"
                   : order?.status === "READY"
                     ? "Your order is ready! Head to the counter to pick it up."
-                    : order?.status === "REJECTED" || order?.status === "CANCELLED"
+                    : order?.status === "REJECTED" || order?.status === "CANCELLED" || order?.status === "REFUNDED"
                       ? "This order was cancelled. Your wallet has been refunded."
                       : "Your order has been confirmed and sent to the kitchen. Get ready for some delicious food!"}
               </p>
@@ -185,7 +192,7 @@ export default function OrderConfirmation() {
               )}
 
               {/* Cancellation Reason Banner */}
-              {(order?.status === "REJECTED" || order?.status === "CANCELLED") && order?.rejectReason && (
+              {(order?.status === "REJECTED" || order?.status === "CANCELLED" || order?.status === "REFUNDED") && order?.rejectReason && (
                 <div className="rounded-2xl p-5 mb-8 border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40 text-left">
                   <div className="flex items-start gap-3">
                     <div className="w-9 h-9 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">

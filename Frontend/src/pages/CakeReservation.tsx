@@ -2,13 +2,13 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import {
   ArrowLeft, Cake, Clock, MapPin, AlertCircle, Check, Wallet,
-  Calendar, ChevronDown, XCircle,
+  Calendar, ChevronDown, XCircle, Ban,
   CheckCircle, Package, RefreshCw, Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { listCanteens } from "../api/canteens";
-import { checkCakeAvailability, getMyReservations, getCakeOptions } from "../api/cakes";
+import { checkCakeAvailability, getMyReservations, getCakeOptions, cancelCake } from "../api/cakes";
 import { buildFileUrl } from "../api/client";
 import { useWallet } from "../context/WalletContext";
 import type { Canteen, CakeReservation as CakeReservationType, CakeSizePrice, CakeFlavor } from "../types";
@@ -53,6 +53,11 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
     color: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700",
     icon: <Package className="size-3.5" />,
   },
+  CANCELLED: {
+    label: "Cancelled",
+    color: "bg-orange-100 dark:bg-orange-950/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800",
+    icon: <Ban className="size-3.5" />,
+  },
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────────
@@ -76,6 +81,7 @@ export default function CakeReservation() {
   // Reservations from API
   const [reservations, setReservations] = useState<CakeReservationType[]>([]);
   const [reservationsLoading, setReservationsLoading] = useState(false);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
 
   // Step 1 – Check availability
   const [selectedCanteen, setSelectedCanteen] = useState<number | null>(null);
@@ -92,8 +98,12 @@ export default function CakeReservation() {
 
   // After submit
   const [submitted, setSubmitted] = useState(false);
+  const [submittedCakeData, setSubmittedCakeData] = useState<{
+    flavor: string; size: string; pickupDate: string; pickupTime: string;
+    advanceAmount: string; canteenId: number;
+  } | null>(null);
 
-  const { balance } = useWallet();
+  const { balance, refreshBalance } = useWallet();
 
   const canteen = useMemo(() => canteens.find((c) => c.id === selectedCanteen), [canteens, selectedCanteen]);
   const sizeEntry = useMemo(() => availableSizes.find((s) => s.size === size), [availableSizes, size]);
@@ -121,9 +131,18 @@ export default function CakeReservation() {
 
   // Handle return from VerifyWalletPin after successful cake reservation
   useEffect(() => {
-    const state = location.state as { cakeSubmitted?: boolean } | null;
+    const state = location.state as {
+      cakeSubmitted?: boolean;
+      cakeData?: {
+        canteenId: number; flavor: string; size: string;
+        pickupDate: string; pickupTime: string; advanceAmount: string;
+      };
+    } | null;
     if (state?.cakeSubmitted) {
       setSubmitted(true);
+      if (state.cakeData) {
+        setSubmittedCakeData(state.cakeData);
+      }
       // Clear the navigation state so refresh doesn't re-trigger
       window.history.replaceState({}, "");
     }
@@ -147,6 +166,21 @@ export default function CakeReservation() {
       toast.error("Failed to load reservations");
     } finally {
       setReservationsLoading(false);
+    }
+  };
+
+  const handleCancelReservation = async (id: number) => {
+    if (!window.confirm("Cancel this reservation? The advance will be refunded to your wallet.")) return;
+    setCancellingId(id);
+    try {
+      await cancelCake(id);
+      toast.success("Reservation cancelled. Advance refunded to your wallet.");
+      await loadReservations();
+      refreshBalance();
+    } catch {
+      toast.error("Failed to cancel reservation");
+    } finally {
+      setCancellingId(null);
     }
   };
 
@@ -291,13 +325,13 @@ export default function CakeReservation() {
                   </div>
                   <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Reservation Submitted!</h2>
                   <p className="text-gray-500 dark:text-gray-400 mb-2">
-                    Awaiting manager approval for your <span className="font-bold text-gray-900 dark:text-white">{flavor} {size}</span> cake.
+                    Awaiting manager approval for your <span className="font-bold text-gray-900 dark:text-white">{submittedCakeData?.flavor || flavor} {submittedCakeData?.size || size}</span> cake.
                   </p>
                   <p className="text-sm text-gray-400 dark:text-gray-500 mb-1">
-                    Pickup: {formatDate(selectedDate)} at {pickupTime}
+                    Pickup: {formatDate(submittedCakeData?.pickupDate || selectedDate)} at {submittedCakeData?.pickupTime || pickupTime}
                   </p>
                   <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
-                    Canteen: {canteen?.name} &bull; Advance: ₹{advanceAmount}
+                    Canteen: {(submittedCakeData ? canteens.find(c => c.id === submittedCakeData.canteenId)?.name : canteen?.name) || "—"} &bull; Advance: ₹{submittedCakeData ? parseFloat(submittedCakeData.advanceAmount) : advanceAmount}
                   </p>
                   <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-xl p-3 mb-6">
                     <p className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-2 justify-center">
@@ -696,6 +730,31 @@ export default function CakeReservation() {
                           <p className="text-xs text-green-700 dark:text-green-400 flex items-center gap-2">
                             <CheckCircle className="size-3.5" />
                             Collect on {formatDate(r.pickupDate)} at {r.pickupTime} from {r.canteenName}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Cancel button for pending reservations */}
+                      {r.status === "PENDING_APPROVAL" && (
+                        <button
+                          onClick={() => handleCancelReservation(r.id)}
+                          disabled={cancellingId === r.id}
+                          className="w-full mt-3 py-2.5 rounded-xl border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {cancellingId === r.id ? (
+                            <><Loader2 className="size-4 animate-spin" /> Cancelling…</>
+                          ) : (
+                            <><Ban className="size-4" /> Cancel Reservation</>
+                          )}
+                        </button>
+                      )}
+
+                      {/* Cancelled info */}
+                      {(r.status === "CANCELLED" || r.status === "REFUNDED") && !r.rejectionReason && (
+                        <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800/40 rounded-xl p-3">
+                          <p className="text-xs text-orange-700 dark:text-orange-400 flex items-center gap-2">
+                            <Ban className="size-3.5" />
+                            You cancelled this reservation. The advance has been refunded to your wallet.
                           </p>
                         </div>
                       )}

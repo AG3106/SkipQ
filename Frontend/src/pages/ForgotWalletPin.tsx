@@ -126,7 +126,7 @@ export default function ForgotWalletPin() {
         setError('');
 
         if (newPin.length < 4 || newPin.length > 6) {
-            setError('PIN must be 4 to 6 digits.');
+            setError('PIN must be 4 digits.');
             return;
         }
         if (!/^\d+$/.test(newPin)) {
@@ -407,7 +407,7 @@ export default function ForgotWalletPin() {
                                             type="password"
                                             value={newPin}
                                             onChange={(e) => { setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
-                                            placeholder="4 to 6 digits"
+                                            placeholder="4 digits"
                                             className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#D4725C]/50"
                                             required
                                             autoFocus

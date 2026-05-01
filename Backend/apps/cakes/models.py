@@ -34,6 +34,7 @@ class CakeReservation(models.Model):
         CONFIRMED = "CONFIRMED", "Confirmed"
         REJECTED = "REJECTED", "Rejected"
         COMPLETED = "COMPLETED", "Completed"
+        CANCELLED = "CANCELLED", "Cancelled"
         REFUNDED = "REFUNDED", "Refunded"
 
     customer = models.ForeignKey(
@@ -97,9 +98,10 @@ class CakeReservation(models.Model):
         """
         valid_transitions = {
             self.Status.CONFIGURATION: [self.Status.PENDING_APPROVAL],
-            self.Status.PENDING_APPROVAL: [self.Status.CONFIRMED, self.Status.REJECTED],
+            self.Status.PENDING_APPROVAL: [self.Status.CONFIRMED, self.Status.REJECTED, self.Status.CANCELLED],
             self.Status.CONFIRMED: [self.Status.COMPLETED],
             self.Status.REJECTED: [self.Status.REFUNDED],
+            self.Status.CANCELLED: [self.Status.REFUNDED],
         }
         allowed = valid_transitions.get(self.status, [])
         if new_status not in allowed:

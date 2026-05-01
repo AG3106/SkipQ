@@ -107,7 +107,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     addItem({
       dishId: typeof item.id === "number" ? item.id : parseInt(item.id, 10),
       name: item.name,
-      price: typeof item.price === "number" ? item.price : parseFloat(item.price),
+      price: Math.round(typeof item.price === "number" ? item.price : parseFloat(item.price)),
       photoUrl: item.photoUrl || item.photo_url || null,
       category: item.category || "",
       isVeg: item.isVeg ?? item.is_veg ?? true,

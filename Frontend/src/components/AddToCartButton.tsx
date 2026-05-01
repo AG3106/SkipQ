@@ -65,7 +65,7 @@ export function AddToCartButton({
     addItem({
       dishId: dish.id,
       name: dish.name,
-      price: typeof dish.price === "number" ? dish.price : parseFloat(dish.price),
+      price: Math.round(typeof dish.price === "number" ? dish.price : parseFloat(dish.price)),
       photoUrl: dish.photoUrl || null,
       category: dish.category || "",
       isVeg: dish.isVeg ?? true,

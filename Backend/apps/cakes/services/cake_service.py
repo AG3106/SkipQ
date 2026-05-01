@@ -183,6 +183,28 @@ def reject_reservation(reservation, reason=""):
     return reservation
 
 
+@transaction.atomic
+def cancel_reservation(reservation):
+    """
+    Customer-initiated cancellation.
+    Only allowed while reservation is still PENDING_APPROVAL (before manager decision).
+    Refunds the advance amount to the customer's wallet.
+
+    State diagram: PENDING_APPROVAL → CANCELLED → REFUNDED
+    """
+    reservation.update_status(CakeReservation.Status.CANCELLED)
+
+    # Automatic refund
+    refund_to_wallet(reservation.customer, reservation.advance_amount)
+    reservation.update_status(CakeReservation.Status.REFUNDED)
+
+    logger.info(
+        "Cake reservation #%s cancelled by customer and refunded",
+        reservation.pk,
+    )
+    return reservation
+
+
 def complete_reservation(reservation):
     """
     State diagram: Confirmed → Picked up → Completed

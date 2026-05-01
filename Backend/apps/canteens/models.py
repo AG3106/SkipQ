@@ -62,7 +62,7 @@ class Canteen(models.Model):
     opening_time = models.TimeField()
     closing_time = models.TimeField()
     lead_time_config = models.IntegerField(
-        default=6,
+        default=24,
         help_text="Minimum hours before a cake reservation can be placed.",
     )
     status = models.CharField(
@@ -109,6 +109,10 @@ class Canteen(models.Model):
         state diagram: isOpen() == True → Open state.
         """
         if self.status in (self.Status.UNDER_REVIEW, self.Status.REJECTED, self.Status.CLOSED, self.Status.EMERGENCY_CLOSURE):
+            return False
+        # Check if today is a holiday for this canteen
+        today = timezone.localdate()
+        if self.holidays.filter(date=today).exists():
             return False
         now = timezone.localtime().time()
         if self.opening_time <= self.closing_time:
@@ -230,6 +234,7 @@ class Dish(models.Model):
 
     class Meta:
         app_label = "canteens"
+        unique_together = ("canteen", "name")
 
     def __str__(self):
         return f"{self.name} (₹{self.price})"
@@ -241,8 +246,14 @@ class Dish(models.Model):
         logger.info("Dish %s availability toggled to %s", self.name, self.is_available)
 
     def get_effective_price(self):
-        """Return the price directly (discount feature removed)."""
-        return self.price
+        """Return the price rounded to the nearest whole rupee.
+
+        The frontend displays all prices as whole numbers (via .toFixed(0)),
+        so we round here to ensure the charged amount always matches
+        what users see on screen.
+        """
+        from decimal import Decimal, ROUND_HALF_UP
+        return self.price.quantize(Decimal("1"), rounding=ROUND_HALF_UP)
 
 
 # ---------------------------------------------------------------------------

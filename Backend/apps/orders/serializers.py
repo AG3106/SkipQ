@@ -79,6 +79,7 @@ class OrderHistorySerializer(serializers.ModelSerializer):
             "id", "canteen_id", "canteen_name", "status",
             "book_time", "receive_time", "is_rated",
             "customer_name", "roll_no",
+            "reject_reason", "cancel_rejection_reason",
             "items", "payment", "total_price",
         ]
         read_only_fields = fields

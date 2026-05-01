@@ -28,7 +28,9 @@ export default function Checkout() {
   const [customerName, setCustomerName] = useState(
     profile && "name" in profile ? profile.name || "" : "",
   );
-  const [rollNo, setRollNo] = useState("");
+  const [rollNo, setRollNo] = useState(
+    profile && "rollNumber" in profile ? profile.rollNumber || "" : "",
+  );
   const [canteenOpen, setCanteenOpen] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -156,7 +158,7 @@ export default function Checkout() {
                         {item.name}
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        ₹{item.price} each
+                        ₹{item.price.toFixed(0)} each
                       </p>
                     </div>
                     <div className="flex items-center gap-3 self-end sm:self-auto">

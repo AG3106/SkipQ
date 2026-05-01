@@ -65,7 +65,7 @@ export default function SearchResults() {
             />
             <div className="absolute top-4 right-4 z-20">
               <span className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md ${canteen.isCurrentlyOpen ? "bg-green-500/90 text-white border-transparent" : "bg-red-500/90 text-white border-transparent"}`}>
-                {canteen.isCurrentlyOpen ? "Open Now" : "Closed"}
+                {canteen.isCurrentlyOpen ? "Open Now" : canteen.holidayToday ? `Holiday — ${canteen.holidayToday}` : "Closed"}
               </span>
             </div>
             <div className="absolute bottom-4 left-4 right-4 z-20 text-white">
